@@ -275,7 +275,7 @@ def main():
     res_monotonic = evaluate_arm(model, val_loader, device, is_monotonic=True)
 
     print(f"\n>>> Results Summary:")
-    print(f"  NaviTrit-10M Val Loss : {res_learned['val_loss']} (PPL: {res_learned['val_perplexity']})")
+    print(f"  NaviTrit-{args.model_size.upper()} Val Loss : {res_learned['val_loss']} (PPL: {res_learned['val_perplexity']})")
     print(f"  Monotonic Baseline    : {res_monotonic['val_loss']} (PPL: {res_monotonic['val_perplexity']})")
     print(f"  Advantage             : {res_learned['val_loss'] - res_monotonic['val_loss']:.4f} loss points")
     print(f"  Attention Ratio       : {res_learned['attention_ratio']*100:.1f}%")

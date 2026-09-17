@@ -23,16 +23,16 @@ from experiments.frontier_scaling.navitrit_scale_model import (
 )
 
 
-def audit_generation():
+def audit_generation(model_size: str = "10m"):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    ckpt_path = os.path.join(os.path.dirname(__file__), "../../outputs/checkpoints/navitrit-10m-trained.pt")
+    ckpt_path = os.path.join(os.path.dirname(__file__), f"../../outputs/checkpoints/navitrit-{model_size}-trained.pt")
     
     if not os.path.exists(ckpt_path):
         print(f"Checkpoint {ckpt_path} not found yet.")
         return
 
     tokenizer = AutoTokenizer.from_pretrained("gpt2")
-    cfg = get_scale_config("10m")
+    cfg = get_scale_config(model_size)
     model = NaviTritScaleForCausalLM(cfg).to(device)
     model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
     model.eval()
@@ -76,11 +76,15 @@ def audit_generation():
             "trajectory": trajectory_log[0],
         })
 
-    out_file = os.path.join(os.path.dirname(__file__), "../../outputs/navitrit-10m-generation-audit.json")
+    out_file = os.path.join(os.path.dirname(__file__), f"../../outputs/navitrit-{model_size}-generation-audit.json")
     with open(out_file, "w") as f:
         json.dump(results, f, indent=2)
     print(f"\nAudit results saved to {out_file}")
 
 
 if __name__ == "__main__":
-    audit_generation()
+    import argparse
+    parser = argparse.ArgumentParser(description="Multi-Corpus Generation & Routing Audit")
+    parser.add_argument("--model_size", type=str, default="10m", choices=["10m", "100m"])
+    args = parser.parse_args()
+    audit_generation(args.model_size)
