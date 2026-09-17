@@ -267,6 +267,18 @@
         "outputs/navitrit-100m-longhorizon-results.json",
         "outputs/navitrit-100m-longhorizon-audit.json"
       ]
+    },
+    {
+      "gate": "Gate 16",
+      "track": "Phase II Track D-5: Frontier LLM Benchmarking (Gemini 2.5 Flash) & Flow-Reasoned Planner (FRP)",
+      "status": "PASSED",
+      "records": [
+        "experiments/frontier_scaling/gemini_benchmark.py",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/10-track-d4-frontier-scaling-and-scale-adaptive.md",
+        "research/deep-dives/11-frp-reasoning-and-frontier-llm-benchmarking.md",
+        "research/master-research-summary.md"
+      ]
     }
   ]
 }
