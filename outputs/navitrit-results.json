@@ -1,0 +1,287 @@
+{
+  "status": "COMPLETED",
+  "model_architecture": "NaviTrit (Stationary Module Graph G + Flow-Reasoned Navigation Controller)",
+  "track": "Track D (Paper 4: Non-Monotonic Token Navigation)",
+  "gate": "Gate 13",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda",
+  "seed": 20260916,
+  "cli": {
+    "train_steps": 600,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0006,
+    "num_layers": 3,
+    "max_hops": 6,
+    "lambda_hop": 0.02,
+    "lambda_fpf": 0.01,
+    "d_nav_route": 128,
+    "router_warmup_frac": 0.2,
+    "seed": 20260916,
+    "eval_batches": 0,
+    "save_checkpoints": true,
+    "smoke": false,
+    "json": "outputs/navitrit-results.json"
+  },
+  "arms": {
+    "train_time_s": 110.19,
+    "checkpoint_path": "outputs/checkpoints/navitrit-flow.pt",
+    "latency_ms_batch1_seq128": 12.42,
+    "navitrit_learned": {
+      "val_loss": 3.7449,
+      "val_perplexity": 42.3,
+      "avg_hops_per_sequence": 5.98,
+      "avg_forward_hops": 1.0,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 3.96,
+      "avg_early_exits": 0.0,
+      "node_visitation_distribution": [
+        3092,
+        6280,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    },
+    "monotonic_baseline": {
+      "val_loss": 4.2172,
+      "val_perplexity": 67.84,
+      "avg_hops_per_sequence": 5.98,
+      "avg_forward_hops": 5.98,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 0.0,
+      "avg_early_exits": 0.0,
+      "node_visitation_distribution": [
+        1562,
+        1562,
+        1562,
+        1562,
+        1562,
+        1562,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    },
+    "random_walk_control": {
+      "val_loss": 3.7449,
+      "val_perplexity": 42.3,
+      "avg_hops_per_sequence": 5.98,
+      "avg_forward_hops": 1.0,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 3.96,
+      "avg_early_exits": 0.0,
+      "node_visitation_distribution": [
+        3092,
+        6280,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    }
+  },
+  "findings": {
+    "navitrit_minus_monotonic_val_loss": -0.4723,
+    "navitrit_minus_random_val_loss": 0.0,
+    "navitrit_beats_random_control": false,
+    "navitrit_beats_monotonic_baseline": true,
+    "avg_hops_per_sequence": 5.98,
+    "has_backward_hops": false,
+    "has_self_loops": true,
+    "has_early_exits": false
+  }
+}

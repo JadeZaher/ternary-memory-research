@@ -80,9 +80,12 @@
         "paper_title": "Beyond the Pipeline: Non-Monotonic Token Navigation and Stationary Attractor Routing in Low-Bit Neural Architectures",
         "model_name": "NaviTrit",
         "target_venues": ["ICLR", "NeurIPS"],
-        "mechanism": "Bidirectional layer hopping (forward/backward/self-loop), repeated activations of high-capacity layers, and certified attractor early exits via Global Flow-Reasoned Navigation Controller",
-        "status": "SPECIFIED_IN_RESEARCH_DOCS",
-        "records": ["research/layer-navigation-flow-theory.md"]
+        "mechanism": "Stationary ternary module graph G = (V, E) with non-monotonic token navigation (forward hops, backward hops, self-loops, and early exits) driven by FlowNavigationController",
+        "val_loss": "3.7449 (NaviTrit) vs 4.2172 (Monotonic Feedforward Baseline)",
+        "val_perplexity": "42.30 vs 67.84 (-25.54 PPL recovery, -0.4723 val loss advantage)",
+        "discovered_trajectory": "Stationary repeated activations: 4 consecutive self-loops through Layer 0 FFN followed by Layer 0 Attention, bypassing redundant layers entirely",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": ["experiments/navitrit/navitrit_model.py", "experiments/navitrit/test_navitrit.py", "experiments/navitrit/train_navitrit.py", "outputs/navitrit-results.json"]
       },
       "track_e_liquid_mamba": {
         "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
@@ -176,8 +179,8 @@
     {
       "gate": "Gate 13",
       "track": "Phase II Track D: Non-Monotonic Token Navigation & Graph Routing (NaviTrit)",
-      "status": "SPECIFIED_IN_RESEARCH_DOCS",
-      "records": ["research/layer-navigation-flow-theory.md"]
+      "status": "PASSED",
+      "records": ["experiments/navitrit/navitrit_model.py", "experiments/navitrit/test_navitrit.py", "experiments/navitrit/train_navitrit.py", "outputs/navitrit-results.json"]
     }
   ]
 }
