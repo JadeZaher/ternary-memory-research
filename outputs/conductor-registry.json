@@ -263,7 +263,9 @@
         "outputs/navitrit-10m-generation-audit.json",
         "outputs/navitrit-100m-results.json",
         "outputs/navitrit-100m-generation-audit.json",
-        "outputs/navitrit-100m-scale-adaptive-results.json"
+        "outputs/navitrit-100m-scale-adaptive-results.json",
+        "outputs/navitrit-100m-longhorizon-results.json",
+        "outputs/navitrit-100m-longhorizon-audit.json"
       ]
     }
   ]

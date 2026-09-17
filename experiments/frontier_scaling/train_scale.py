@@ -39,6 +39,16 @@ from experiments.frontier_scaling.navitrit_scale_model import (
 )
 
 
+def make_lr_lambda(total_steps: int, warmup_iters: int = 500, min_ratio: float = 0.10):
+    """Linear warmup for `warmup_iters` steps, then cosine decay to `min_ratio` of peak lr."""
+    def lr_lambda(step: int) -> float:
+        if step < warmup_iters:
+            return float(step) / float(max(1, warmup_iters))
+        progress = float(step - warmup_iters) / float(max(1, total_steps - warmup_iters))
+        return min_ratio + 0.5 * (1.0 - min_ratio) * (1.0 + math.cos(math.pi * progress))
+    return lr_lambda
+
+
 class FlatTokenDataset(Dataset):
     """Fixed-length chunk dataset from 1D token tensor."""
     def __init__(self, tokens: torch.Tensor, seq_len: int):
@@ -165,6 +175,8 @@ def main():
     parser.add_argument("--json", type=str, default="outputs/navitrit-10m-results.json")
     parser.add_argument("--save_checkpoint", action="store_true", default=True)
     parser.add_argument("--disable_scale_adaptive", action="store_true", default=False)
+    parser.add_argument("--warmup_steps", type=int, default=500)
+    parser.add_argument("--checkpoint_interval", type=int, default=2500)
     args = parser.parse_args()
 
     # Set seed
@@ -195,12 +207,17 @@ def main():
         print("  Scale-Adaptive Disabled (Fixed Base Weights)")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, make_lr_lambda(args.train_steps, warmup_iters=args.warmup_steps))
     train_iter = iter(train_loader)
 
+    milestones = []
+    global_step = 0
     start_time = time.time()
+
     print(f"\n--- STAGE 1: Backbone & Hop Modulation Adaptation ({args.stage1_steps} steps) ---")
     model.train()
     for step in range(args.stage1_steps):
+        global_step += 1
         try:
             x, y = next(train_iter)
         except StopIteration:
@@ -229,13 +246,33 @@ def main():
         loss_total.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
+        scheduler.step()
 
-        if (step + 1) % 200 == 0:
-            print(f"  [Stage 1] Step {step+1}/{args.stage1_steps} | CE Loss: {loss_ce.item():.4f} | Attn Ratio: {out['attn_ratio']:.2f}")
+        if global_step % 200 == 0:
+            cur_lr = scheduler.get_last_lr()[0]
+            print(f"  [Stage 1] Step {global_step}/{args.train_steps} | CE Loss: {loss_ce.item():.4f} | Attn Ratio: {out['attn_ratio']:.2f} | LR: {cur_lr:.6f}")
+
+        if args.checkpoint_interval > 0 and global_step % args.checkpoint_interval == 0:
+            milestone_res = evaluate_arm(model, val_loader, device, is_monotonic=False, max_batches=20)
+            milestones.append({
+                "step": global_step,
+                "stage": 1,
+                "val_loss": milestone_res["val_loss"],
+                "val_perplexity": milestone_res["val_perplexity"],
+                "attention_ratio": milestone_res["attention_ratio"],
+                "sample_trajectory": milestone_res["sample_trajectories"][0] if len(milestone_res["sample_trajectories"]) > 0 else [],
+                "lr": scheduler.get_last_lr()[0],
+            })
+            ckpt_step = os.path.join(os.path.dirname(__file__), f"../../outputs/checkpoints/navitrit-{args.model_size}-step{global_step}.pt")
+            os.makedirs(os.path.dirname(ckpt_step), exist_ok=True)
+            torch.save(model.state_dict(), ckpt_step)
+            print(f"  >>> [Milestone] Step {global_step}/{args.train_steps} | Val Loss: {milestone_res['val_loss']} (PPL: {milestone_res['val_perplexity']}) | Attn: {milestone_res['attention_ratio']*100:.1f}% | Ckpt: {ckpt_step}")
+            model.train()
 
     print(f"\n--- STAGE 2: Joint Navigation & Attractor Core Stabilization ({args.train_steps - args.stage1_steps} steps) ---")
     stage2_steps = args.train_steps - args.stage1_steps
     for step in range(stage2_steps):
+        global_step += 1
         try:
             x, y = next(train_iter)
         except StopIteration:
@@ -265,9 +302,28 @@ def main():
         loss_total.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
+        scheduler.step()
 
         if (step + 1) % 300 == 0 or (step + 1) == stage2_steps:
-            print(f"  [Stage 2] Step {step+1}/{stage2_steps} | CE Loss: {loss_ce.item():.4f} | Trajectory: {out['trajectory']} | Attn: {out['attn_ratio']:.2f}")
+            cur_lr = scheduler.get_last_lr()[0]
+            print(f"  [Stage 2] Step {global_step}/{args.train_steps} | CE Loss: {loss_ce.item():.4f} | Trajectory: {out['trajectory']} | Attn: {out['attn_ratio']:.2f} | LR: {cur_lr:.6f}")
+
+        if args.checkpoint_interval > 0 and global_step % args.checkpoint_interval == 0:
+            milestone_res = evaluate_arm(model, val_loader, device, is_monotonic=False, max_batches=20)
+            milestones.append({
+                "step": global_step,
+                "stage": 2,
+                "val_loss": milestone_res["val_loss"],
+                "val_perplexity": milestone_res["val_perplexity"],
+                "attention_ratio": milestone_res["attention_ratio"],
+                "sample_trajectory": milestone_res["sample_trajectories"][0] if len(milestone_res["sample_trajectories"]) > 0 else [],
+                "lr": scheduler.get_last_lr()[0],
+            })
+            ckpt_step = os.path.join(os.path.dirname(__file__), f"../../outputs/checkpoints/navitrit-{args.model_size}-step{global_step}.pt")
+            os.makedirs(os.path.dirname(ckpt_step), exist_ok=True)
+            torch.save(model.state_dict(), ckpt_step)
+            print(f"  >>> [Milestone] Step {global_step}/{args.train_steps} | Val Loss: {milestone_res['val_loss']} (PPL: {milestone_res['val_perplexity']}) | Attn: {milestone_res['attention_ratio']*100:.1f}% | Ckpt: {ckpt_step}")
+            model.train()
 
     train_time = round(time.time() - start_time, 2)
     print(f"\nTraining completed in {train_time}s ({train_time/60:.2f} min).")
@@ -302,6 +358,7 @@ def main():
         "total_parameters": total_params,
         "train_time_s": train_time,
         "cli": vars(args),
+        "milestones": milestones,
         "arms": {
             "navitrit_learned": res_learned,
             "monotonic_baseline": res_monotonic,

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "story",
+    "prompt": "One sunny day, Lily and her brother found a big, red ball.",
+    "continuation": " She wanted to play with her toy car. She asked her mom, \"Can I have a toy car?\"\n\"Yes, please?\" Lily asked.\n\"Yes,",
+    "trajectory": [
+      2,
+      9,
+      0,
+      19,
+      16,
+      19
+    ]
+  },
+  {
+    "type": "story",
+    "prompt": "Once upon a time, there was a little dog named Spot.",
+    "continuation": " Spot loved to play with his friends. One day, Tim saw a big dog named Tim. Tim was sad because he wanted to help his friend, Sam.\nTim's",
+    "trajectory": [
+      2,
+      1,
+      14,
+      19,
+      16,
+      19
+    ]
+  },
+  {
+    "type": "math",
+    "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many apples remain?\nReasoning:",
+    "continuation": " Let's track the count step by step.\nStep 1: Mia begins with 15 apples.\nStep 2: After gave 3 to Lily, 15 - 3 = 17 apples",
+    "trajectory": [
+      0,
+      19,
+      2,
+      15,
+      16,
+      19
+    ]
+  },
+  {
+    "type": "code",
+    "prompt": "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n",
+    "continuation": "    while low <= high:\n        mid = (low + high) // 2\n        if arr",
+    "trajectory": [
+      10,
+      9,
+      0,
+      19,
+      16,
+      19
+    ]
+  }
+]

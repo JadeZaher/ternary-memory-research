@@ -11,6 +11,7 @@ Evaluates:
 import os
 import sys
 import json
+from typing import Optional
 import torch
 from transformers import AutoTokenizer
 
@@ -23,9 +24,12 @@ from experiments.frontier_scaling.navitrit_scale_model import (
 )
 
 
-def audit_generation(model_size: str = "10m"):
+def audit_generation(model_size: str = "10m", checkpoint_path: Optional[str] = None, json_path: Optional[str] = None):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    ckpt_path = os.path.join(os.path.dirname(__file__), f"../../outputs/checkpoints/navitrit-{model_size}-trained.pt")
+    if checkpoint_path is None:
+        ckpt_path = os.path.join(os.path.dirname(__file__), f"../../outputs/checkpoints/navitrit-{model_size}-trained.pt")
+    else:
+        ckpt_path = checkpoint_path
     
     if not os.path.exists(ckpt_path):
         print(f"Checkpoint {ckpt_path} not found yet.")
@@ -44,7 +48,7 @@ def audit_generation(model_size: str = "10m"):
         {"type": "code", "prompt": "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n"},
     ]
 
-    print("\n=== NaviTrit-10M Multi-Corpus Generation & Routing Audit ===")
+    print(f"\n=== NaviTrit-{model_size.upper()} Multi-Corpus Generation & Routing Audit ({os.path.basename(ckpt_path)}) ===")
     results = []
 
     for item in prompts:
@@ -76,7 +80,11 @@ def audit_generation(model_size: str = "10m"):
             "trajectory": trajectory_log[0],
         })
 
-    out_file = os.path.join(os.path.dirname(__file__), f"../../outputs/navitrit-{model_size}-generation-audit.json")
+    if json_path is None:
+        out_file = os.path.join(os.path.dirname(__file__), f"../../outputs/navitrit-{model_size}-generation-audit.json")
+    else:
+        out_file = json_path
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
     with open(out_file, "w") as f:
         json.dump(results, f, indent=2)
     print(f"\nAudit results saved to {out_file}")
@@ -86,5 +94,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Multi-Corpus Generation & Routing Audit")
     parser.add_argument("--model_size", type=str, default="10m", choices=["10m", "100m"])
+    parser.add_argument("--checkpoint", type=str, default=None)
+    parser.add_argument("--json", type=str, default=None)
     args = parser.parse_args()
-    audit_generation(args.model_size)
+    audit_generation(args.model_size, args.checkpoint, args.json)

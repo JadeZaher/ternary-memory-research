@@ -1,0 +1,255 @@
+{
+  "status": "COMPLETED",
+  "gate": "Gate 15 (Track D-4)",
+  "model_size": "100m",
+  "total_parameters": 129700571,
+  "train_time_s": 1726.49,
+  "cli": {
+    "model_size": "100m",
+    "data_path": "data/multicorpus_10m.pt",
+    "train_steps": 10000,
+    "stage1_steps": 2000,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0004,
+    "max_hops": 6,
+    "seed": 20260917,
+    "json": "outputs/navitrit-100m-longhorizon-results.json",
+    "save_checkpoint": true,
+    "disable_scale_adaptive": false,
+    "warmup_steps": 500,
+    "checkpoint_interval": 2500
+  },
+  "milestones": [
+    {
+      "step": 2500,
+      "stage": 2,
+      "val_loss": 0.6111,
+      "val_perplexity": 1.84,
+      "attention_ratio": 0.5,
+      "sample_trajectory": [
+        15,
+        2,
+        15,
+        14,
+        15,
+        14
+      ],
+      "lr": 0.00036204529169135084
+    },
+    {
+      "step": 5000,
+      "stage": 2,
+      "val_loss": 0.2482,
+      "val_perplexity": 1.28,
+      "attention_ratio": 0.5,
+      "sample_trajectory": [
+        15,
+        0,
+        5,
+        16,
+        15,
+        0
+      ],
+      "lr": 0.00023486428218501986
+    },
+    {
+      "step": 7500,
+      "stage": 2,
+      "val_loss": 0.1596,
+      "val_perplexity": 1.17,
+      "attention_ratio": 0.6667,
+      "sample_trajectory": [
+        2,
+        0,
+        19,
+        22,
+        15,
+        0
+      ],
+      "lr": 9.808931710736665e-05
+    },
+    {
+      "step": 10000,
+      "stage": 2,
+      "val_loss": 0.1355,
+      "val_perplexity": 1.15,
+      "attention_ratio": 0.5016,
+      "sample_trajectory": [
+        0,
+        13,
+        2,
+        9,
+        0,
+        19
+      ],
+      "lr": 4e-05
+    }
+  ],
+  "arms": {
+    "navitrit_learned": {
+      "val_loss": 0.1368,
+      "val_perplexity": 1.15,
+      "avg_hops": 6,
+      "attention_ratio": 0.5021,
+      "node_visitations": [
+        68,
+        0,
+        29,
+        0,
+        0,
+        0,
+        12,
+        0,
+        0,
+        40,
+        11,
+        0,
+        0,
+        40,
+        0,
+        12,
+        0,
+        0,
+        0,
+        28,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          0,
+          13,
+          2,
+          9,
+          0,
+          19
+        ],
+        [
+          0,
+          13,
+          2,
+          9,
+          0,
+          19
+        ],
+        [
+          0,
+          13,
+          2,
+          9,
+          0,
+          19
+        ],
+        [
+          0,
+          13,
+          2,
+          9,
+          0,
+          19
+        ],
+        [
+          0,
+          13,
+          2,
+          9,
+          0,
+          19
+        ]
+      ]
+    },
+    "monotonic_baseline": {
+      "val_loss": 0.1325,
+      "val_perplexity": 1.14,
+      "avg_hops": 6,
+      "attention_ratio": 0.5,
+      "node_visitations": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ]
+    }
+  },
+  "findings": {
+    "val_loss_delta": 0.0043,
+    "navitrit_beats_monotonic": false,
+    "attention_ratio": 0.5021,
+    "reasoning_core_visitations": 0,
+    "scale_adaptive": {
+      "enabled": true,
+      "lambda_attn_div": 1.7321,
+      "lambda_entropy": 0.3464,
+      "ffn_damping": 1.6094
+    }
+  }
+}
