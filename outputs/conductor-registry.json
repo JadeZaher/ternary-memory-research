@@ -61,6 +61,18 @@
         "average_layer_passes": "12.07 passes vs 20.0 fixed",
         "status": "VALIDATED_ON_RTX_4060",
         "records": ["experiments/flowroute_model.py", "experiments/train_flowroute_sudoku.py", "outputs/flowroute-test.json"]
+      },
+      "flow_reasoned_multihop": {
+        "paper_title": "Flow-Reasoned Dynamic Routing: Attractor Relaxation and Decoupled Multi-Hop Execution in Native Ternary Transformers",
+        "model_name": "BitRoute-MultiHop",
+        "mechanism": "Global FlowRoutingPlanner (continuous attractor relaxation) with decoupled Attention (Hop 1) and FFN (Hop 2)",
+        "val_loss": "2.9836 (Learned Routing) vs 3.0238 (Forced Full Execution) vs 3.3598 (Matched Random Coin)",
+        "val_perplexity": "19.76 (Learned Routing) vs 20.57 (Forced Full) vs 28.78 (Random Coin)",
+        "beats_full_execution": "-0.0402 val loss points (-0.81 PPL) while saving 16.7% parameter compute",
+        "beats_random_control": "-0.3762 val loss points (-9.02 PPL advantage)",
+        "discovered_sparsity": "Identified redundant early Attention at Layers 0, 1, 3 (50% attention bypass) while preserving 100% FFN",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": ["experiments/flow_router.py", "experiments/bitroute_multihop_model.py", "experiments/train_bitroute_multihop.py", "outputs/bitroute-multihop-results.json"]
       }
     },
     "phase_2_dynamical_scaling": {
@@ -140,6 +152,12 @@
       "track": "Phase I-B Track C: FlowRoute Combined Dual-Axis Routing",
       "status": "PASSED",
       "records": ["experiments/train_flowroute_sudoku.py", "outputs/flowroute-test.json"]
+    },
+    {
+      "gate": "Gate 11-B",
+      "track": "Phase I-B: Flow-Reasoned Dynamic Routing & Multi-Hop Decoupled Execution",
+      "status": "PASSED",
+      "records": ["experiments/flow_router.py", "experiments/bitroute_multihop_model.py", "experiments/train_bitroute_multihop.py", "outputs/bitroute-multihop-results.json"]
     },
     {
       "gate": "Gate 12",

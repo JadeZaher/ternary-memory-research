@@ -54,6 +54,7 @@ stateDiagram-v2
     Gate9_Lang   : Gate 9 - TinyStories Generalization (PASSED)
     Gate10_Sud9  : Gate 10 - 9x9 Sudoku Scaling (PASSED)
     Gate11_Route : Gate 11 - Track C FlowRoute Combined (PASSED)
+    Gate11B_FlowRoute : Gate 11-B - Flow-Reasoned Multi-Hop (PASSED)
     Gate12_Papers: Gate 12 - Multi-Paper Drafting (ACTIVE)
     PhaseII_TrackD : Phase II - Liquid & Mamba Flow (FUTURE)
     PhaseIII_TrackE : Phase III - Ternary on Metal (FUTURE)
@@ -69,7 +70,8 @@ stateDiagram-v2
     Gate8_Router --> Gate10_Sud9
     Gate9_Lang --> Gate11_Route
     Gate10_Sud9 --> Gate11_Route
-    Gate11_Route --> Gate12_Papers
+    Gate11_Route --> Gate11B_FlowRoute
+    Gate11B_FlowRoute --> Gate12_Papers
     Gate12_Papers --> PhaseII_TrackD
     PhaseII_TrackD --> PhaseIII_TrackE
 ```
@@ -86,6 +88,7 @@ stateDiagram-v2
 | **Gate 9** | Track A: TinyStories Language Modeling | Real text generalization; trained router achieves **lower perplexity (408.87 vs 609.78)** and lower validation loss (6.01 vs 6.41) while bypassing 13.7% of layers. | **PASSED** |
 | **Gate 10** | Track B: 9x9 Sudoku Scaling | Scaled to 81 positions, 9 classes (729 logits); comparable loss to FP32 (0.86 vs 0.81). | **PASSED** |
 | **Gate 11** | Track C: FlowRoute Combined Dual-Axis | Merged recurrent denoiser with TwoStateLayerRouter; **39.6% - 52.7% multiplicative compute savings** (fewer steps $\times$ fewer layers). | **PASSED** |
+| **Gate 11-B** | Flow-Reasoned Dynamic Routing & Multi-Hop | Continuous attractor routing $dr/dt = v_\phi$; decoupled Attention/FFN execution. **Val loss 2.98 vs 3.02 full baseline (-0.04 loss / -0.81 PPL advantage with 16.7% compute saved); crushes random coin (3.36 loss / 28.78 PPL)**. Uncovers early attention redundancy (Layers 0, 1, 3). | **PASSED** |
 | **Gate 12** | Multi-Paper Drafting & Artifact Release | Compile 3 paper packages: Paper 1 (Systems/BitRoute), Paper 2 (Reasoning/FlowTrit), Paper 3 (Dual-Axis/FlowRoute). | **ACTIVE** |
 | **Phase II** | Liquid & Mamba Ternary Flow | Track D: Zero-KV scaling and continuous-time ODE dynamics (includes deferred multi-hop routing). | Queued |
 | **Phase III**| Ternary on Metal Neuromorphic | Track E: Physical memristive crossbar mapping and zero-energy skipping. | Queued |

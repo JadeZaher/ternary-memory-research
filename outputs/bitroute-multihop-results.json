@@ -1,0 +1,263 @@
+{
+  "status": "COMPLETED",
+  "model_architecture": "BitRouteMultiHop (Decoupled 2-Hop Attention/FFN + FlowRoutingPlanner)",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda",
+  "seed": 20260916,
+  "cli": {
+    "train_steps": 2000,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0006,
+    "target_budget": 0.7,
+    "lambda_budget": 0.5,
+    "lambda_fpf": 0.05,
+    "d_route": 128,
+    "max_flow_steps": 3,
+    "flow_dt": 0.5,
+    "eps_contraction": 0.001,
+    "router_warmup_frac": 0.2,
+    "seed": 20260916,
+    "eval_batches": 0,
+    "save_checkpoints": true,
+    "smoke": false,
+    "json": "outputs/bitroute-multihop-results.json",
+    "reference_json": "outputs/bitroute-tinystories-lambda0.2.json"
+  },
+  "arm": {
+    "train_time_s": 210.25,
+    "checkpoint_path": "outputs/checkpoints/bitroute-multihop-flow.pt",
+    "latency_ms_batch1_seq128": 9.991,
+    "router_on": {
+      "val_loss": 2.9836,
+      "val_perplexity": 19.76,
+      "attn_exec_fraction": 0.5,
+      "ffn_exec_fraction": 1.0,
+      "weighted_param_cost": 0.8333,
+      "bandwidth_saving_ratio": 0.1667,
+      "flow_steps_distribution": [
+        0,
+        1562,
+        0,
+        0
+      ],
+      "sublayer_histogram": [
+        {
+          "layer": 0,
+          "attn_exec": 0,
+          "attn_bypass": 1562,
+          "attn_exec_rate": 0.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 1,
+          "attn_exec": 0,
+          "attn_bypass": 1562,
+          "attn_exec_rate": 0.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 2,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 3,
+          "attn_exec": 0,
+          "attn_bypass": 1562,
+          "attn_exec_rate": 0.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 4,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 5,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    },
+    "forced_execute": {
+      "val_loss": 3.0238,
+      "val_perplexity": 20.57,
+      "attn_exec_fraction": 1.0,
+      "ffn_exec_fraction": 1.0,
+      "weighted_param_cost": 1.0,
+      "bandwidth_saving_ratio": 0.0,
+      "flow_steps_distribution": [
+        0,
+        1562,
+        0,
+        0
+      ],
+      "sublayer_histogram": [
+        {
+          "layer": 0,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 1,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 2,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 3,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 4,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        },
+        {
+          "layer": 5,
+          "attn_exec": 1562,
+          "attn_bypass": 0,
+          "attn_exec_rate": 1.0,
+          "ffn_exec": 1562,
+          "ffn_bypass": 0,
+          "ffn_exec_rate": 1.0
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    },
+    "random_matched": {
+      "val_loss": 3.3598,
+      "val_perplexity": 28.78,
+      "attn_exec_fraction": 0.8322,
+      "ffn_exec_fraction": 0.8309,
+      "weighted_param_cost": 0.8313,
+      "bandwidth_saving_ratio": 0.1687,
+      "flow_steps_distribution": [
+        0,
+        1562,
+        0,
+        0
+      ],
+      "sublayer_histogram": [
+        {
+          "layer": 0,
+          "attn_exec": 1320,
+          "attn_bypass": 242,
+          "attn_exec_rate": 0.845,
+          "ffn_exec": 1297,
+          "ffn_bypass": 265,
+          "ffn_exec_rate": 0.83
+        },
+        {
+          "layer": 1,
+          "attn_exec": 1280,
+          "attn_bypass": 282,
+          "attn_exec_rate": 0.819,
+          "ffn_exec": 1303,
+          "ffn_bypass": 259,
+          "ffn_exec_rate": 0.834
+        },
+        {
+          "layer": 2,
+          "attn_exec": 1298,
+          "attn_bypass": 264,
+          "attn_exec_rate": 0.831,
+          "ffn_exec": 1313,
+          "ffn_bypass": 249,
+          "ffn_exec_rate": 0.841
+        },
+        {
+          "layer": 3,
+          "attn_exec": 1305,
+          "attn_bypass": 257,
+          "attn_exec_rate": 0.835,
+          "ffn_exec": 1296,
+          "ffn_bypass": 266,
+          "ffn_exec_rate": 0.83
+        },
+        {
+          "layer": 4,
+          "attn_exec": 1302,
+          "attn_bypass": 260,
+          "attn_exec_rate": 0.834,
+          "ffn_exec": 1286,
+          "ffn_bypass": 276,
+          "ffn_exec_rate": 0.823
+        },
+        {
+          "layer": 5,
+          "attn_exec": 1294,
+          "attn_bypass": 268,
+          "attn_exec_rate": 0.828,
+          "ffn_exec": 1292,
+          "ffn_bypass": 270,
+          "ffn_exec_rate": 0.827
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    }
+  },
+  "findings": {
+    "router_on_minus_forced_execute_val_loss": -0.0402,
+    "router_on_minus_random_matched_val_loss": -0.3762,
+    "router_beats_random_control": true,
+    "router_beats_forced_execute": true,
+    "attn_exec_fraction": 0.5,
+    "ffn_exec_fraction": 1.0,
+    "weighted_param_cost": 0.8333,
+    "bandwidth_saving_ratio": 0.1667,
+    "ref_fp32_val_loss": 2.4752,
+    "ref_ternary_val_loss": 2.6152,
+    "ref_greedy_val_loss": 2.6987,
+    "ref_greedy_ppl": 14.86,
+    "ref_greedy_bypass": 0.149
+  }
+}
