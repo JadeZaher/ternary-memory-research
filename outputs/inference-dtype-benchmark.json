@@ -1,0 +1,23 @@
+{
+  "device": "NVIDIA GeForce RTX 4060",
+  "torch": "2.5.1+cu121",
+  "model": "BitRoute-135M reference config, batch 1, all layers executed",
+  "seq_len": 16,
+  "iters": 30,
+  "latency_ms": {
+    "fp32_additive_requantize_each_call": 51.043,
+    "fp32_additive_cached": 20.084,
+    "fp32_dense_cached": 17.064,
+    "bf16_dense_cached_autocast": 22.476,
+    "bf16_additive_cached_autocast": 26.65
+  },
+  "speedup_vs_pre_hardening": {
+    "fp32_additive_requantize_each_call": 1.0,
+    "fp32_additive_cached": 2.54,
+    "fp32_dense_cached": 2.99,
+    "bf16_dense_cached_autocast": 2.27,
+    "bf16_additive_cached_autocast": 1.92
+  },
+  "bf16_vs_fp32_logit_rel_err": 0.0037222765386104584,
+  "label": "measured"
+}

@@ -1,0 +1,332 @@
+{
+  "status": "COMPLETED",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda",
+  "seed": 20260916,
+  "config": {
+    "vocab_size": 64,
+    "hidden_size": 128,
+    "intermediate_size": 512,
+    "num_hidden_layers": 4,
+    "num_attention_heads": 4,
+    "max_position_embeddings": 128,
+    "block_size": 128,
+    "use_trained_router": true
+  },
+  "cli": {
+    "train_steps": 1500,
+    "batch_size": 64,
+    "lr": 0.001,
+    "lambda_sparse": 0.02,
+    "router_warmup_frac": 0.2,
+    "eval_size": 512,
+    "tasks": [
+      "reverse",
+      "sort",
+      "mod_add",
+      "parity"
+    ]
+  },
+  "tasks": {
+    "reverse": {
+      "arms": {
+        "fp32": {
+          "train_time_s": 28.44,
+          "eval": {
+            "token_accuracy": 0.9989,
+            "exact_seq_accuracy": 0.9824,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary": {
+          "train_time_s": 51.86,
+          "eval": {
+            "token_accuracy": 0.996,
+            "exact_seq_accuracy": 0.9414,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary_router": {
+          "train_time_s": 54.71,
+          "router_on": {
+            "token_accuracy": 0.9952,
+            "exact_seq_accuracy": 0.9297,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0,
+            "layer_action_histogram": [
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              }
+            ]
+          },
+          "router_forced_execute": {
+            "token_accuracy": 0.9952,
+            "exact_seq_accuracy": 0.9297,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          },
+          "router_random_matched": {
+            "token_accuracy": 0.9952,
+            "exact_seq_accuracy": 0.9297,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        }
+      },
+      "findings": {
+        "ternary_minus_fp32_exact_acc": -0.041,
+        "router_minus_random_exact_acc": 0.0,
+        "bypass_fraction": 0.0
+      }
+    },
+    "sort": {
+      "arms": {
+        "fp32": {
+          "train_time_s": 27.1,
+          "eval": {
+            "token_accuracy": 0.9999,
+            "exact_seq_accuracy": 0.998,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary": {
+          "train_time_s": 50.04,
+          "eval": {
+            "token_accuracy": 0.9999,
+            "exact_seq_accuracy": 0.998,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary_router": {
+          "train_time_s": 54.1,
+          "router_on": {
+            "token_accuracy": 1.0,
+            "exact_seq_accuracy": 1.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0,
+            "layer_action_histogram": [
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              }
+            ]
+          },
+          "router_forced_execute": {
+            "token_accuracy": 1.0,
+            "exact_seq_accuracy": 1.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          },
+          "router_random_matched": {
+            "token_accuracy": 1.0,
+            "exact_seq_accuracy": 1.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        }
+      },
+      "findings": {
+        "ternary_minus_fp32_exact_acc": 0.0,
+        "router_minus_random_exact_acc": 0.0,
+        "bypass_fraction": 0.0
+      }
+    },
+    "mod_add": {
+      "arms": {
+        "fp32": {
+          "train_time_s": 27.3,
+          "eval": {
+            "token_accuracy": 0.7808,
+            "exact_seq_accuracy": 0.0996,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary": {
+          "train_time_s": 50.3,
+          "eval": {
+            "token_accuracy": 0.542,
+            "exact_seq_accuracy": 0.002,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary_router": {
+          "train_time_s": 54.78,
+          "router_on": {
+            "token_accuracy": 0.5613,
+            "exact_seq_accuracy": 0.0039,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0,
+            "layer_action_histogram": [
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              }
+            ]
+          },
+          "router_forced_execute": {
+            "token_accuracy": 0.5613,
+            "exact_seq_accuracy": 0.0039,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          },
+          "router_random_matched": {
+            "token_accuracy": 0.5613,
+            "exact_seq_accuracy": 0.0039,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        }
+      },
+      "findings": {
+        "ternary_minus_fp32_exact_acc": -0.0976,
+        "router_minus_random_exact_acc": 0.0,
+        "bypass_fraction": 0.0
+      }
+    },
+    "parity": {
+      "arms": {
+        "fp32": {
+          "train_time_s": 27.13,
+          "eval": {
+            "token_accuracy": 0.8115,
+            "exact_seq_accuracy": 0.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary": {
+          "train_time_s": 49.94,
+          "eval": {
+            "token_accuracy": 0.7247,
+            "exact_seq_accuracy": 0.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          }
+        },
+        "ternary_router": {
+          "train_time_s": 53.84,
+          "router_on": {
+            "token_accuracy": 0.6278,
+            "exact_seq_accuracy": 0.0,
+            "layer_exec_fraction": 0.7666,
+            "layer_bypass_fraction": 0.0029,
+            "layer_exit_fraction": 0.2305,
+            "layer_action_histogram": [
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 512,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 0
+              },
+              {
+                "EXECUTE": 277,
+                "ROUTE_AROUND": 0,
+                "EARLY_EXIT": 235
+              },
+              {
+                "EXECUTE": 269,
+                "ROUTE_AROUND": 6,
+                "EARLY_EXIT": 2
+              }
+            ]
+          },
+          "router_forced_execute": {
+            "token_accuracy": 0.672,
+            "exact_seq_accuracy": 0.0,
+            "layer_exec_fraction": 1.0,
+            "layer_bypass_fraction": 0.0,
+            "layer_exit_fraction": 0.0
+          },
+          "router_random_matched": {
+            "token_accuracy": 0.6241,
+            "exact_seq_accuracy": 0.0,
+            "layer_exec_fraction": 0.77,
+            "layer_bypass_fraction": 0.0024,
+            "layer_exit_fraction": 0.2275
+          }
+        }
+      },
+      "findings": {
+        "ternary_minus_fp32_exact_acc": 0.0,
+        "router_minus_random_exact_acc": 0.0,
+        "bypass_fraction": 0.0029
+      }
+    }
+  }
+}

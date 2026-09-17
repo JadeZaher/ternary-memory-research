@@ -1,0 +1,30 @@
+{
+  "phase1": {
+    "max_diff": 1.1920928955078125e-06
+  },
+  "phase2": {
+    "zero_fraction": 0.25008392333984375
+  },
+  "phase3": {
+    "gradient_max_diff": 0.0
+  },
+  "phase4": {
+    "mean_latency_legacy_ms": 0.21499499678611755,
+    "std_latency_legacy_ms": 0.0029213486704975367,
+    "mean_latency_additive_ms": 0.4436350464820862,
+    "std_latency_additive_ms": 0.010985408909618855,
+    "speedup": 0.4846213086431596,
+    "verdict": "SLOWER_ON_CUBLAS",
+    "note": "additive path is two dense GEMMs on cuBLAS; the gate that matters is exactness (phase1/phase3)"
+  },
+  "phase5": {
+    "q_proj": 0.2499338835477829,
+    "k_proj": 0.2495032399892807,
+    "v_proj": 0.2493947297334671,
+    "o_proj": 0.2502237856388092,
+    "gate_proj": 0.24931399524211884,
+    "up_proj": 0.24934260547161102,
+    "down_proj": 0.2490050047636032
+  },
+  "exactness_gate": "PASS"
+}

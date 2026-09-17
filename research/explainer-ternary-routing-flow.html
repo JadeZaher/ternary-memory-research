@@ -1,0 +1,223 @@
+<title>Trits, Routes, and Fixed Points</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F5F6F2; --paper:#FFFFFF; --ink:#1C2430; --ink-2:#4A5563; --rule:#D9DDD6;
+  --neg:#2F4A8A; --zero:#7E868E; --pos:#C2551A; --pos-soft:#F7E3D6; --neg-soft:#DEE5F4; --zero-soft:#E9EBEA;
+  --code:#EEF0EC; --good:#2C7A4B; --warn:#9A6B00; --bad:#A83A2E;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'IBM Plex Sans','Segoe UI',Helvetica,Arial,sans-serif; --mono:'IBM Plex Mono',Consolas,'Courier New',monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ground:#14181D; --paper:#1C2128; --ink:#E7E9E3; --ink-2:#AAB2BC; --rule:#2E353E;
+  --neg:#8FA8E0; --zero:#9AA3AC; --pos:#F08A55; --pos-soft:#3A2419; --neg-soft:#1E2B45; --zero-soft:#262B31;
+  --code:#232930; --good:#6CC28E; --warn:#E0B24A; --bad:#E8776A;
+}}
+:root[data-theme="dark"]{
+  --ground:#14181D; --paper:#1C2128; --ink:#E7E9E3; --ink-2:#AAB2BC; --rule:#2E353E;
+  --neg:#8FA8E0; --zero:#9AA3AC; --pos:#F08A55; --pos-soft:#3A2419; --neg-soft:#1E2B45; --zero-soft:#262B31;
+  --code:#232930; --good:#6CC28E; --warn:#E0B24A; --bad:#E8776A;
+}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:2.6rem;letter-spacing:-0.01em}
+h2{font-size:1.7rem;margin-top:56px;padding-top:24px;border-top:1px solid var(--rule)}
+h3{font-size:1.2rem;margin-top:28px}
+p{max-width:68ch;margin:12px 0}
+.lede{font-size:1.15rem;color:var(--ink-2);max-width:62ch}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.trits{display:inline-flex;gap:6px;vertical-align:middle;margin-left:8px}
+.trit{display:inline-block;width:14px;height:14px;border-radius:2px}
+.trit.n{background:var(--neg)}.trit.z{background:var(--zero)}.trit.p{background:var(--pos)}
+.mode{position:sticky;top:0;z-index:5;background:var(--ground);padding:14px 0;margin:28px 0 8px;border-bottom:1px solid var(--rule);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.mode .label{font-size:.9rem;color:var(--ink-2)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--paper)}
+.seg button{font:inherit;font-weight:500;padding:8px 16px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.seg button:focus-visible{outline:2px solid var(--pos);outline-offset:-2px}
+.plain,.formal{margin:10px 0}
+:root[data-mode="formal"] .plain{display:none}
+:root:not([data-mode="formal"]) .formal{display:none}
+.pane{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;margin:14px 0}
+.pane .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.eq{font-family:var(--mono);font-size:.95rem;background:var(--code);padding:10px 14px;border-radius:4px;overflow-x:auto;margin:10px 0;white-space:pre}
+code,.sym{font-family:var(--mono);font-size:.92em;background:var(--code);padding:1px 5px;border-radius:3px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;margin:12px 0;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;margin:12px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+td.num,th.num{text-align:right}
+.glossary td:first-child{font-family:var(--mono);white-space:nowrap;font-weight:500}
+.verdict{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;padding:2px 8px;border-radius:3px;text-transform:uppercase}
+.verdict.good{background:var(--pos-soft);color:var(--good)}.verdict.warn{background:var(--zero-soft);color:var(--warn)}.verdict.bad{background:var(--neg-soft);color:var(--bad)}
+.callout{border-left:3px solid var(--pos);padding:6px 16px;margin:16px 0;color:var(--ink)}
+.callout.neg{border-color:var(--neg)}
+ul{padding-left:22px}li{margin:6px 0;max-width:68ch}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.small{font-size:.86rem;color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.seg button{transition:background .15s}}
+</style>
+
+<div class="wrap">
+<div class="eyebrow">ternary-memory-research · hardening pass · 16 September 2026</div>
+<h1 style="margin-top:10px">Trits, Routes, and Fixed Points <span class="trits" aria-hidden="true"><span class="trit n"></span><span class="trit z"></span><span class="trit p"></span></span></h1>
+<p class="lede">What this research track is, what the hardening pass actually found, and where it goes next. Read it in plain words or in full notation; every symbol used in the formal mode is defined in the glossary at the end.</p>
+
+<div class="mode" role="group" aria-label="Reading mode">
+  <span class="label">Reading mode</span>
+  <div class="seg">
+    <button type="button" id="btn-plain" aria-pressed="true">Plain words</button>
+    <button type="button" id="btn-formal" aria-pressed="false">Full notation</button>
+  </div>
+  <span class="small">Same content, two treatments. Tables and the glossary show in both.</span>
+</div>
+
+<h2>1. The one-sentence version</h2>
+<div class="plain">
+<p>We are testing whether a neural network can be built from weights that take only three values, minus one, zero, and plus one, and still (a) speak passable English, (b) solve small logic puzzles by "thinking in loops", and (c) learn to skip the parts of itself it does not need for a given input. The three-value idea is what makes the network small enough to sit in a chip's fast memory; the skipping and looping ideas are what would make it cheap to run there.</p>
+</div>
+<div class="formal">
+<p>Three claims are under test. (1) A transformer whose linear maps use weights in <span class="sym">{−1, 0, +1}</span> with one shared scale per 256-weight block can be trained from scratch with a straight-through estimator and stay close to an FP32 twin. (2) A weight-tied recurrent denoiser trained by fixed-point forcing converges toward a per-cell fixed point on constraint-satisfaction problems, so the contraction <span class="sym">‖s⁽ᵏ⁺¹⁾ − s⁽ᵏ⁾‖<sub>∞</sub> &lt; ε<sub>exit</sub></span> is a usable stopping rule. (3) A per-layer three-way router (execute / route around / exit) trained with Gumbel-softmax learns to skip layers in a way that beats a random router at the same skip rate.</p>
+</div>
+
+<h2>2. Three ideas, each in both voices</h2>
+
+<h3>2.1 Ternary weights</h3>
+<div class="plain">
+<div class="pane"><div class="tag">plain words</div>
+<p>A normal network stores each connection strength as a 32-bit number, roughly a dial with four billion positions. Here each connection is only a switch with three positions: pull negative, do nothing, pull positive. To keep the network from losing all sense of scale, every block of 256 switches shares one ordinary number that says "how strong is a pull in this block". Three positions need about 1.6 bits to store instead of 32, so the network shrinks about twenty-fold.</p>
+<p>Training a three-position switch is awkward because you cannot nudge it a little. The trick is to keep a hidden 32-bit dial behind each switch during training, nudge the dial, and snap the switch to whichever of the three positions the dial is closest to. At the end the dials are thrown away and only the switches ship. About a quarter of the switches end up in the "do nothing" position, which is why "zero-skipping hardware" is interesting: those connections cost nothing if the chip knows to skip them.</p>
+</div>
+</div>
+<div class="formal">
+<div class="pane"><div class="tag">full notation</div>
+<p>Let <span class="sym">W ∈ ℝ^{m×n}</span> be a master weight matrix, partitioned into blocks of <span class="sym">g = 256</span> consecutive entries. For each block <span class="sym">b</span>:</p>
+<div class="eq">γ_b   = mean_{ij ∈ b} |W_ij|            (block scale, γ_b &gt; 0)
+W̃_ij  = clip( round( W_ij / γ_b ), −1, +1 )   ∈ {−1, 0, +1}
+y     = W_eff x + bias,   W_eff = W̃ ⊙ γ      (γ broadcast per block)</div>
+<p>The straight-through estimator defines the backward pass as <span class="sym">∂L/∂W := ∂L/∂W̃</span>, i.e. the rounding is treated as the identity for gradients. Implementation: <span class="sym">W_ste = W/γ + (W̃ − W/γ).detach()</span>. Storage cost is <span class="sym">log₂ 3 ≈ 1.585</span> bits per weight, or 1.6875 bits with a 16-bit scale per 256 weights (the TQ1_0 layout). At Kaiming-uniform initialisation, <span class="sym">|W_ij|/γ_b &lt; ½</span> for about 25% of entries, which is the measured zero fraction (0.249 to 0.250 across all seven projection shapes).</p>
+<p>The additive form of the product, <span class="sym">y_i = γ (Σ_{j∈P_i} x_j − Σ_{j∈N_i} x_j)</span> with <span class="sym">P_i = {j : W̃_ij = +1}</span> and <span class="sym">N_i = {j : W̃_ij = −1}</span>, contains no multiplications by weights. It models hardware that can skip zeros; on a GPU it executes as two dense matrix products and is measured slower than one (section 3).</p>
+</div>
+</div>
+
+<h3>2.2 The tri-state router</h3>
+<div class="plain">
+<div class="pane"><div class="tag">plain words</div>
+<p>A transformer is a stack of layers, and every token normally passes through all of them. The router is a tiny gatekeeper in front of each layer that looks at the token's current state and picks one of three: <b>run this layer</b>, <b>skip this layer and carry on</b>, or <b>stop here and answer now</b>. Skipping is the novel option: earlier work only allowed stopping, which means a token could never skip a middle layer and still use a later one.</p>
+<p>The gatekeeper is trained by letting it flip a weighted coin during training and rewarding it slightly for choosing "skip". The honest question is not "does it skip" but "does it skip <i>better than a coin flip at the same rate</i>". That comparison was missing before this pass and is now built into every ledger.</p>
+</div>
+</div>
+<div class="formal">
+<div class="pane"><div class="tag">full notation</div>
+<p>At layer <span class="sym">l</span> with hidden state <span class="sym">h_l ∈ ℝ^{B×n×d}</span>, the probe reads the last position and emits three logits:</p>
+<div class="eq">z = W_r h_l[:, −1, :] + b_r  ∈ ℝ^{B×3},     p = softmax(z)
+a = argmax(z)                       at inference (per sample)
+g = gumbel_softmax(z, τ, hard=True)  in training (one-hot, straight-through)
+h_{l+1} = g₀ · f_l(h_l) + (g₁ + g₂) · h_l</div>
+<p>Action 0 executes the layer function <span class="sym">f_l</span>; actions 1 (route around) and 2 (early exit) both leave <span class="sym">h_l</span> unchanged at this layer, and at inference action 2 additionally halts the remaining layers. The auxiliary loss <span class="sym">L_route = λ · mean_l p_{l,0}</span> pushes probability mass away from EXECUTE. Two controls accompany every routed model: the same weights with every layer forced to execute, and a random policy per layer with the same measured action frequencies <span class="sym">(p̂_{l,0}, p̂_{l,1}, p̂_{l,2})</span> counted over samples still active at layer <span class="sym">l</span>.</p>
+<p>Two defects fixed in this pass: the blend previously used <span class="sym">g₀ f_l(h) + g₁ h</span>, so a sampled exit multiplied the state by zero; and inference used <span class="sym">argmax(z[0])</span> for the whole batch, so samples 1..B−1 followed sample 0's decision. Physical layer skipping remains a batch-size-1 property; batched evaluation selects per sample without saving compute.</p>
+</div>
+</div>
+
+<h3>2.3 Recurrent flow reasoning and the fixed-point exit</h3>
+<div class="plain">
+<div class="pane"><div class="tag">plain words</div>
+<p>For puzzles like Sudoku, the network does not answer in one pass. It keeps a "current belief" for every cell, a list of how likely each digit is, and runs the same network again and again, each time feeding its own beliefs back in and sharpening them. Because the same weights are reused each loop, they are loaded into fast memory once and stay there.</p>
+<p>When the beliefs stop changing between loops, the network is done: that is the fixed point. The stopping rule is simply "the biggest change to any belief was smaller than a threshold". Easy puzzles settle in two or three loops, hard ones use the full budget, so compute follows difficulty.</p>
+<p>The training recipe matters. The network is trained on beliefs produced by its own loops, not on perfect inputs, so that the loops it sees at test time look like the loops it saw in training. This pass found that the training inputs also accidentally contained the answer, and that the shipped test-time inputs did not. That mismatch is now closed, and the corrected numbers are in section 3.</p>
+</div>
+</div>
+<div class="formal">
+<div class="pane"><div class="tag">full notation</div>
+<p>A puzzle has <span class="sym">n</span> cells and <span class="sym">V</span> classes. The condition <span class="sym">c ∈ {0,1}^{n×V}</span> is one-hot on clue cells and zero elsewhere, with clue mask <span class="sym">m ∈ {0,1}^{n}</span>. The carry <span class="sym">s⁽ᵏ⁾ ∈ (Δ^{V−1})^{n}</span> holds a probability vector per cell. With flow time <span class="sym">t ∈ [0,1]</span> and noise <span class="sym">ε ~ 𝒩(0, I)</span>:</p>
+<div class="eq">x_t      = (1 − t) ε + t · c                          (interpolant; leak-free form)
+s⁽⁰⁾      = uniform, then clues pinned: s ← (1−m) s + m c
+s⁽ᵏ⁺¹⁾    = softmax( D_θ(x_t, c, s⁽ᵏ⁾, t) ), clues pinned again
+Δ⁽ᵏ⁾      = ‖ (1−m) ⊙ (s⁽ᵏ⁺¹⁾ − s⁽ᵏ⁾) ‖_∞
+stop when Δ⁽ᵏ⁾ &lt; ε_exit;   ŷ_i = argmax_v s⁽ᵏ⁾_{i,v}</div>
+<p>Fixed-point forcing: sample <span class="sym">k ~ U{0,…,K}</span>, run <span class="sym">k</span> steps of the recurrence without gradient to obtain <span class="sym">s_FPF</span>, then take one supervised step minimising <span class="sym">CE(D_θ(x_t, c, stopgrad(s_FPF), t), y)</span> against the ground-truth assignment <span class="sym">y ∈ {1..V}^{n}</span>. If training makes the map contractive around <span class="sym">y</span>, <span class="sym">‖D_θ(s) − y‖ ≤ ρ ‖s − y‖</span> with <span class="sym">ρ &lt; 1</span>, then Banach's theorem makes the consecutive-difference test a sound stopping rule; <span class="sym">ρ</span> is not measured directly here, only the empirical exit behaviour.</p>
+<p>The leak: the original interpolant was <span class="sym">x_t = (1−t)ε + t · x₁</span> with <span class="sym">x₁</span> the full solution, while inference supplies <span class="sym">x_t = 0.2 ε + 0.8 c</span>. Probe on the FP32 4×4 model: 75.6% solved as shipped, 100% with the training-style input, 90% with <span class="sym">x_t = 0</span>. Training now uses <span class="sym">c</span> in the interpolant so both regimes coincide.</p>
+</div>
+</div>
+
+<h3>2.4 FlowRoute: two axes of skipping</h3>
+<div class="plain">
+<p>Put the router inside the looping network and you can skip along two axes at once: fewer loops (stop early) and fewer layers per loop (route around). The saving multiplies. The catch, which the old ledger missed, is that skipping is only worth reporting next to the solve rate: a network that skips 40% of its work and solves nothing has saved nothing.</p>
+</div>
+<div class="formal">
+<p>Total layer evaluations for one puzzle are <span class="sym">E = Σ_{k=1}^{K_eff} Σ_{l=1}^{L} 𝟙[a_{k,l} = EXECUTE]</span>, and the reported saving is <span class="sym">1 − E / (K_max · L)</span>. Modes compared: all layers, fixed <span class="sym">K</span>; step exit only (layers forced to execute); layer routing only; both; and a random-bypass control at the matched bypass rate. A router-free twin trained identically is the accuracy reference.</p>
+</div>
+
+<h2>3. What the hardening pass measured</h2>
+<p class="small">All numbers below are measured on one RTX 4060 (8 GB) on 16 September 2026 unless marked "derived". "Before" values are the ledgers as they stood at the start of the pass; "after" values come from the corrected scripts. Chance levels are stated where they matter.</p>
+<!--RESULTS-->
+
+<h2>4. Outlook for the track</h2>
+<!--OUTLOOK-->
+
+<h2>5. Symbol glossary</h2>
+<p class="small">Every symbol used in full-notation mode. "Said aloud" is how you would read it to someone; "type" says what kind of object it is; the last column is the plain-words meaning in this project.</p>
+<div class="tablewrap"><table class="glossary">
+<tr><th>Symbol</th><th>Said aloud</th><th>Type</th><th>Definition here</th><th>In plain words</th></tr>
+<tr><td>ℝ</td><td>the reals</td><td>set</td><td>All ordinary decimal numbers, positive, negative, and zero.</td><td>Any number a 32-bit float can hold.</td></tr>
+<tr><td>ℝ^{m×n}</td><td>R m by n</td><td>set of matrices</td><td>Grids with m rows and n columns of real numbers.</td><td>A weight table with m outputs and n inputs.</td></tr>
+<tr><td>{−1, 0, +1}</td><td>the ternary set</td><td>finite set</td><td>Exactly three values. Written S in the older notes.</td><td>The three switch positions.</td></tr>
+<tr><td>x ∈ A</td><td>x in A</td><td>relation</td><td>x is a member of the set A.</td><td>"x is one of these."</td></tr>
+<tr><td>W, W̃, W_eff</td><td>W, W tilde, W effective</td><td>matrices</td><td>Master FP32 weights; their ternary rounding; the rounding times its scale.</td><td>The hidden dial, the switch, and the switch with its block strength applied.</td></tr>
+<tr><td>γ_b</td><td>gamma sub b</td><td>positive real</td><td>mean|W_ij| over block b; the shared scale of that block.</td><td>How strong one pull is in this block of 256.</td></tr>
+<tr><td>mean, |·|</td><td>mean; absolute value</td><td>operators</td><td>Arithmetic average; distance from zero ignoring sign.</td><td>Average size.</td></tr>
+<tr><td>round, clip(·, a, b)</td><td>round; clip to a b</td><td>functions ℝ→ℝ</td><td>Nearest integer; then force into the interval [a, b].</td><td>Snap to the nearest switch position.</td></tr>
+<tr><td>⊙</td><td>Hadamard product</td><td>operator</td><td>Element-wise multiplication of same-shaped arrays.</td><td>Multiply matching entries, not matrix multiplication.</td></tr>
+<tr><td>Σ_{j∈P}</td><td>sum over j in P</td><td>operator</td><td>Add up the terms for every index j in the set P.</td><td>Add these ones up.</td></tr>
+<tr><td>P_i, N_i</td><td>P sub i, N sub i</td><td>index sets</td><td>Columns where row i of W̃ is +1, respectively −1.</td><td>Which inputs row i adds, and which it subtracts.</td></tr>
+<tr><td>∂L/∂W</td><td>partial L partial W</td><td>gradient (matrix)</td><td>How the loss changes per unit change of each weight.</td><td>Which way to nudge each dial.</td></tr>
+<tr><td>:=</td><td>defined as</td><td>notation</td><td>The left side is defined to equal the right side.</td><td>"We choose to make this so."</td></tr>
+<tr><td>log₂ 3</td><td>log base two of three</td><td>real ≈ 1.585</td><td>Bits needed to name one of three equally likely values.</td><td>Storage cost of one switch.</td></tr>
+<tr><td>h_l, d, n, B</td><td>h sub l; d; n; B</td><td>tensor, integers</td><td>Hidden state entering layer l; model width; sequence length or cell count; batch size.</td><td>The token's working memory and the sizes involved.</td></tr>
+<tr><td>z, p</td><td>z, p</td><td>vectors in ℝ³</td><td>Router logits and their softmax probabilities.</td><td>The gatekeeper's raw scores and its odds.</td></tr>
+<tr><td>softmax(z)</td><td>softmax of z</td><td>ℝ^k → Δ^{k−1}</td><td>p_i = exp(z_i) / Σ_j exp(z_j); turns scores into probabilities summing to 1.</td><td>Scores to odds.</td></tr>
+<tr><td>argmax</td><td>arg max</td><td>operator</td><td>The index of the largest entry.</td><td>Pick the winner.</td></tr>
+<tr><td>gumbel_softmax(z, τ, hard)</td><td>Gumbel softmax</td><td>stochastic function</td><td>Adds Gumbel noise to z, applies softmax with temperature τ, and (hard=True) snaps to one-hot in the forward pass while keeping the soft gradient.</td><td>A trainable coin flip.</td></tr>
+<tr><td>τ</td><td>tau</td><td>positive real</td><td>Gumbel-softmax temperature (1.0 here). Not the τ_exit / τ_bypass thresholds of the legacy policy.</td><td>How noisy the coin is.</td></tr>
+<tr><td>g = (g₀, g₁, g₂)</td><td>g</td><td>one-hot in ℝ³</td><td>Sampled routing weights for execute / route around / exit.</td><td>Which door the coin chose.</td></tr>
+<tr><td>f_l</td><td>f sub l</td><td>function</td><td>Layer l's attention-plus-feed-forward map, including its residual adds.</td><td>What the layer does when run.</td></tr>
+<tr><td>λ</td><td>lambda</td><td>real ≥ 0</td><td>Weight of the routing sparsity loss (0.02 on TinyStories, 0.005 in FlowRoute).</td><td>How hard we push toward skipping.</td></tr>
+<tr><td>𝟙[·]</td><td>indicator</td><td>{0,1}-valued</td><td>1 if the bracketed statement is true, else 0.</td><td>Count it if true.</td></tr>
+<tr><td>V, n</td><td>V; n</td><td>integers</td><td>Number of classes per cell (4, 5, 6, 9); number of cells (16, 25, 36, 81).</td><td>Digits per cell; cells per board.</td></tr>
+<tr><td>Δ^{V−1}</td><td>the V minus one simplex</td><td>set</td><td>Vectors in ℝ^V with non-negative entries summing to 1.</td><td>A belief over V digits.</td></tr>
+<tr><td>c, m</td><td>c; m</td><td>tensor; mask</td><td>One-hot clues (zero on empty cells); 1 on clue cells, 0 elsewhere.</td><td>The given digits and where they are.</td></tr>
+<tr><td>s⁽ᵏ⁾</td><td>s at step k</td><td>(Δ^{V−1})^n</td><td>Per-cell beliefs after k recurrent steps.</td><td>What the network currently thinks each cell is.</td></tr>
+<tr><td>t</td><td>t</td><td>real in [0,1]</td><td>Flow time; 0 is pure noise, 1 is clean data. Training samples t ∈ [0.1, 0.9]; inference uses 0.8.</td><td>How noisy the side input is.</td></tr>
+<tr><td>ε, 𝒩(0, I)</td><td>epsilon; standard normal</td><td>random tensor</td><td>Gaussian noise with mean 0 and identity covariance, same shape as the data.</td><td>Random static.</td></tr>
+<tr><td>x_t, x₁</td><td>x sub t; x one</td><td>tensors</td><td>Interpolant between noise and a target; x₁ is the clean solution.</td><td>The side input; the answer (which must not appear in training inputs).</td></tr>
+<tr><td>D_θ</td><td>D theta</td><td>neural network</td><td>The denoiser with parameters θ, mapping (x_t, c, s, t) to logits.</td><td>The looping network.</td></tr>
+<tr><td>θ</td><td>theta</td><td>parameter vector</td><td>All trainable weights of the model.</td><td>Everything training changes.</td></tr>
+<tr><td>‖·‖_∞</td><td>infinity norm</td><td>ℝ^k → ℝ≥0</td><td>The largest absolute entry.</td><td>The biggest single change.</td></tr>
+<tr><td>Δ⁽ᵏ⁾, ε_exit</td><td>delta k; epsilon exit</td><td>reals</td><td>Change between consecutive carries; the stopping threshold (0.03).</td><td>How much beliefs moved; when "moved little enough" means stop.</td></tr>
+<tr><td>K, K_max, K_eff</td><td>K</td><td>integers</td><td>Rollout budget in training (4); maximum inference steps (5 or 6); steps actually taken.</td><td>Loop counts.</td></tr>
+<tr><td>U{0,…,K}</td><td>uniform on zero to K</td><td>distribution</td><td>Each integer from 0 to K equally likely.</td><td>Pick a loop count at random.</td></tr>
+<tr><td>~</td><td>is distributed as</td><td>relation</td><td>The left side is a random draw from the right-side distribution.</td><td>"Drawn from."</td></tr>
+<tr><td>stopgrad(·)</td><td>stop gradient</td><td>operator</td><td>Treat the argument as a constant during backpropagation.</td><td>Do not learn through this.</td></tr>
+<tr><td>CE(·, y)</td><td>cross-entropy</td><td>loss</td><td>−log of the probability assigned to the true class, averaged over cells.</td><td>How surprised the network was by the right answer.</td></tr>
+<tr><td>ρ</td><td>rho</td><td>real in [0,1)</td><td>Contraction factor of the denoiser map near a solution. Written γ in the flow note; renamed here to avoid clashing with the block scale.</td><td>How fast the loops home in.</td></tr>
+<tr><td>PPL</td><td>perplexity</td><td>real ≥ 1</td><td>exp(mean cross-entropy per token).</td><td>Roughly how many equally likely next words the model is torn between.</td></tr>
+<tr><td>ŷ</td><td>y hat</td><td>prediction</td><td>The model's output assignment.</td><td>Its answer.</td></tr>
+</table></div>
+
+<p class="small" style="margin-top:32px">Sources: <code>research/hardening-2026-09-16.md</code> for the full ledger and file references; <code>outputs/*.json</code> for raw numbers; <code>research/flow-reasoning-and-ternary.md</code> and <code>research/architecture-ternary-continuations.md</code> for the original formulations.</p>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, bp=document.getElementById('btn-plain'), bf=document.getElementById('btn-formal');
+  function setMode(m){
+    if(m==='formal'){root.setAttribute('data-mode','formal');}else{root.removeAttribute('data-mode');}
+    bp.setAttribute('aria-pressed', m!=='formal'); bf.setAttribute('aria-pressed', m==='formal');
+    try{localStorage.setItem('trits-mode', m);}catch(e){}
+  }
+  bp.addEventListener('click',function(){setMode('plain')});
+  bf.addEventListener('click',function(){setMode('formal')});
+  var saved=null; try{saved=localStorage.getItem('trits-mode');}catch(e){}
+  if(saved==='formal'){setMode('formal');}
+})();
+</script>

@@ -1,0 +1,198 @@
+{
+  "timestamp": "2026-09-16 16:11:27",
+  "platform": {
+    "pytorch_version": "2.5.1+cu121",
+    "cuda_available": true,
+    "cuda_device": "NVIDIA GeForce RTX 4060",
+    "device_used": "cuda:0"
+  },
+  "benchmark": {
+    "name": "4x4 Mini-Sudoku Discrete Constraint Reasoning",
+    "total_enumerated_valid_boards": 288,
+    "train_boards_count": 220,
+    "test_boards_count": 68,
+    "test_puzzles_evaluated": 90,
+    "difficulty_tiers": [
+      "easy (10 clues)",
+      "medium (8 clues)",
+      "hard (6 clues)"
+    ]
+  },
+  "verification_checks": {
+    "bitlinear_ternary_quantization": {
+      "status": "PASSED",
+      "unique_quantized_states": [
+        -1.0,
+        0.0,
+        1.0
+      ],
+      "ste_gradient_norm": 263.9364929199219,
+      "accumulator_overflow_free": true
+    },
+    "weight_tied_recurrence_and_cache": {
+      "status": "PASSED",
+      "benchmark_model": {
+        "total_parameters": 829060,
+        "ternary_parameters": 821248,
+        "other_parameters": 7812,
+        "fp32_bytes": 3316240.0,
+        "fp32_kib": 3238.515625,
+        "ternary_packed_bytes": 204480.0,
+        "ternary_packed_kib": 199.6875,
+        "compression_ratio": 16.2179186228482
+      },
+      "scaled_model_flowtrit_40m": {
+        "total_parameters": 40000000,
+        "fp32_mb": 152.587890625,
+        "ternary_packed_tq1_0_mb": 8.046627044677734,
+        "compression_ratio": 18.962962962962962,
+        "fits_rtx4060_32mb_l2_cache": true,
+        "fits_cpu_32mb_l3_cache": true,
+        "dram_traffic_reduction_k5": 5.0
+      }
+    },
+    "comparisons": {
+      "fp32_unquantized_baseline": {
+        "solve_rate": 0.9,
+        "avg_steps": 5.0,
+        "tier_summary": {
+          "easy": {
+            "count": 30,
+            "solved": 30,
+            "solve_rate": 1.0,
+            "avg_steps": 5.0
+          },
+          "medium": {
+            "count": 30,
+            "solved": 29,
+            "solve_rate": 0.9667,
+            "avg_steps": 5.0
+          },
+          "hard": {
+            "count": 30,
+            "solved": 22,
+            "solve_rate": 0.7333,
+            "avg_steps": 5.0
+          }
+        }
+      },
+      "post_hoc_ternarized_baseline": {
+        "solve_rate": 0.4333,
+        "avg_steps": 5.0,
+        "solve_rate_degradation_pct": 46.67,
+        "tier_summary": {
+          "easy": {
+            "count": 30,
+            "solved": 22,
+            "solve_rate": 0.7333,
+            "avg_steps": 5.0
+          },
+          "medium": {
+            "count": 30,
+            "solved": 11,
+            "solve_rate": 0.3667,
+            "avg_steps": 5.0
+          },
+          "hard": {
+            "count": 30,
+            "solved": 6,
+            "solve_rate": 0.2,
+            "avg_steps": 5.0
+          }
+        }
+      },
+      "native_flowtrit_fixed_k5": {
+        "solve_rate": 0.8778,
+        "avg_steps": 5.0,
+        "solve_rate_recovery_pct": 44.45,
+        "tier_summary": {
+          "easy": {
+            "count": 30,
+            "solved": 30,
+            "solve_rate": 1.0,
+            "avg_steps": 5.0
+          },
+          "medium": {
+            "count": 30,
+            "solved": 26,
+            "solve_rate": 0.8667,
+            "avg_steps": 5.0
+          },
+          "hard": {
+            "count": 30,
+            "solved": 23,
+            "solve_rate": 0.7667,
+            "avg_steps": 5.0
+          }
+        }
+      },
+      "native_flowtrit_dynamic_early_exit": {
+        "solve_rate": 0.9,
+        "avg_steps": 3.87,
+        "step_reduction_pct": 22.6,
+        "eps_exit": 0.03,
+        "tier_summary": {
+          "easy": {
+            "count": 30,
+            "solved": 30,
+            "solve_rate": 1.0,
+            "avg_steps": 2.63
+          },
+          "medium": {
+            "count": 30,
+            "solved": 26,
+            "solve_rate": 0.8667,
+            "avg_steps": 3.87
+          },
+          "hard": {
+            "count": 30,
+            "solved": 25,
+            "solve_rate": 0.8333,
+            "avg_steps": 5.1
+          }
+        },
+        "sample_trajectories": [
+          {
+            "difficulty": "easy",
+            "clues_count": 10,
+            "steps_taken": 2,
+            "early_exited": true,
+            "deltas": [
+              0.7496,
+              0.0087
+            ],
+            "solved": true
+          },
+          {
+            "difficulty": "medium",
+            "clues_count": 8,
+            "steps_taken": 3,
+            "early_exited": true,
+            "deltas": [
+              0.7496,
+              0.0814,
+              0.0045
+            ],
+            "solved": true
+          },
+          {
+            "difficulty": "hard",
+            "clues_count": 6,
+            "steps_taken": 6,
+            "early_exited": true,
+            "deltas": [
+              0.7497,
+              0.3542,
+              0.1626,
+              0.0837,
+              0.0302,
+              0.019
+            ],
+            "solved": true
+          }
+        ]
+      }
+    }
+  },
+  "all_passed": true
+}

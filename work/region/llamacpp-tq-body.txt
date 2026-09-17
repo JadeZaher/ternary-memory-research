@@ -1,0 +1,445 @@
+TITLE: ggml-quants : ternary packing for TriLMs and BitNet b1.58
+---BODY---
+This adds `1.6875 bpw` and `2.0625 bpw` quant types for TriLMs and BitNet b1.58 models. For now, these are named `TQ1_0` and `TQ2_0`, respectively.
+I had given glimpses of this idea starting from <https://github.com/ggerganov/llama.cpp/pull/7931#discussion_r1640265346>.
+
+The `1.6875 bpw` type mostly relies on the fact that <code>3<sup>5</sup> == 243 < 256 == 2<sup>8</sup></code> to pack 5 trits per byte.
+
+(I also made [a blog post about ternary packing](https://compilade.net/blog/ternary-packing) in an attempt to explain the core idea a bit more (storing the values in fixed-point to extract the most significant digit first with multiplications))
+
+Huge thanks to @Eddie-Wang1120, who motivated this by adding initial BitNet b1.58 support in #7931.
+
+## How to try it
+
+Using [TriLM models](https://huggingface.co/collections/SpectraSuite/trilms-unpacked-668d5f62afe0f4036925b1d2) is the easiest because all of their models have row sizes divisible by 256.
+
+> [!IMPORTANT]
+> To quantize the token embeddings and the output tensor to `Q4_K` and `Q6_K`, you ***need*** to use `llama-quantize` on the model files produced by `convert_hf_to_gguf.py --outtype tq1_0` (and also for `tq2_0`). Otherwise these two tensors are kept as `f16` and are responsible for most of the size of the models.
+
+```console
+$ python3 convert_hf_to_gguf.py /path/to/TriLM_3.9B_Unpacked/ --outfile /somewhere/TriLM-3.9B-TQ1_0-big.gguf --outtype tq1_0
+$ ./build/bin/llama-quantize /somewhere/TriLM-3.9B-TQ1_0-big.gguf /somewhere/TriLM-3.9B-TQ1_0.gguf tq1_0
+```
+
+If you want to try `TQ2_0`, which is faster (but bigger) than `TQ1_0` on compute-bound hardware, you can replace `tq1_0` with `tq2_0` in the above example, but it's also possible to convert from the `TQ1_0` model file.
+
+The two ternary formats hold the same values, so round-trip quantizing between the two should result in the same files.
+
+```console
+$ ./build/bin/llama-quantize --allow-requantize /somewhere/TriLM-3.9B-TQ1_0.gguf /somewhere/TriLM-3.9B-TQ2_0.gguf tq2_0
+```
+
+## Speed
+
+`TQ2_0` is twice as fast as `Q4_K` on my laptop. It's *the* fastest quant on compute-bound AVX2-capable computers.
+
+This is a table of the float32-equivalent throughput of the `vec_dot_q` operation for each of these quant types.
+
+| CPU | F16 | Q8_0 | Q4_K | Q2_K | TQ1_0 | TQ2_0 |
+|-----|-----|------|------|------|-------|-------|
+| Intel Core m3-8100Y (AVX2) | 30.60 GB/s | 67.03 GB/s | 64.17 GB/s | 81.73 GB/s | 70.31 GB/s | 141.83 GB/s |
+| Arm Cortex A72 (NEON) | 3.84 GB/s | 9.51 GB/s| 9.26 GB/s | 9.79 GB/s | 11.81 GB/s | 15.78 GB/s |
+| Arm Cortex A53 (NEON)| 4.30 GB/s | 5.87 GB/s | 5.76 GB/s | 5.84 GB/s | 8.97 GB/s | 10.29 GB/s |
+| AWS `t4g` (NEON) | 8.69 GB/s | 22.35 GB/s | 25.34 GB/s | 22.84 GB/s | 33.34 GB/s | 44.80 GB/s |
+| AWS `t4g` (DOTPROD) | 49.17 GB/s | 42.63 GB/s | 45.40 GB/s | 29.84 GB/s | 40.44 GB/s | 65.76 GB/s |
+
+From this, it's easy to see that `TQ1_0` is usually slightly faster than `Q4_K`, and that `TQ2_0` is by far the fastest quant on AVX2.
+
+> [!NOTE]
+> There might be a way to make a similar type as `TQ2_0` like some sort of `Q2_1`, which could be almost as fast but still usable by non-ternary models, but this will probably *require* something like [LQER](https://github.com/ggerganov/llama.cpp/discussions/8831) to help with keeping some precision.
+
+<details><summary>Raw data (click to expand)</summary>
+
+Intel Core m3-8100Y:
+```console
+$ for t in bf16 f16 q8_0 q4_0 q4_K q2_K tq1_0 tq2_0; do ./bin/test-quantize-perf --op vec_dot_q -i 10000000 --type "$t"; done
+bf16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      4.28
+      avg cycles/32 vals   :      4.72
+      float32 throughput   :     37.89 GB/s
+      quantized throughput :     18.95 GB/s
+
+f16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      5.52
+      avg cycles/32 vals   :      5.93
+      float32 throughput   :     30.60 GB/s
+      quantized throughput :     15.30 GB/s
+
+q8_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      2.27
+      avg cycles/32 vals   :      2.56
+      float32 throughput   :     67.03 GB/s
+      quantized throughput :     17.81 GB/s
+
+q4_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      3.04
+      avg cycles/32 vals   :      3.38
+      float32 throughput   :     52.20 GB/s
+      quantized throughput :      7.34 GB/s
+
+q4_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      2.22
+      avg cycles/32 vals   :      2.61
+      float32 throughput   :     64.17 GB/s
+      quantized throughput :      9.02 GB/s
+
+q2_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      1.77
+      avg cycles/32 vals   :      1.99
+      float32 throughput   :     81.73 GB/s
+      quantized throughput :      6.70 GB/s
+
+tq1_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      2.12
+      avg cycles/32 vals   :      2.33
+      float32 throughput   :     70.31 GB/s
+      quantized throughput :      3.71 GB/s
+
+tq2_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.85
+      avg cycles/32 vals   :      0.97
+      float32 throughput   :    141.83 GB/s
+      quantized throughput :      9.14 GB/s
+```
+
+Arm Cortex A72 (Raspberry Pi 4):
+```console
+$ for t in f16 q8_0 q4_K q2_K tq1_0 tq2_0; do ./bin/test-quantize-perf --op vec_dot_q -i 2000000 --type "$t"; done                                                                                        
+f16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      3.84 GB/s
+      quantized throughput :      1.92 GB/s
+
+q8_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      9.51 GB/s
+      quantized throughput :      2.53 GB/s
+
+q4_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      9.26 GB/s
+      quantized throughput :      1.30 GB/s
+
+q2_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      9.79 GB/s
+      quantized throughput :      0.80 GB/s
+
+tq1_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     11.81 GB/s
+      quantized throughput :      0.62 GB/s
+
+tq2_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     15.78 GB/s
+      quantized throughput :      1.02 GB/s
+```
+
+Arm Cortex A53 (Some Android phone from 2017):
+```console
+$ for t in f16 q8_0 q4_K q2_K tq1_0 tq2_0; do ./bin/test-quantize-perf --op vec_dot_q -i 2000000 --type "$t"; done
+f16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      4.30 GB/s
+      quantized throughput :      2.15 GB/s
+
+q8_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      5.87 GB/s
+      quantized throughput :      1.56 GB/s
+
+q4_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      5.76 GB/s
+      quantized throughput :      0.81 GB/s
+
+q2_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      5.84 GB/s
+      quantized throughput :      0.48 GB/s
+
+tq1_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      8.97 GB/s
+      quantized throughput :      0.47 GB/s
+
+tq2_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     10.29 GB/s
+      quantized throughput :      0.66 GB/s
+```
+
+AWS `t4g.small` instance (Arm Neoverse N1) using NEON:
+
+```console
+$ for t in f16 q8_0 q4_K q2_K tq1_0 tq2_0; do ./bin/test-quantize-perf --op vec_dot_q -i 2000000 --type "$t"; done
+f16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :      8.69 GB/s
+      quantized throughput :      4.35 GB/s
+
+q8_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     22.35 GB/s
+      quantized throughput :      5.94 GB/s
+
+q4_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     25.34 GB/s
+      quantized throughput :      3.56 GB/s
+
+q2_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     22.84 GB/s
+      quantized throughput :      1.87 GB/s
+
+tq1_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     33.34 GB/s
+      quantized throughput :      1.76 GB/s
+
+tq2_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     44.80 GB/s
+      quantized throughput :      2.89 GB/s
+```
+
+AWS `t4g.small` (Arm Neoverse N1) with `-march=native`:
+
+```console
+$ for t in f16 q8_0 q4_K q2_K tq1_0 tq2_0; do ./tests/test-quantize-perf --op vec_dot_q -i 2000000 --type "$t"; done
+f16
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     49.17 GB/s
+      quantized throughput :     24.59 GB/s
+
+q8_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     42.63 GB/s
+      quantized throughput :     11.32 GB/s
+
+q4_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     45.40 GB/s
+      quantized throughput :      6.38 GB/s
+
+q2_K
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     29.84 GB/s
+      quantized throughput :      2.45 GB/s
+
+tq1_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     40.44 GB/s
+      quantized throughput :      2.13 GB/s
+
+tq2_0
+  vec_dot_q
+    4096 values (0.02 MB)
+      min cycles/32 vals   :      0.00
+      avg cycles/32 vals   :      0.00
+      float32 throughput   :     65.76 GB/s
+      quantized throughput :      4.24 GB/s
+```
+---
+
+</details>
+
+## Size
+
+The token embeddings are kept at `Q4_K` and the output projection at `Q6_K`, which means the smaller models might be slightly bigger than 2 bits per weight.
+
+All of the [TriLM models](https://huggingface.co/collections/SpectraSuite/trilms-unpacked-668d5f62afe0f4036925b1d2) should work, because their row sizes are multiples of 256. I did not try them all yet, but those I tried are in the table below.
+
+The BitNet b1.58 models [from the 1bitLLM team](https://huggingface.co/1bitLLM) however are *not* all compatible; only the 700M model has dimensions divisible by 256. The others are not supported (yet), unless when padding them.
+
+| Model | F16 | TQ1_0 | TQ2_0 |
+|-|-|-|-|
+| <https://huggingface.co/1bitLLM/bitnet_b1_58-large> (728.84 M) | 1391.26 MiB | 176.65 MiB | 207.03 MiB |
+| <https://huggingface.co/SpectraSuite/TriLM_390M_Unpacked> | 750.39 MiB | 128.04 MiB | 140.98 MiB |
+| <https://huggingface.co/SpectraSuite/TriLM_1.5B_Unpacked> | 2892.09 MiB | 401.54 MiB | 460.04 MiB |
+| <https://huggingface.co/SpectraSuite/TriLM_2.4B_Unpacked> | 4696.86 MiB | 603.59 MiB | 703.26 MiB |
+| <https://huggingface.co/SpectraSuite/TriLM_3.9B_Unpacked> | 7616.43 MiB | 948.16 MiB | 1112.70 MiB |
+
+> [!NOTE]
+> The [1.3B BitNet b1.58 model](https://huggingface.co/1bitLLM/bitnet_b1_58-xl) has a FFN size of 5460 which factors into `2 2 3 5 7 13`, which is not convenient for ***any*** block-wise types based on powers of 2, so these tensors are kept as `F16`. My hypothesis is that 5460 was a typo for 5440 (factors into `2 2 2 2 2 2 5 17`), but it was kept for some reason, and *reproduced* by the 1bitLLM team. ***If anyone training ternary models reads this, PLEASE DON'T USE `5460` FOR THE FFN SIZE!*** Please use multiples of 256 for your row sizes.
+
+## Perplexity
+
+Quality seems good. I don't have a powerful machine, so my tests only include the first 16 chunks of wikitext-2-raw with <https://huggingface.co/SpectraSuite/TriLM_390M_Unpacked>.
+
+The tests below use `Q4_K` token embeddings and `Q6_K` output tensor for `TQ1_0` and `TQ2_0`, while `F16` token embeddings and output tensor is used in `TQ1_0_L` and `TQ2_0_L`.
+
+|       | chunk | PPL | ln(PPL(Q)/PPL(base)) | KL Divergence | Δp RMS | Same top p |
+|-------|--------------|-----|-------|-------|---------|---------|
+| TQ1_0 | 16    | 23.6336 ± 1.0765 | 0.00463 ± 0.00141 | 0.00187 ± 0.00002 |    0.860 ± 0.020 % | 97.279 ± 0.255 % |
+| TQ2_0 | 16    | 23.6336 ± 1.0765 | 0.00463 ± 0.00141 | 0.00187 ± 0.00002 | 0.860 ± 0.020 % | 97.279 ±  0.255 % |
+| TQ1_0_L | 16  | 23.5758 ± 1.0746 | 0.00218 ± 0.00112 | 0.00034 ± 0.00001 | 0.405 ± 0.012 % | 98.971 ±  0.158 % |
+| TQ2_0_L |  16 | 23.5758 ± 1.0746 | 0.00218 ± 0.00112 | 0.00034 ± 0.00001 | 0.405 ± 0.012 % | 98.971 ± 0.158 % |
+
+From this it seems like there is no significant quality loss for the ternary quants for TriLM models (I think the difference with pure `f16` comes from the 8-bit activations), and that `TQ1_0` and `TQ2_0` are completely equivalent in quality (and they should be, because lossless conversion between the two is possible).
+
+## Structure of `TQ1_0`
+
+This type relies on the fact that `3^5 == 243 < 256 == 2^8`.
+
+In a block of 256 elements, there are 240 elements encoded in 5 elements per byte, while the last 16 elements are encoded in 4 elements per byte.
+
+This means `(240 / 5) + (16 / 4) == 48 + 4 == 52` bytes are used to pack 256 ternary weights (this is `1.625` bits per weight).
+
+But there is also one `float16` scale per block, so the size of a block is 54 bytes making it a `1.6875 bpw` type. Even though it's not ideal, this is still `1.6875 / (log(3) / log(2)) ≈ 94%` of the best ternary packing efficiency.
+
+In the table below I'm describing the order of the elements within the bytes. I'm using ranges to make this shorter, with the notation `start..end` where the start is inclusive and the end is exclusive. (So `0..3` is `{0, 1, 2}`)
+
+Read this as if the ranges of a row are zipped together. A byte never contains more than 5 ternary values.
+
+The ternary values are stored unsigned, so `{-1, 0, 1}` is stored as `{0, 1, 2}`.
+
+| byte | x * 3<sup>-1</sup> | x * 3<sup>-2</sup> | x * 3<sup>-3</sup> | x * 3<sup>-4</sup> | x * 3<sup>-5</sup> |
+|-|-|-|-|-|-|
+|`0..32`|`0..32`|`32..64`|`64..96`|`96..128`|`128..160`|
+|`32..48`|`160..176`|`176..192`|`192..208`|`208..224`|`224..240`|
+|`48..52`|`240..244`|`244..248`|`248..252`|`252..256`|N/A|
+
+And then byte `52` and `53` contain the `float16` scale in little-endian.
+
+Values are stored in fixed point to allow extracting the most significant digit first. This is explained in <https://compilade.net/blog/ternary-packing>.
+
+## Structure of `TQ2_0`
+
+This type was originally inspired by the `Q2_2` type made by @Eddie-Wang1120, but the block size, the order, and the mapping of the values are different.
+
+`TQ2_0` started as an experiment to see how fast a 2-bit type can be compared to a 1.6-bit type on compute-bound hardware.
+
+This packs each ternary value in 2 bits, which means each byte contains 4 values.
+
+The ternary values are stored unsigned, so `{-1, 0, 1}` is stored as `{0, 1, 2}`.
+
+Again, the ranges use the `start..end` notation where the start is inclusive and the end is exclusive, and the ranges of a row should be read as being zipped together (they advance in parallel in lockstep).
+
+| byte | x << 6 | x << 4 | x << 2 | x << 0 |
+|---|-|-|-|-|
+|`0..32`|`96..128`|`64..96`|`32..64`|`0..32`|
+|`32..64`|`224..256`|`192..224`|`160..192`|`128..160`|
+
+And then byte `64` and `65` contain the `float16` scale in little-endian.
+
+# TODO
+
+- [x] Implement Numpy (de)quantization for `TQ1_0` and `TQ2_0`
+  - Done in <https://github.com/ggerganov/llama.cpp/pull/8151/commits/3a0bf17d5737508fc28f8c1ad1efb206160a7770>
+- [x] Allow `convert_hf_to_gguf.py` to directly convert a ternary model to a ternary encoding
+  - Using `f16` for the token embeddings and output tensor because `Q4_K` and `Q6_K` quantization is not yet supported by `gguf-py`. This means `llama-quantize` *needs* to be used to quantize these tensors.
+  - [ ] Make it more obvious that the models should go through `llama-quantize` afterwards.
+    - Maybe use other type names, like `TQ1_0_L` or something?
+- [x] Decide whether the `float16` scale should be before or after the packed weights
+  - I'd prefer it after because I feel like the scales are read after the weights in dot products, but the convention with the other types (except for `Q2_K`, `Q3_K` and `Q6_K`) is to keep the scale before.
+  - Okay, I've decided the scales should stay at the end.
+- [x] More graceful fallback conversion with `llama-quantize`
+  - Using `Q4_0` as a fallback type, because the smallest symmetric quant type is `Q8_0` but it's a bit big, so `Q4_0` it is (even though it's not ideal). Only relevant when row sizes are not multiples of 256.
+- [x] Unify the `__ARM_FEATURE_DOTPROD` variants of the dot products of `TQ1_0` and `TQ2_0` with their bare `__ARM_NEON` variants to reduce code duplication.
+- [x] Test `TQ1_0` and `TQ2_0` for correctness on an ARM CPU which supports dot product instructions
+  - Tested on an AWS `t4g.small` instance.
+  - [x] Also test relative performance for fun
+- [ ] Should `TQ1_0`'s first 48 bytes be divided in 3 sub-blocks of 16 bytes (80 elements) instead of one of 32 bytes (140 elements) and one of 16 bytes?
+  - I've done the 32-16 split to use 256-bit registers on AVX2 for the pow3 shifts for at least the 32 byte part, but 16-16-16 would be more regular, although it would require using 128-bit registers for all the ternary shifts. Not sure if there's a performance difference.
+- [x] Rename references to "BitNet 1.58b" to "BitNet b1.58". The "b" comes before in the paper.
+  - <https://github.com/ggerganov/llama.cpp/pull/8151/commits/bfd2f21fb43525a8757a8c9e44032fd14bac222b> 
+- [x] Find a naming convention for BitNet quants and rename `Q1_3` and `Q2_2`
+  - They were renamed and redesigned as `TQ1_0` and `TQ2_0`. 
+- [x] Decide to keep or to remove the optimization for `ggml_mul` when the broadcasted tensor only has a single element
+  - The decision is to keep it. Ref: https://github.com/ggerganov/llama.cpp/pull/8151#discussion_r1667699770 
+- [x] Fix Android CI build issues.
+  - It was apparently a problem with Arm 32-bit. Fixed in <https://github.com/ggerganov/llama.cpp/pull/8151/commits/8fbd59308b54729a191dcf3aee3388abfa7dd6e3>
+
+---
+
+- [x] I have read the [contributing guidelines](https://github.com/ggerganov/llama.cpp/blob/master/CONTRIBUTING.md)
+- Self-reported review complexity:
+  - [x] High

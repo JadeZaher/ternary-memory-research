@@ -1,0 +1,182 @@
+[
+  {
+    "slug": "mx-formats-abs",
+    "url": "https://arxiv.org/abs/2310.10537",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:10:48Z",
+    "bytes_saved": 45644,
+    "note": "Abstract-only page; used mx-formats-html for full-text quotes."
+  },
+  {
+    "slug": "mx-formats-html",
+    "url": "https://arxiv.org/html/2310.10537",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:10:51Z",
+    "bytes_saved": 192189,
+    "note": "Primary source for MX formats quotes (block size, E8M0, format table)."
+  },
+  {
+    "slug": "t-mac-abs",
+    "url": "https://arxiv.org/abs/2407.00088",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:10:54Z",
+    "bytes_saved": 45475,
+    "note": "Abstract-only page; used t-mac-html for full-text quotes."
+  },
+  {
+    "slug": "t-mac-html",
+    "url": "https://arxiv.org/html/2407.00088",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:10:56Z",
+    "bytes_saved": 251965,
+    "note": "Primary source for T-MAC LUT and speedup quotes."
+  },
+  {
+    "slug": "bitnet-cpu-report-abs",
+    "url": "https://arxiv.org/abs/2410.16144",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:10:59Z",
+    "bytes_saved": 40930,
+    "note": "Abstract-only page; used bitnet-cpu-report-html for full-text quotes."
+  },
+  {
+    "slug": "bitnet-cpu-report-html",
+    "url": "https://arxiv.org/html/2410.16144",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:02Z",
+    "bytes_saved": 186724,
+    "note": "Primary source for I2_S/TL1/TL2 kernel and speedup quotes."
+  },
+  {
+    "slug": "llamacpp-tq",
+    "url": "https://github.com/ggml-org/llama.cpp/pull/8151",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:05Z",
+    "bytes_saved": 781940,
+    "note": "GitHub PR page fetched but is a heavy client-hydration shell; body text was extracted from the API JSON instead (see llamacpp-tq-api)."
+  },
+  {
+    "slug": "llamacpp-tq-api",
+    "url": "https://api.github.com/repos/ggml-org/llama.cpp/pulls/8151",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:10Z",
+    "bytes_saved": 39577,
+    "note": "Used as primary source. PR body field extracted with python3 json.load and saved verbatim to llamacpp-tq-body.txt for quoting."
+  },
+  {
+    "slug": "nvidia-2to4-blog",
+    "url": "https://developer.nvidia.com/blog/accelerating-inference-with-sparsity-using-ampere-and-tensorrt/",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:13Z",
+    "bytes_saved": 265463,
+    "note": "Used for 2:4 pattern definition and 2x throughput claim."
+  },
+  {
+    "slug": "nvidia-2to4-arxiv-abs",
+    "url": "https://arxiv.org/abs/2104.08378",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:17Z",
+    "bytes_saved": 43150,
+    "note": "Abstract-only page; used nvidia-2to4-arxiv-html for full-text quotes."
+  },
+  {
+    "slug": "nvidia-2to4-arxiv-html",
+    "url": "https://arxiv.org/html/2104.08378",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:26Z",
+    "bytes_saved": 240198,
+    "note": "Used for 2-bit metadata index and storage overhead percentages (Mishra et al. 2021)."
+  },
+  {
+    "slug": "cheri-tags-faq",
+    "url": "https://www.cl.cam.ac.uk/research/security/ctsrd/cheri/cheri-faq.html",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:29Z",
+    "bytes_saved": 20855,
+    "note": "Primary source for tag bit and storage overhead quotes. Does not state ordinary-load/store inaccessibility or write-clearing behavior explicitly; see Not Found."
+  },
+  {
+    "slug": "cheri-tags-main",
+    "url": "https://www.cl.cam.ac.uk/research/security/ctsrd/cheri/",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:32Z",
+    "bytes_saved": 17475,
+    "note": "Checked for supplementary detail; only a brief mention of tagged memory found, no new facts beyond the FAQ."
+  },
+  {
+    "slug": "asan-shadow",
+    "url": "https://github.com/google/sanitizers/wiki/AddressSanitizerAlgorithm",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:35Z",
+    "bytes_saved": 439398,
+    "note": "GitHub wiki page rendered with full body text (not a client shell); used directly."
+  },
+  {
+    "slug": "setun",
+    "url": "https://en.wikipedia.org/wiki/Setun",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:38Z",
+    "bytes_saved": 157026,
+    "note": "Raw Parsoid HTML has very long single lines; a tag-stripped derivative was saved as setun-plaintext.txt (same content, no new fetch) to locate quotes."
+  },
+  {
+    "slug": "succinct-rank-select",
+    "url": "https://en.wikipedia.org/wiki/Succinct_data_structure",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:41Z",
+    "bytes_saved": 265690,
+    "note": "Raw Parsoid HTML with MathML; a tag-stripped derivative was saved as succinct-plaintext.txt (same content, no new fetch) to locate quotes."
+  },
+  {
+    "slug": "twn-abs",
+    "url": "https://arxiv.org/abs/1605.04711",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:44Z",
+    "bytes_saved": 41999,
+    "note": "Abstract-only page; used twn-html for full-text quotes."
+  },
+  {
+    "slug": "twn-html",
+    "url": "https://arxiv.org/html/1605.04711",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:47Z",
+    "bytes_saved": 120195,
+    "note": "Primary source for Ternary Weight Networks quotes."
+  },
+  {
+    "slug": "ttq-abs",
+    "url": "https://arxiv.org/abs/1612.01064",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:50Z",
+    "bytes_saved": 43191,
+    "note": "Abstract-only page; used ttq-html for full-text quotes."
+  },
+  {
+    "slug": "ttq-html",
+    "url": "https://arxiv.org/html/1612.01064",
+    "method": "curl",
+    "http_status": 200,
+    "checked_at_utc": "2026-09-12T14:11:52Z",
+    "bytes_saved": 129664,
+    "note": "Primary source for Trained Ternary Quantization quotes."
+  }
+]

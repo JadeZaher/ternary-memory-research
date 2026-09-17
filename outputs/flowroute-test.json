@@ -1,0 +1,212 @@
+{
+  "status": "COMPLETED",
+  "task": "Track C Combined FlowRoute Architecture",
+  "device": "cuda:0",
+  "seed": 1,
+  "config": {
+    "steps": 1500,
+    "lambda_sparse": 0.005,
+    "router_warmup_frac": 0.3,
+    "lr": 0.002,
+    "puzzles_per_tier": 100,
+    "d_model": 128,
+    "n_layers": 4,
+    "n_heads": 4
+  },
+  "train_seconds": {
+    "flowroute": {
+      "value": 98.98,
+      "label": "measured"
+    },
+    "flowtrit_reference": {
+      "value": 75.07,
+      "label": "measured"
+    }
+  },
+  "flowroute_modes": {
+    "fixed_all_layers": {
+      "overall_solve_rate_pct": 92.67,
+      "overall_mean_steps": 5.0,
+      "overall_mean_layer_passes": 20.0,
+      "compute_savings_pct": 0.0,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 96.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        },
+        "medium": {
+          "solve_rate_pct": 95.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        },
+        "hard": {
+          "solve_rate_pct": 87.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        }
+      },
+      "total_layers_executed": 6000,
+      "total_layers_bypassed": 0
+    },
+    "step_exit_only": {
+      "overall_solve_rate_pct": 93.33,
+      "overall_mean_steps": 3.56,
+      "overall_mean_layer_passes": 14.24,
+      "compute_savings_pct": 28.8,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 97.0,
+          "mean_steps": 2.64,
+          "mean_layer_passes": 10.56
+        },
+        "medium": {
+          "solve_rate_pct": 98.0,
+          "mean_steps": 3.68,
+          "mean_layer_passes": 14.72
+        },
+        "hard": {
+          "solve_rate_pct": 85.0,
+          "mean_steps": 4.36,
+          "mean_layer_passes": 17.44
+        }
+      },
+      "total_layers_executed": 4272,
+      "total_layers_bypassed": 0
+    },
+    "layer_routing_only": {
+      "overall_solve_rate_pct": 93.0,
+      "overall_mean_steps": 5.0,
+      "overall_mean_layer_passes": 19.113,
+      "compute_savings_pct": 4.44,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 96.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 17.73
+        },
+        "medium": {
+          "solve_rate_pct": 96.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 19.65
+        },
+        "hard": {
+          "solve_rate_pct": 87.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 19.96
+        }
+      },
+      "total_layers_executed": 5734,
+      "total_layers_bypassed": 266
+    },
+    "combined": {
+      "overall_solve_rate_pct": 91.67,
+      "overall_mean_steps": 3.517,
+      "overall_mean_layer_passes": 13.61,
+      "compute_savings_pct": 31.95,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 96.0,
+          "mean_steps": 2.63,
+          "mean_layer_passes": 9.48
+        },
+        "medium": {
+          "solve_rate_pct": 95.0,
+          "mean_steps": 3.56,
+          "mean_layer_passes": 13.95
+        },
+        "hard": {
+          "solve_rate_pct": 84.0,
+          "mean_steps": 4.36,
+          "mean_layer_passes": 17.4
+        }
+      },
+      "total_layers_executed": 4083,
+      "total_layers_bypassed": 137
+    },
+    "random_bypass_matched": {
+      "overall_solve_rate_pct": 92.0,
+      "overall_mean_steps": 3.83,
+      "overall_mean_layer_passes": 14.853,
+      "compute_savings_pct": 25.73,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 95.0,
+          "mean_steps": 2.8,
+          "mean_layer_passes": 10.9
+        },
+        "medium": {
+          "solve_rate_pct": 97.0,
+          "mean_steps": 3.97,
+          "mean_layer_passes": 15.39
+        },
+        "hard": {
+          "solve_rate_pct": 84.0,
+          "mean_steps": 4.72,
+          "mean_layer_passes": 18.27
+        }
+      },
+      "total_layers_executed": 4456,
+      "total_layers_bypassed": 140
+    }
+  },
+  "flowtrit_reference_modes": {
+    "fixed": {
+      "overall_solve_rate_pct": 87.33,
+      "overall_mean_steps": 5.0,
+      "overall_mean_layer_passes": 20.0,
+      "compute_savings_pct": 0.0,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 97.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        },
+        "medium": {
+          "solve_rate_pct": 89.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        },
+        "hard": {
+          "solve_rate_pct": 76.0,
+          "mean_steps": 5.0,
+          "mean_layer_passes": 20.0
+        }
+      },
+      "total_layers_executed": 6000,
+      "total_layers_bypassed": 0
+    },
+    "dynamic_exit": {
+      "overall_solve_rate_pct": 86.67,
+      "overall_mean_steps": 3.52,
+      "overall_mean_layer_passes": 14.08,
+      "compute_savings_pct": 29.6,
+      "tier_summary": {
+        "easy": {
+          "solve_rate_pct": 97.0,
+          "mean_steps": 2.62,
+          "mean_layer_passes": 10.48
+        },
+        "medium": {
+          "solve_rate_pct": 87.0,
+          "mean_steps": 3.43,
+          "mean_layer_passes": 13.72
+        },
+        "hard": {
+          "solve_rate_pct": 76.0,
+          "mean_steps": 4.51,
+          "mean_layer_passes": 18.04
+        }
+      },
+      "total_layers_executed": 4224,
+      "total_layers_bypassed": 0
+    }
+  },
+  "findings": {
+    "combined_minus_reference_fixed_solve_rate": 4.34,
+    "combined_minus_random_matched_solve_rate": -0.33,
+    "combined_savings_pct": 31.95,
+    "layer_routing_only_bypass_fraction": 0.0443,
+    "router_beats_random_control": false
+  }
+}

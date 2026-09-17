@@ -1,0 +1,1833 @@
+{
+  "status": "COMPLETED",
+  "checkpoint": "outputs/checkpoints/bitroute-tinystories-ternary_router.pt",
+  "arm": "ternary_router",
+  "train_steps": 3000,
+  "seed": 20260916,
+  "device": "cuda",
+  "max_new_tokens": 40,
+  "note": "measured, batch 1, no KV cache, full recompute per generated token",
+  "overall_bypass_fraction": 0.0292,
+  "overall_exit_fraction": 0.0528,
+  "overall_tokens_per_second": 67.92,
+  "prompts": [
+    {
+      "prompt": "Once upon a time, there was a little dog named Spot.",
+      "generated_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his friends. One day, Spot saw a big, red ball. He wanted to play with it, but it was too big.\nSpot's friend, a little girl",
+      "prompt_tokens": 13,
+      "new_tokens": 40,
+      "generation_time_s": 0.9,
+      "tokens_per_second": 44.45,
+      "bypass_fraction": 0.0167,
+      "exit_fraction": 0.0167,
+      "token_logs": [
+        {
+          "step": 0,
+          "token": " Spot",
+          "token_id": 15899,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 1,
+          "token": " loved",
+          "token_id": 6151,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 2,
+          "token": " to",
+          "token_id": 284,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 3,
+          "token": " play",
+          "token_id": 711,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 4,
+          "token": " with",
+          "token_id": 351,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 5,
+          "token": " his",
+          "token_id": 465,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 6,
+          "token": " friends",
+          "token_id": 2460,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 7,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 8,
+          "token": " One",
+          "token_id": 1881,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 9,
+          "token": " day",
+          "token_id": 1110,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 10,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 11,
+          "token": " Spot",
+          "token_id": 15899,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 12,
+          "token": " saw",
+          "token_id": 2497,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 13,
+          "token": " a",
+          "token_id": 257,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 14,
+          "token": " big",
+          "token_id": 1263,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 15,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 16,
+          "token": " red",
+          "token_id": 2266,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 17,
+          "token": " ball",
+          "token_id": 2613,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 18,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 19,
+          "token": " He",
+          "token_id": 679,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 20,
+          "token": " wanted",
+          "token_id": 2227,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 21,
+          "token": " to",
+          "token_id": 284,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 22,
+          "token": " play",
+          "token_id": 711,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 23,
+          "token": " with",
+          "token_id": 351,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 24,
+          "token": " it",
+          "token_id": 340,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 25,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 26,
+          "token": " but",
+          "token_id": 475,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 27,
+          "token": " it",
+          "token_id": 340,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 28,
+          "token": " was",
+          "token_id": 373,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 29,
+          "token": " too",
+          "token_id": 1165,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 30,
+          "token": " big",
+          "token_id": 1263,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 31,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 32,
+          "token": "\n",
+          "token_id": 198,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 33,
+          "token": "Spot",
+          "token_id": 32565,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 34,
+          "token": "'s",
+          "token_id": 338,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 35,
+          "token": " friend",
+          "token_id": 1545,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 36,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 37,
+          "token": " a",
+          "token_id": 257,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 38,
+          "token": " little",
+          "token_id": 1310,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 39,
+          "token": " girl",
+          "token_id": 2576,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        }
+      ]
+    },
+    {
+      "prompt": "The sun was bright and",
+      "generated_text": "The sun was bright and the sun and the sun was shining, and the sun was shining, and the sun.\nOne day, while they were playing, the sun was shining, the sky was a big, and a",
+      "prompt_tokens": 5,
+      "new_tokens": 40,
+      "generation_time_s": 0.4352,
+      "tokens_per_second": 91.92,
+      "bypass_fraction": 0.0125,
+      "exit_fraction": 0.0292,
+      "token_logs": [
+        {
+          "step": 0,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 1,
+          "token": " sun",
+          "token_id": 4252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 2,
+          "token": " and",
+          "token_id": 290,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 3,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 4,
+          "token": " sun",
+          "token_id": 4252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 5,
+          "token": " was",
+          "token_id": 373,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 6,
+          "token": " shining",
+          "token_id": 22751,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 7,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 8,
+          "token": " and",
+          "token_id": 290,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 9,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 10,
+          "token": " sun",
+          "token_id": 4252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 11,
+          "token": " was",
+          "token_id": 373,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 12,
+          "token": " shining",
+          "token_id": 22751,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 13,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 14,
+          "token": " and",
+          "token_id": 290,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 15,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 16,
+          "token": " sun",
+          "token_id": 4252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 17,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 18,
+          "token": "\n",
+          "token_id": 198,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 19,
+          "token": "One",
+          "token_id": 3198,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 20,
+          "token": " day",
+          "token_id": 1110,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 21,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 22,
+          "token": " while",
+          "token_id": 981,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 23,
+          "token": " they",
+          "token_id": 484,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 24,
+          "token": " were",
+          "token_id": 547,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 25,
+          "token": " playing",
+          "token_id": 2712,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 26,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 27,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 28,
+          "token": " sun",
+          "token_id": 4252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 29,
+          "token": " was",
+          "token_id": 373,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 30,
+          "token": " shining",
+          "token_id": 22751,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 31,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 32,
+          "token": " the",
+          "token_id": 262,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 33,
+          "token": " sky",
+          "token_id": 6766,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 34,
+          "token": " was",
+          "token_id": 373,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 35,
+          "token": " a",
+          "token_id": 257,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 36,
+          "token": " big",
+          "token_id": 1263,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 37,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 38,
+          "token": " and",
+          "token_id": 290,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 39,
+          "token": " a",
+          "token_id": 257,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        }
+      ]
+    },
+    {
+      "prompt": "Lily wanted to",
+      "generated_text": "Lily wanted to help her mom. She said \"Mom, \"Mom, \"Mommy, I'm sorry, but I'm sorry, I'm sorry. I'm sorry, I'm sorry. I'm sorry",
+      "prompt_tokens": 4,
+      "new_tokens": 40,
+      "generation_time_s": 0.4315,
+      "tokens_per_second": 92.7,
+      "bypass_fraction": 0.0583,
+      "exit_fraction": 0.1125,
+      "token_logs": [
+        {
+          "step": 0,
+          "token": " help",
+          "token_id": 1037,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 1,
+          "token": " her",
+          "token_id": 607,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 2,
+          "token": " mom",
+          "token_id": 1995,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 3,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 4,
+          "token": " She",
+          "token_id": 1375,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 5,
+          "token": " said",
+          "token_id": 531,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": 5
+        },
+        {
+          "step": 6,
+          "token": " \"",
+          "token_id": 366,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [
+            4,
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 7,
+          "token": "Mom",
+          "token_id": 29252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 8,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 9,
+          "token": " \"",
+          "token_id": 366,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 10,
+          "token": "Mom",
+          "token_id": 29252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 11,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 12,
+          "token": " \"",
+          "token_id": 366,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 13,
+          "token": "Mom",
+          "token_id": 29252,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 14,
+          "token": "my",
+          "token_id": 1820,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 15,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 16,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 17,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 4
+        },
+        {
+          "step": 18,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 19,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 20,
+          "token": " but",
+          "token_id": 475,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 21,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 22,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 23,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 24,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 25,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 26,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 27,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "bypassed_layers": [
+            4
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 28,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 29,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [],
+          "exit_layer": 5
+        },
+        {
+          "step": 30,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 31,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 32,
+          "token": ",",
+          "token_id": 11,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 33,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 34,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 35,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 36,
+          "token": ".",
+          "token_id": 13,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 37,
+          "token": " I",
+          "token_id": 314,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        },
+        {
+          "step": 38,
+          "token": "'m",
+          "token_id": 1101,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "bypassed_layers": [
+            5
+          ],
+          "exit_layer": null
+        },
+        {
+          "step": 39,
+          "token": " sorry",
+          "token_id": 7926,
+          "executed_layers": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "bypassed_layers": [],
+          "exit_layer": null
+        }
+      ]
+    }
+  ]
+}

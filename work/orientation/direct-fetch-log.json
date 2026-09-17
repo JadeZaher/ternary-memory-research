@@ -1,0 +1,146 @@
+[
+  {
+    "Name": "labs-skill",
+    "Url": "https://agentprivacy.org/skill.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:42.5422818Z",
+    "Bytes": 7731,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-labs-skill.txt"
+  },
+  {
+    "Name": "labs-work",
+    "Url": "https://agentprivacy.org/work/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:42.9561375Z",
+    "Bytes": 30101,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-labs-work.txt"
+  },
+  {
+    "Name": "labs-research",
+    "Url": "https://agentprivacy.org/research/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:43.3416009Z",
+    "Bytes": 28663,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-labs-research.txt"
+  },
+  {
+    "Name": "city-skill",
+    "Url": "https://mages.city/skill.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:43.5580868Z",
+    "Bytes": 10495,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-skill.txt"
+  },
+  {
+    "Name": "city-orientation",
+    "Url": "https://mages.city/orientation.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:43.9150154Z",
+    "Bytes": 3951,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-orientation.txt"
+  },
+  {
+    "Name": "city-experience",
+    "Url": "https://mages.city/experience-overview.json",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:44.2597545Z",
+    "Bytes": 3453,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-experience.txt"
+  },
+  {
+    "Name": "city-mcp",
+    "Url": "https://mages.city/mcp-entry.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:44.5606232Z",
+    "Bytes": 3077,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-mcp.txt"
+  },
+  {
+    "Name": "star-key",
+    "Url": "https://agentprivacy.org/work/star-key/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:44.8213387Z",
+    "Bytes": 8410,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-star-key.txt"
+  },
+  {
+    "Name": "loadouts",
+    "Url": "https://skills.agentprivacy.ai/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:45.0611204Z",
+    "Bytes": 33702,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-loadouts.txt"
+  },
+  {
+    "Name": "namekeeper",
+    "Url": "https://agentprivacy.org/work/namekeeper/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:45.2995740Z",
+    "Bytes": 7241,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-namekeeper.txt"
+  },
+  {
+    "Name": "uor-kappa",
+    "Url": "https://agentprivacy.org/fund/projects/uor-kappa/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:45.6922032Z",
+    "Bytes": 8880,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-uor-kappa.txt"
+  },
+  {
+    "Name": "fund",
+    "Url": "https://agentprivacy.org/fund/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:45.9454559Z",
+    "Bytes": 95464,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-fund.txt"
+  },
+  {
+    "Name": "trusttasks",
+    "Url": "https://trusttasks.org/",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:46.2068259Z",
+    "Bytes": 12172,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-trusttasks.txt"
+  },
+  {
+    "Name": "city-mage-md",
+    "Url": "https://mages.city/city-mage.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:46.5448154Z",
+    "Bytes": 4859,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-mage-md.txt"
+  },
+  {
+    "Name": "persona",
+    "Url": "https://agentprivacy.ai/persona",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:46.8376214Z",
+    "Bytes": 29835,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-persona.txt"
+  },
+  {
+    "Name": "walk",
+    "Url": "https://agentprivacy.ai/guide/walk",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:47.2064845Z",
+    "Bytes": 88439,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-walk.txt"
+  },
+  {
+    "Name": "city-key-arrival",
+    "Url": "https://mages.city/city-key-arrival.md",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:47.5173926Z",
+    "Bytes": 5808,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-city-key-arrival.txt"
+  },
+  {
+    "Name": "routes",
+    "Url": "https://agentprivacy.org/begin/routes.json",
+    "Status": 200,
+    "CheckedAt": "2026-09-12T00:28:47.7606753Z",
+    "Bytes": 4624,
+    "File": "C:\\Users\\atooz\\Documents\\Codex\\2026-09-11\\cre\\work\\orientation\\direct-routes.txt"
+  }
+]

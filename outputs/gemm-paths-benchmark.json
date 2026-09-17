@@ -1,0 +1,632 @@
+{
+  "meta": {
+    "torch_version": "2.5.1+cu121",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "timestamp": "2026-09-16T22:10:02.945593+00:00",
+    "seed": 20260916,
+    "cpu_threads": 6,
+    "smoke": false
+  },
+  "weight_storage_bytes": {
+    "768x768": {
+      "fp32_bytes": 2359296,
+      "bf16_bytes": 1179648,
+      "int8_bytes": 589824,
+      "packed_ternary_bytes": 124416.0,
+      "_label": "derived, not measured"
+    },
+    "768x2048": {
+      "fp32_bytes": 6291456,
+      "bf16_bytes": 3145728,
+      "int8_bytes": 1572864,
+      "packed_ternary_bytes": 331776.0,
+      "_label": "derived, not measured"
+    },
+    "2048x768": {
+      "fp32_bytes": 6291456,
+      "bf16_bytes": 3145728,
+      "int8_bytes": 1572864,
+      "packed_ternary_bytes": 331776.0,
+      "_label": "derived, not measured"
+    }
+  },
+  "cuda": {
+    "768x768": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.04905599728226662,
+          "std_ms": 0.023205064237117767,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.19444866478443146,
+          "std_ms": 0.019292296841740608,
+          "max_abs_err": 2.5331974029541016e-07,
+          "rel_err": 2.6776754198721066e-08,
+          "speedup_vs_dense_fp32": 0.252282510330687
+        },
+        "additive_cached": {
+          "mean_ms": 0.09513343870639801,
+          "std_ms": 0.014883666299283504,
+          "max_abs_err": 2.5331974029541016e-07,
+          "rel_err": 2.6776754198721066e-08,
+          "speedup_vs_dense_fp32": 0.5156546210177879
+        },
+        "dense_bf16": {
+          "mean_ms": 0.09137920290231705,
+          "std_ms": 0.014418982900679111,
+          "max_abs_err": 0.022934913635253906,
+          "rel_err": 0.0024242980206119263,
+          "speedup_vs_dense_fp32": 0.5368398467505425
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.08142911642789841,
+          "std_ms": 0.035262126475572586,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.6024380397852328,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.4775724709033966,
+          "std_ms": 0.10832718014717102,
+          "max_abs_err": 0.01352342963218689,
+          "rel_err": 0.001471150254955156,
+          "speedup_vs_dense_fp32": 0.10271948294982369,
+          "padded_m": true,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "1x512": {
+        "dense_fp32": {
+          "mean_ms": 0.08557119220495224,
+          "std_ms": 0.002825322328135371,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.3345145881175995,
+          "std_ms": 0.04877473786473274,
+          "max_abs_err": 1.430511474609375e-05,
+          "rel_err": 1.3564929484522731e-06,
+          "speedup_vs_dense_fp32": 0.2558070566861779
+        },
+        "additive_cached": {
+          "mean_ms": 0.19475138187408447,
+          "std_ms": 0.025570310652256012,
+          "max_abs_err": 1.430511474609375e-05,
+          "rel_err": 1.3564929484522731e-06,
+          "speedup_vs_dense_fp32": 0.4393868294104217
+        },
+        "dense_bf16": {
+          "mean_ms": 0.07583360373973846,
+          "std_ms": 0.022677313536405563,
+          "max_abs_err": 0.05242919921875,
+          "rel_err": 0.004971637088940811,
+          "speedup_vs_dense_fp32": 1.1284073021062437
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.10235264897346497,
+          "std_ms": 0.012809555977582932,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.8360427703941171,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.45338428020477295,
+          "std_ms": 0.3130684196949005,
+          "max_abs_err": 0.016645118594169617,
+          "rel_err": 0.0016161583945561828,
+          "speedup_vs_dense_fp32": 0.18873877181251994,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "16x128": {
+        "dense_fp32": {
+          "mean_ms": 0.335989773273468,
+          "std_ms": 0.02199137955904007,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.8488633632659912,
+          "std_ms": 0.07214528322219849,
+          "max_abs_err": 3.814697265625e-06,
+          "rel_err": 3.617316819076282e-07,
+          "speedup_vs_dense_fp32": 0.39581137296437385
+        },
+        "additive_cached": {
+          "mean_ms": 0.700733482837677,
+          "std_ms": 0.02703210338950157,
+          "max_abs_err": 3.814697265625e-06,
+          "rel_err": 3.617316819076282e-07,
+          "speedup_vs_dense_fp32": 0.4794829724888416
+        },
+        "dense_bf16": {
+          "mean_ms": 0.11906623840332031,
+          "std_ms": 0.024433303624391556,
+          "max_abs_err": 0.052428245544433594,
+          "rel_err": 0.004971549803217965,
+          "speedup_vs_dense_fp32": 2.821872747296756
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.3571974039077759,
+          "std_ms": 0.011672505177557468,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9406277022108945,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.31099778413772583,
+          "std_ms": 0.018284384161233902,
+          "max_abs_err": 0.01871875673532486,
+          "rel_err": 0.0018174985334942053,
+          "speedup_vs_dense_fp32": 1.0803606662505172,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      }
+    },
+    "768x2048": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.07049471884965897,
+          "std_ms": 0.01858636364340782,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.2967628836631775,
+          "std_ms": 0.03431955724954605,
+          "max_abs_err": 2.682209014892578e-07,
+          "rel_err": 2.835185738688113e-08,
+          "speedup_vs_dense_fp32": 0.23754560536508895
+        },
+        "additive_cached": {
+          "mean_ms": 0.12719103693962097,
+          "std_ms": 0.02960912510752678,
+          "max_abs_err": 2.682209014892578e-07,
+          "rel_err": 2.835185738688113e-08,
+          "speedup_vs_dense_fp32": 0.5542428188797895
+        },
+        "dense_bf16": {
+          "mean_ms": 0.06703232228755951,
+          "std_ms": 0.04465419426560402,
+          "max_abs_err": 0.022934913635253906,
+          "rel_err": 0.0024242980206119263,
+          "speedup_vs_dense_fp32": 1.0516526422469186
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.07801023125648499,
+          "std_ms": 0.0020981577690690756,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9036599137603344,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.4030643105506897,
+          "std_ms": 0.051754437386989594,
+          "max_abs_err": 0.013530194759368896,
+          "rel_err": 0.0014711499356994471,
+          "speedup_vs_dense_fp32": 0.1748969506958952,
+          "padded_m": true,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "1x512": {
+        "dense_fp32": {
+          "mean_ms": 0.23943744599819183,
+          "std_ms": 0.013432417996227741,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.6922815442085266,
+          "std_ms": 0.051060453057289124,
+          "max_abs_err": 2.86102294921875e-06,
+          "rel_err": 2.7129876143072113e-07,
+          "speedup_vs_dense_fp32": 0.3458671518853453
+        },
+        "additive_cached": {
+          "mean_ms": 0.4648486375808716,
+          "std_ms": 0.03721895068883896,
+          "max_abs_err": 2.86102294921875e-06,
+          "rel_err": 2.7129876143072113e-07,
+          "speedup_vs_dense_fp32": 0.5150869049423339
+        },
+        "dense_bf16": {
+          "mean_ms": 0.09147392213344574,
+          "std_ms": 0.009916502982378006,
+          "max_abs_err": 0.052425384521484375,
+          "rel_err": 0.004971278504456535,
+          "speedup_vs_dense_fp32": 2.617548700370485
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.24847425520420074,
+          "std_ms": 0.010403534397482872,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9636308027220676,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.4160960018634796,
+          "std_ms": 0.1048811748623848,
+          "max_abs_err": 0.01675701141357422,
+          "rel_err": 0.00162620888607329,
+          "speedup_vs_dense_fp32": 0.57543798769004,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "16x128": {
+        "dense_fp32": {
+          "mean_ms": 0.8076678514480591,
+          "std_ms": 0.02829732373356819,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 2.0181446075439453,
+          "std_ms": 0.05185023322701454,
+          "max_abs_err": 1.430511474609375e-05,
+          "rel_err": 1.342548947320796e-06,
+          "speedup_vs_dense_fp32": 0.40020316107624215
+        },
+        "additive_cached": {
+          "mean_ms": 1.8746014833450317,
+          "std_ms": 0.1268303096294403,
+          "max_abs_err": 1.430511474609375e-05,
+          "rel_err": 1.342548947320796e-06,
+          "speedup_vs_dense_fp32": 0.4308477607767917
+        },
+        "dense_bf16": {
+          "mean_ms": 0.28760191798210144,
+          "std_ms": 0.020249973982572556,
+          "max_abs_err": 0.05242919921875,
+          "rel_err": 0.004920531395193872,
+          "speedup_vs_dense_fp32": 2.8082839541366456
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.813405454158783,
+          "std_ms": 0.03689216077327728,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9929461959206338,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.8439686298370361,
+          "std_ms": 0.025944774970412254,
+          "max_abs_err": 0.01890917867422104,
+          "rel_err": 0.0018134858194737632,
+          "speedup_vs_dense_fp32": 0.956988000376286,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      }
+    },
+    "2048x768": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.07362432777881622,
+          "std_ms": 0.004039076156914234,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.28800639510154724,
+          "std_ms": 0.058027319610118866,
+          "max_abs_err": 9.5367431640625e-07,
+          "rel_err": 6.025915776498302e-08,
+          "speedup_vs_dense_fp32": 0.2556343505943931
+        },
+        "additive_cached": {
+          "mean_ms": 0.12912768125534058,
+          "std_ms": 0.021702958270907402,
+          "max_abs_err": 9.5367431640625e-07,
+          "rel_err": 6.025915776498302e-08,
+          "speedup_vs_dense_fp32": 0.5701668849239961
+        },
+        "dense_bf16": {
+          "mean_ms": 0.05395711958408356,
+          "std_ms": 0.017288941890001297,
+          "max_abs_err": 0.013713836669921875,
+          "rel_err": 0.0008665266886604558,
+          "speedup_vs_dense_fp32": 1.3644969995865783
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.02505599893629551,
+          "std_ms": 0.007192407734692097,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 2.938391239798698,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.38076546788215637,
+          "std_ms": 0.03609193116426468,
+          "max_abs_err": 0.01274004578590393,
+          "rel_err": 0.0008138498768768512,
+          "speedup_vs_dense_fp32": 0.19335873126394518,
+          "padded_m": true,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "1x512": {
+        "dense_fp32": {
+          "mean_ms": 0.21319489181041718,
+          "std_ms": 0.009549594484269619,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 0.6124557256698608,
+          "std_ms": 0.020109115168452263,
+          "max_abs_err": 5.7220458984375e-06,
+          "rel_err": 3.481681596504206e-07,
+          "speedup_vs_dense_fp32": 0.3480984549164589
+        },
+        "additive_cached": {
+          "mean_ms": 0.4167008101940155,
+          "std_ms": 0.009748068638145924,
+          "max_abs_err": 5.7220458984375e-06,
+          "rel_err": 3.481681596504206e-07,
+          "speedup_vs_dense_fp32": 0.5116258154409488
+        },
+        "dense_bf16": {
+          "mean_ms": 0.08559039980173111,
+          "std_ms": 0.01011637318879366,
+          "max_abs_err": 0.06528091430664062,
+          "rel_err": 0.003972134477398432,
+          "speedup_vs_dense_fp32": 2.490873886607376
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.22580929100513458,
+          "std_ms": 0.025629982352256775,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9441369345850762,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.3819596767425537,
+          "std_ms": 0.2976559102535248,
+          "max_abs_err": 0.019075989723205566,
+          "rel_err": 0.0011770972237097471,
+          "speedup_vs_dense_fp32": 0.5581607295005477,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      },
+      "16x128": {
+        "dense_fp32": {
+          "mean_ms": 0.7918316721916199,
+          "std_ms": 0.04032580927014351,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 1.893444538116455,
+          "std_ms": 0.06872101128101349,
+          "max_abs_err": 7.62939453125e-06,
+          "rel_err": 4.642241589912038e-07,
+          "speedup_vs_dense_fp32": 0.418196390890494
+        },
+        "additive_cached": {
+          "mean_ms": 1.7303379774093628,
+          "std_ms": 0.111324243247509,
+          "max_abs_err": 7.62939453125e-06,
+          "rel_err": 4.642241589912038e-07,
+          "speedup_vs_dense_fp32": 0.4576167676658978
+        },
+        "dense_bf16": {
+          "mean_ms": 0.26692482829093933,
+          "std_ms": 0.014099827036261559,
+          "max_abs_err": 0.06527900695800781,
+          "rel_err": 0.003972017960368487,
+          "speedup_vs_dense_fp32": 2.9664968870132578
+        },
+        "dense_fp32_layerwide": {
+          "mean_ms": 0.8123770356178284,
+          "std_ms": 0.031123977154493332,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 0.9747095713869074,
+          "note": "reference for int8_tensorcore, uses layer-wide scalar gamma (block_size=None)"
+        },
+        "int8_tensorcore": {
+          "mean_ms": 0.8925108313560486,
+          "std_ms": 0.08515124768018723,
+          "max_abs_err": 0.020540565252304077,
+          "rel_err": 0.001267470174498281,
+          "speedup_vs_dense_fp32": 0.8871955884149211,
+          "padded_m": false,
+          "gamma_mode": "layer-wide scalar gamma (block_size=None); block gamma cannot be factored out of a single int32 dequant multiply"
+        }
+      }
+    }
+  },
+  "cpu": {
+    "768x768": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.014989999122917652,
+          "std_ms": 0.002545763738453388,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 1.7880958318710327,
+          "std_ms": 0.21098344027996063,
+          "max_abs_err": 2.980232238769531e-07,
+          "rel_err": 5.160475087373036e-08,
+          "speedup_vs_dense_fp32": 0.008383219095831331
+        },
+        "additive_cached": {
+          "mean_ms": 0.0314360037446022,
+          "std_ms": 0.0015694512985646725,
+          "max_abs_err": 2.980232238769531e-07,
+          "rel_err": 5.160475087373036e-08,
+          "speedup_vs_dense_fp32": 0.4768417526827514
+        }
+      },
+      "1x64": {
+        "dense_fp32": {
+          "mean_ms": 0.24713000655174255,
+          "std_ms": 0.019209446385502815,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 2.237311840057373,
+          "std_ms": 0.10768960416316986,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 3.302703510526129e-07,
+          "speedup_vs_dense_fp32": 0.11045845381366472
+        },
+        "additive_cached": {
+          "mean_ms": 0.4492979943752289,
+          "std_ms": 0.08765522390604019,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 3.302703510526129e-07,
+          "speedup_vs_dense_fp32": 0.5500358551464025
+        }
+      }
+    },
+    "768x2048": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.04341199994087219,
+          "std_ms": 0.015451645478606224,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 4.977704048156738,
+          "std_ms": 0.2944874167442322,
+          "max_abs_err": 2.980232238769531e-07,
+          "rel_err": 5.160475087373036e-08,
+          "speedup_vs_dense_fp32": 0.008721289880009602
+        },
+        "additive_cached": {
+          "mean_ms": 0.09304200112819672,
+          "std_ms": 0.0024534135591238737,
+          "max_abs_err": 2.980232238769531e-07,
+          "rel_err": 5.160475087373036e-08,
+          "speedup_vs_dense_fp32": 0.46658497683274813
+        }
+      },
+      "1x64": {
+        "dense_fp32": {
+          "mean_ms": 0.6668619513511658,
+          "std_ms": 0.026237310841679573,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 8.201153755187988,
+          "std_ms": 3.7464053630828857,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 3.302703510526129e-07,
+          "speedup_vs_dense_fp32": 0.08131318729749627
+        },
+        "additive_cached": {
+          "mean_ms": 1.6613998413085938,
+          "std_ms": 0.4231199026107788,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 3.302703510526129e-07,
+          "speedup_vs_dense_fp32": 0.4013855874850181
+        }
+      }
+    },
+    "2048x768": {
+      "1x1": {
+        "dense_fp32": {
+          "mean_ms": 0.0457799956202507,
+          "std_ms": 0.03700229153037071,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 5.010528087615967,
+          "std_ms": 0.3246811628341675,
+          "max_abs_err": 5.066394805908203e-07,
+          "rel_err": 6.130150509186167e-08,
+          "speedup_vs_dense_fp32": 0.009136760600823824
+        },
+        "additive_cached": {
+          "mean_ms": 0.09593799710273743,
+          "std_ms": 0.007391578983515501,
+          "max_abs_err": 5.066394805908203e-07,
+          "rel_err": 6.130150509186167e-08,
+          "speedup_vs_dense_fp32": 0.47718314956300506
+        }
+      },
+      "1x64": {
+        "dense_fp32": {
+          "mean_ms": 0.6954479813575745,
+          "std_ms": 0.0185617133975029,
+          "max_abs_err": 0.0,
+          "rel_err": 0.0,
+          "speedup_vs_dense_fp32": 1.0
+        },
+        "additive_reference": {
+          "mean_ms": 6.236907958984375,
+          "std_ms": 0.2943355143070221,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 2.2451287721671385e-07,
+          "speedup_vs_dense_fp32": 0.11150525002630021
+        },
+        "additive_cached": {
+          "mean_ms": 1.4549660682678223,
+          "std_ms": 0.08381853997707367,
+          "max_abs_err": 1.9073486328125e-06,
+          "rel_err": 2.2451287721671385e-07,
+          "speedup_vs_dense_fp32": 0.47798226812637956
+        }
+      }
+    }
+  },
+  "fastest_cuda_path_per_shape": {
+    "768x768|1x1": "dense_fp32",
+    "768x768|1x512": "dense_bf16",
+    "768x768|16x128": "dense_bf16",
+    "768x2048|1x1": "dense_bf16",
+    "768x2048|1x512": "dense_bf16",
+    "768x2048|16x128": "dense_bf16",
+    "2048x768|1x1": "dense_fp32_layerwide",
+    "2048x768|1x512": "dense_bf16",
+    "2048x768|16x128": "dense_bf16"
+  },
+  "additive_vs_dense_ratio": {
+    "768x768|1x1": 0.5156546210177879,
+    "768x768|1x512": 0.4393868294104217,
+    "768x768|16x128": 0.4794829724888416,
+    "768x2048|1x1": 0.5542428188797895,
+    "768x2048|1x512": 0.5150869049423339,
+    "768x2048|16x128": 0.4308477607767917,
+    "2048x768|1x1": 0.5701668849239961,
+    "2048x768|1x512": 0.5116258154409488,
+    "2048x768|16x128": 0.4576167676658978
+  }
+}

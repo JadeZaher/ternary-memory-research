@@ -1,0 +1,216 @@
+{
+  "checked_at_utc": "2026-09-12T14:37:15.785463+00:00",
+  "status": "passed",
+  "checks": [
+    "uniform ternary entropy is log2(3)",
+    "five trits fit one byte",
+    "mask+sign planes cost one plus density and never beat the entropy bound",
+    "mask+sign planes meet the entropy bound only at density one half",
+    "mask plane overhead equals one minus the binary entropy of the density",
+    "exactly identity and sign flip are affine permutations of the three states",
+    "exactly identity and sign flip are compensable by an input sign",
+    "every non-affine permutation moves zero",
+    "unsigned digits plus one zero-point correction reproduce the dot product",
+    "unsigned digits lie in 0..2",
+    "positive and negative planes reproduce the dot product",
+    "mask and sign planes reproduce the dot product",
+    "rank-indexed sign plane reproduces every weight",
+    "two-level directory ranks correctly across a superblock boundary with block counts under sixteen bits",
+    "spare fourth code as an escape pointer round-trips",
+    "trit zero as an escape pointer round-trips",
+    "using the numerical zero as a pointer costs more than the spare code when true zeros are common",
+    "activation-side lookup table replaces multiply-accumulate",
+    "two-trit and three-trit lookup indices fit four and five bits",
+    "flat-index dictionary totals never fall below log2(3) on uniform random blocks in this sample",
+    "flat-index dictionary totals never fall below the entropy bound on sparse random blocks in this sample",
+    "a rank-one sign pattern factors into row and column signs",
+    "a non-rank-one block sign pattern has no row/column compensation",
+    "row and column sign compensation reproduces the matrix-vector product"
+  ],
+  "tables": {
+    "bits_per_weight": [
+      {
+        "density": 1.0,
+        "entropy_bound": 1.0,
+        "fixed_2bit": 2.0,
+        "five_trits_per_byte": 1.6,
+        "pos_neg_planes": 2.0,
+        "mask_plus_signs": 2.0,
+        "mask_plus_signs_with_rank_directory": 2.063,
+        "unsigned_digits_plus_zero_point": 2.0
+      },
+      {
+        "density": 0.6667,
+        "entropy_bound": 1.585,
+        "fixed_2bit": 2.0,
+        "five_trits_per_byte": 1.6,
+        "pos_neg_planes": 2.0,
+        "mask_plus_signs": 1.6667,
+        "mask_plus_signs_with_rank_directory": 1.7297,
+        "unsigned_digits_plus_zero_point": 2.0
+      },
+      {
+        "density": 0.5,
+        "entropy_bound": 1.5,
+        "fixed_2bit": 2.0,
+        "five_trits_per_byte": 1.6,
+        "pos_neg_planes": 2.0,
+        "mask_plus_signs": 1.5,
+        "mask_plus_signs_with_rank_directory": 1.563,
+        "unsigned_digits_plus_zero_point": 2.0
+      },
+      {
+        "density": 0.3,
+        "entropy_bound": 1.1813,
+        "fixed_2bit": 2.0,
+        "five_trits_per_byte": 1.6,
+        "pos_neg_planes": 2.0,
+        "mask_plus_signs": 1.3,
+        "mask_plus_signs_with_rank_directory": 1.363,
+        "unsigned_digits_plus_zero_point": 2.0
+      },
+      {
+        "density": 0.1,
+        "entropy_bound": 0.569,
+        "fixed_2bit": 2.0,
+        "five_trits_per_byte": 1.6,
+        "pos_neg_planes": 2.0,
+        "mask_plus_signs": 1.1,
+        "mask_plus_signs_with_rank_directory": 1.163,
+        "unsigned_digits_plus_zero_point": 2.0
+      }
+    ],
+    "rank_directory_bits_per_weight": 0.063,
+    "rank_example": {
+      "weights": 4096,
+      "nonzeros": 1660,
+      "mask_bits": 4096,
+      "sign_bits": 1660,
+      "directory_bits": 288,
+      "bits_per_weight": 1.4756,
+      "entropy_bound": 1.3792
+    },
+    "escape_example": {
+      "weights": 10000,
+      "outliers": 115,
+      "true_zeros": 2996,
+      "spare_code_bits_per_weight": 2.1592,
+      "zero_as_pointer_bits_per_weight": 4.141,
+      "fourth_code_penalty_over_packed_ternary": 0.415
+    },
+    "dictionary_on_random_blocks": [
+      {
+        "density": 0.6667,
+        "block": 2,
+        "weights": 100000,
+        "blocks": 50000,
+        "distinct": 9,
+        "possible": 9,
+        "index_bits_per_weight": 2.0,
+        "dictionary_bits_per_weight": 0.0003,
+        "total_bits_per_weight": 2.0003,
+        "entropy_bound": 1.585
+      },
+      {
+        "density": 0.6667,
+        "block": 4,
+        "weights": 100000,
+        "blocks": 25000,
+        "distinct": 81,
+        "possible": 81,
+        "index_bits_per_weight": 1.75,
+        "dictionary_bits_per_weight": 0.0051,
+        "total_bits_per_weight": 1.7551,
+        "entropy_bound": 1.585
+      },
+      {
+        "density": 0.6667,
+        "block": 8,
+        "weights": 100000,
+        "blocks": 12500,
+        "distinct": 5575,
+        "possible": 6561,
+        "index_bits_per_weight": 1.625,
+        "dictionary_bits_per_weight": 0.7069,
+        "total_bits_per_weight": 2.3319,
+        "entropy_bound": 1.585
+      },
+      {
+        "density": 0.6667,
+        "block": 16,
+        "weights": 100000,
+        "blocks": 6250,
+        "distinct": 6250,
+        "possible": 43046721,
+        "index_bits_per_weight": 0.8125,
+        "dictionary_bits_per_weight": 1.585,
+        "total_bits_per_weight": 2.3975,
+        "entropy_bound": 1.585
+      },
+      {
+        "density": 0.2,
+        "block": 2,
+        "weights": 100000,
+        "blocks": 50000,
+        "distinct": 9,
+        "possible": 9,
+        "index_bits_per_weight": 2.0,
+        "dictionary_bits_per_weight": 0.0003,
+        "total_bits_per_weight": 2.0003,
+        "entropy_bound": 0.9219
+      },
+      {
+        "density": 0.2,
+        "block": 4,
+        "weights": 100000,
+        "blocks": 25000,
+        "distinct": 78,
+        "possible": 81,
+        "index_bits_per_weight": 1.75,
+        "dictionary_bits_per_weight": 0.0049,
+        "total_bits_per_weight": 1.7549,
+        "entropy_bound": 0.9219
+      },
+      {
+        "density": 0.2,
+        "block": 8,
+        "weights": 100000,
+        "blocks": 12500,
+        "distinct": 1140,
+        "possible": 6561,
+        "index_bits_per_weight": 1.375,
+        "dictionary_bits_per_weight": 0.1445,
+        "total_bits_per_weight": 1.5195,
+        "entropy_bound": 0.9219
+      },
+      {
+        "density": 0.2,
+        "block": 16,
+        "weights": 100000,
+        "blocks": 6250,
+        "distinct": 4301,
+        "possible": 43046721,
+        "index_bits_per_weight": 0.8125,
+        "dictionary_bits_per_weight": 1.0907,
+        "total_bits_per_weight": 1.9032,
+        "entropy_bound": 0.9219
+      }
+    ],
+    "selector_bits": {
+      "full_permutation_selector_ideal_bits_per_block": 2.585,
+      "full_permutation_selector_flat_bits_per_block": 3,
+      "sign_flip_selector_bits_per_block": 1,
+      "per_weight_at_block_16": {
+        "ideal_full": 0.1616,
+        "flat_full": 0.1875,
+        "flip": 0.0625
+      }
+    }
+  },
+  "random_seed": 20260912,
+  "limitations": [
+    "Entropy bounds assume independent identically distributed trits with balanced signs; trained weights need measured statistics.",
+    "Dictionary rows are one seeded sample on random data priced with a flat index and log2(3) per dictionary trit; they are not a proof and say nothing about trained weights.",
+    "Bit counts exclude scales, padding, alignment and any accumulator; no kernel was timed."
+  ]
+}

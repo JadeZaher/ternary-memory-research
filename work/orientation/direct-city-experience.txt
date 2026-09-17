@@ -1,0 +1,24 @@
+{
+  "kind": "agentprivacy.experience-overview/1",
+  "updated": "2026-09-08",
+  "authority": "Source implementation inventory; not live service discovery, admission or permission.",
+  "entry": "https://mages.city/skill.md",
+  "sequence": ["read-entry", "carry-key", "choose-disclosure", "prepare-invitation", "agree-and-verify", "act", "retain-encounter"],
+  "capabilities": [
+    {"id":"entry","status":"implemented-local","tools":["experience_overview","experience_route"],"meaning":"Locate the complete path, current tool names and source capability limits."},
+    {"id":"key-journey","status":"implemented-local","tools":["key_derive","key_evolve","journey_start","journey_inspect","journey_fold","sigil_render"],"meaning":"Preserve complete original evidence and evolve a private City Key journey; no credential issuance."},
+    {"id":"invitation","status":"implemented-local","tools":["city_invitation_draft"],"meaning":"Private invitation/offer/request/mark draft. Publication and final AgentCard signing require separate authorization and transport."},
+    {"id":"learning","status":"implemented-local","tools":["guide_search","guide_page","guide_neighbours"],"meaning":"Read a locally configured guide bake and record selected source-linked walks; not proof of comprehension."},
+    {"id":"game-action","status":"implemented-local","tools":["browser_action_prepare"],"meaning":"Short-lived action proposal. Host library supplies durable pending/completed ledger and receipt-validation seam; live dispatch absent."},
+    {"id":"star-orb","status":"implemented-local","tools":[],"meaning":"Compact City and landing-page controls import palette only. Extension prototype can preview a palette. No authenticated cross-site handoff."},
+    {"id":"vta-pair","status":"portal-observed-only","tools":[],"meaning":"Soulbis/Soulbae listed running in authenticated farm portal on 2026-09-07. Extension control, health and agent-to-agent exchange not established by that observation."},
+    {"id":"agreements-vrc-tasks","status":"pending-live-adapters","tools":[],"meaning":"Reuse existing MyTerms and versioned Trust Task/VRC protocols; verify holder, delegation, issuer, scope and status. Opaque task storage is not verification."},
+    {"id":"city-access","status":"pending-live-adapters","tools":[],"meaning":"Existing local City gate binds exact FedWiki/BIND9 actions. Fresh authentication, entitlements and service executors remain unconnected."},
+    {"id":"core-artefact","status":"design-proposal","tools":[],"meaning":"Optional central image/artefact and source-defined moving-ceiling overlay. Keep time-varying view distinct from key bytes and credential status."}
+  ],
+  "runtime": "city_mage uses the current dual-agent-harness; local bootstrap, checkpoint and offline checks exist. No paired live run or VTA provisioning is implied.",
+  "encounter": "Retain original artefact plus actual receipt privately; idempotent folding does not alone prevent duplicate browser effects. Public testimonials are a separate disclosure.",
+  "sources": {"star":"https://soulbis.com/star/","learning":"https://agentprivacy.ai/guide/walk","journey":"https://agentprivacy.ai/city","spellweb":"https://spellweb.ai/","labs":"https://agentprivacy.org/","city":"https://mages.city/skill.md"},
+  "publishing": "Local source changes are not evidence of deployment. MCP is a trusted local stdio service with filesystem-capable tools, not a public network endpoint."
+}
+

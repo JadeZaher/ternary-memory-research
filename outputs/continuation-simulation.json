@@ -1,0 +1,43 @@
+{
+  "model_config": {
+    "num_layers": 16,
+    "weights_per_layer": 8000000,
+    "total_parameters": 128000000,
+    "resident_descriptor_D_kb": 1040.56
+  },
+  "tokens_simulated": 500,
+  "avg_exit_layer": 6.85,
+  "exit_layer_distribution": [
+    0,
+    0,
+    74,
+    81,
+    59,
+    62,
+    24,
+    24,
+    30,
+    26,
+    18,
+    22,
+    0,
+    0,
+    0,
+    0,
+    80
+  ],
+  "total_megabytes_streamed": {
+    "fp16_full": 122070.31,
+    "int4_full": 30517.58,
+    "tq1_0_full": 12874.6,
+    "tq1_0_dynamic_exit": 5511.94,
+    "mask_sign_dynamic_exit": 4736.19
+  },
+  "speedup_bandwidth_multipliers_vs_fp16": {
+    "fp16_full": 1.0,
+    "int4_full": 4.0,
+    "tq1_0_full": 9.48,
+    "tq1_0_dynamic_exit": 22.15,
+    "mask_sign_dynamic_exit": 25.77
+  }
+}

@@ -1,0 +1,1925 @@
+{
+  "status": "COMPLETED",
+  "timestamp": "2026-09-16 16:31:40",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda:0",
+  "config": {
+    "tasks": [
+      "sudoku4",
+      "latin5",
+      "latin6"
+    ],
+    "steps": 1500,
+    "puzzles_per_tier": 100,
+    "batch_size": 64,
+    "lr": 0.002,
+    "weight_decay": 0.0001,
+    "max_rollout_k": 4,
+    "d_model": 128,
+    "n_layers": 4,
+    "n_heads": 4
+  },
+  "seeds": {
+    "sudoku4": [
+      1,
+      2,
+      3
+    ],
+    "latin5": [
+      1,
+      2,
+      3
+    ],
+    "latin6": [
+      1,
+      2
+    ]
+  },
+  "tasks": {
+    "sudoku4": {
+      "seq_len": 16,
+      "num_classes": 4,
+      "tiers": {
+        "easy": 10,
+        "medium": 8,
+        "hard": 6
+      },
+      "train_boards_count": 220,
+      "test_boards_count": 68,
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "chance_cell_accuracy_pct": {
+        "value": 25.0,
+        "label": "derived"
+      },
+      "arms": {
+        "fp32": {
+          "train_seconds": {
+            "per_seed": [
+              30.496,
+              30.804,
+              30.05
+            ],
+            "mean": 30.45,
+            "std": 0.3095
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.9067,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.94,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.79,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.8567,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.86,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.73,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.95,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.94,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.92,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.9045,
+            "std_solve_rate": 0.0381,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9867,
+                "std_solve_rate": 0.0047,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.9133,
+                "std_solve_rate": 0.0377,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.8133,
+                "std_solve_rate": 0.0793,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.9033,
+                  "mean_steps": 3.57
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 2.56
+                  },
+                  "medium": {
+                    "solve_rate": 0.94,
+                    "mean_steps": 3.47
+                  },
+                  "hard": {
+                    "solve_rate": 0.78,
+                    "mean_steps": 4.68
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.86,
+                  "mean_steps": 3.693
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 2.52
+                  },
+                  "medium": {
+                    "solve_rate": 0.85,
+                    "mean_steps": 3.79
+                  },
+                  "hard": {
+                    "solve_rate": 0.75,
+                    "mean_steps": 4.77
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.9567,
+                  "mean_steps": 4.063
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 2.96
+                  },
+                  "medium": {
+                    "solve_rate": 0.96,
+                    "mean_steps": 4.02
+                  },
+                  "hard": {
+                    "solve_rate": 0.92,
+                    "mean_steps": 5.21
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.9067,
+            "std_solve_rate": 0.0395,
+            "mean_steps": 3.7753,
+            "std_steps": 0.2095,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9867,
+                "std_solve_rate": 0.0047,
+                "mean_steps": 2.68,
+                "std_steps": 0.1987
+              },
+              "medium": {
+                "mean_solve_rate": 0.9167,
+                "std_solve_rate": 0.0478,
+                "mean_steps": 3.76,
+                "std_steps": 0.2255
+              },
+              "hard": {
+                "mean_solve_rate": 0.8167,
+                "std_solve_rate": 0.0741,
+                "mean_steps": 4.8867,
+                "std_steps": 0.2316
+              }
+            }
+          }
+        },
+        "posthoc": {
+          "train_seconds": {
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.3933,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.67,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.37,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.14,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.6233,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.88,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.67,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.32,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.5833,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.81,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.63,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.31,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.5333,
+            "std_solve_rate": 0.1003,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.7867,
+                "std_solve_rate": 0.0873,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.5567,
+                "std_solve_rate": 0.133,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.2567,
+                "std_solve_rate": 0.0826,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.4467,
+                  "mean_steps": 4.447
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.69,
+                    "mean_steps": 3.68
+                  },
+                  "medium": {
+                    "solve_rate": 0.46,
+                    "mean_steps": 4.54
+                  },
+                  "hard": {
+                    "solve_rate": 0.19,
+                    "mean_steps": 5.12
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.63,
+                  "mean_steps": 4.587
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.84,
+                    "mean_steps": 3.51
+                  },
+                  "medium": {
+                    "solve_rate": 0.71,
+                    "mean_steps": 4.8
+                  },
+                  "hard": {
+                    "solve_rate": 0.34,
+                    "mean_steps": 5.45
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.5867,
+                  "mean_steps": 4.963
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.81,
+                    "mean_steps": 4.13
+                  },
+                  "medium": {
+                    "solve_rate": 0.61,
+                    "mean_steps": 5.11
+                  },
+                  "hard": {
+                    "solve_rate": 0.34,
+                    "mean_steps": 5.65
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.5545,
+            "std_solve_rate": 0.0782,
+            "mean_steps": 4.6657,
+            "std_steps": 0.2179,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.78,
+                "std_solve_rate": 0.0648,
+                "mean_steps": 3.7733,
+                "std_steps": 0.2616
+              },
+              "medium": {
+                "mean_solve_rate": 0.5933,
+                "std_solve_rate": 0.1027,
+                "mean_steps": 4.8167,
+                "std_steps": 0.233
+              },
+              "hard": {
+                "mean_solve_rate": 0.29,
+                "std_solve_rate": 0.0707,
+                "mean_steps": 5.4067,
+                "std_steps": 0.2185
+              }
+            }
+          }
+        },
+        "native_ternary": {
+          "train_seconds": {
+            "per_seed": [
+              64.721,
+              65.316,
+              66.049
+            ],
+            "mean": 65.362,
+            "std": 0.5431
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.89,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.94,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.74,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.8,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.93,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.82,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.65,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.88,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.88,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.78,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.8567,
+            "std_solve_rate": 0.0403,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9667,
+                "std_solve_rate": 0.0262,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.88,
+                "std_solve_rate": 0.049,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.7233,
+                "std_solve_rate": 0.0544,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.8967,
+                  "mean_steps": 3.5
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 2.59
+                  },
+                  "medium": {
+                    "solve_rate": 0.94,
+                    "mean_steps": 3.42
+                  },
+                  "hard": {
+                    "solve_rate": 0.76,
+                    "mean_steps": 4.49
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.8033,
+                  "mean_steps": 3.703
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.93,
+                    "mean_steps": 2.78
+                  },
+                  "medium": {
+                    "solve_rate": 0.83,
+                    "mean_steps": 3.65
+                  },
+                  "hard": {
+                    "solve_rate": 0.65,
+                    "mean_steps": 4.68
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.8867,
+                  "mean_steps": 3.57
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 2.53
+                  },
+                  "medium": {
+                    "solve_rate": 0.89,
+                    "mean_steps": 3.59
+                  },
+                  "hard": {
+                    "solve_rate": 0.79,
+                    "mean_steps": 4.59
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.8622,
+            "std_solve_rate": 0.0419,
+            "mean_steps": 3.591,
+            "std_steps": 0.0842,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9667,
+                "std_solve_rate": 0.0262,
+                "mean_steps": 2.6333,
+                "std_steps": 0.1066
+              },
+              "medium": {
+                "mean_solve_rate": 0.8867,
+                "std_solve_rate": 0.045,
+                "mean_steps": 3.5533,
+                "std_steps": 0.0974
+              },
+              "hard": {
+                "mean_solve_rate": 0.7333,
+                "std_solve_rate": 0.0602,
+                "mean_steps": 4.5867,
+                "std_steps": 0.0776
+              }
+            }
+          }
+        },
+        "native_ternary_legacy_leak": {
+          "train_seconds": {
+            "per_seed": [
+              65.513,
+              64.822,
+              64.516
+            ],
+            "mean": 64.9503,
+            "std": 0.417
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.91,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.99,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.9,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.84,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.9067,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.95,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.92,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.85,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.92,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.95,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.83,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.9122,
+            "std_solve_rate": 0.0057,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9733,
+                "std_solve_rate": 0.017,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.9233,
+                "std_solve_rate": 0.0205,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.84,
+                "std_solve_rate": 0.0082,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.9567,
+                  "mean_steps": 3.563
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 1.0,
+                    "mean_steps": 2.75
+                  },
+                  "medium": {
+                    "solve_rate": 0.96,
+                    "mean_steps": 3.53
+                  },
+                  "hard": {
+                    "solve_rate": 0.91,
+                    "mean_steps": 4.41
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.9133,
+                  "mean_steps": 3.867
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.95,
+                    "mean_steps": 2.91
+                  },
+                  "medium": {
+                    "solve_rate": 0.91,
+                    "mean_steps": 3.81
+                  },
+                  "hard": {
+                    "solve_rate": 0.88,
+                    "mean_steps": 4.88
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.9433,
+                  "mean_steps": 3.593
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 2.8
+                  },
+                  "medium": {
+                    "solve_rate": 0.96,
+                    "mean_steps": 3.6
+                  },
+                  "hard": {
+                    "solve_rate": 0.89,
+                    "mean_steps": 4.38
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.9378,
+            "std_solve_rate": 0.0181,
+            "mean_steps": 3.6743,
+            "std_steps": 0.1368,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9767,
+                "std_solve_rate": 0.0205,
+                "mean_steps": 2.82,
+                "std_steps": 0.0668
+              },
+              "medium": {
+                "mean_solve_rate": 0.9433,
+                "std_solve_rate": 0.0236,
+                "mean_steps": 3.6467,
+                "std_steps": 0.119
+              },
+              "hard": {
+                "mean_solve_rate": 0.8933,
+                "std_solve_rate": 0.0125,
+                "mean_steps": 4.5567,
+                "std_steps": 0.229
+              }
+            }
+          }
+        }
+      },
+      "findings": {
+        "native_minus_posthoc_solve_rate": 0.3234,
+        "native_minus_fp32_solve_rate": -0.0478,
+        "dynamic_exit_step_reduction_pct": 28.18,
+        "dynamic_exit_minus_fixed_solve_rate": 0.0055,
+        "leak_free_minus_legacy_solve_rate": -0.0555
+      }
+    },
+    "latin5": {
+      "seq_len": 25,
+      "num_classes": 5,
+      "tiers": {
+        "easy": 14,
+        "medium": 11,
+        "hard": 8
+      },
+      "train_boards_count": 1400,
+      "test_boards_count": 600,
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "chance_cell_accuracy_pct": {
+        "value": 20.0,
+        "label": "derived"
+      },
+      "arms": {
+        "fp32": {
+          "train_seconds": {
+            "per_seed": [
+              31.155,
+              31.154,
+              31.095
+            ],
+            "mean": 31.1347,
+            "std": 0.0281
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.007
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.02
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.37
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.56
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.38
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.17
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.027
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.06
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.01
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.01
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 2.1347,
+            "std_steps": 0.1666,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.2133,
+                "std_steps": 0.2457
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.13,
+                "std_steps": 0.1768
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.06,
+                "std_steps": 0.0779
+              }
+            }
+          }
+        },
+        "posthoc": {
+          "train_seconds": {
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.237
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.46
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.22
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.03
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.34
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.31
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.39
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.32
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 3.103
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 3.38
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 3.04
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.89
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 2.56,
+            "std_steps": 0.3863,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.7167,
+                "std_steps": 0.473
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.55,
+                "std_steps": 0.3534
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.4133,
+                "std_steps": 0.3572
+              }
+            }
+          }
+        },
+        "native_ternary": {
+          "train_seconds": {
+            "per_seed": [
+              65.628,
+              65.905,
+              66.951
+            ],
+            "mean": 66.1613,
+            "std": 0.5697
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.57,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.95,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.66,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.1,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.5667,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.95,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.72,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.03,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.5767,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.71,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.04,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.5711,
+            "std_solve_rate": 0.0042,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.96,
+                "std_solve_rate": 0.0141,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.6967,
+                "std_solve_rate": 0.0262,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0567,
+                "std_solve_rate": 0.0309,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.65,
+                  "mean_steps": 5.533
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 4.7
+                  },
+                  "medium": {
+                    "solve_rate": 0.75,
+                    "mean_steps": 5.9
+                  },
+                  "hard": {
+                    "solve_rate": 0.22,
+                    "mean_steps": 6.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.6433,
+                  "mean_steps": 5.52
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.97,
+                    "mean_steps": 4.69
+                  },
+                  "medium": {
+                    "solve_rate": 0.84,
+                    "mean_steps": 5.87
+                  },
+                  "hard": {
+                    "solve_rate": 0.12,
+                    "mean_steps": 6.0
+                  }
+                }
+              },
+              {
+                "seed": 3,
+                "overall": {
+                  "solve_rate": 0.6233,
+                  "mean_steps": 5.46
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.98,
+                    "mean_steps": 4.53
+                  },
+                  "medium": {
+                    "solve_rate": 0.81,
+                    "mean_steps": 5.85
+                  },
+                  "hard": {
+                    "solve_rate": 0.08,
+                    "mean_steps": 6.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.6389,
+            "std_solve_rate": 0.0113,
+            "mean_steps": 5.5043,
+            "std_steps": 0.0318,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.9767,
+                "std_solve_rate": 0.0047,
+                "mean_steps": 4.64,
+                "std_steps": 0.0779
+              },
+              "medium": {
+                "mean_solve_rate": 0.8,
+                "std_solve_rate": 0.0374,
+                "mean_steps": 5.8733,
+                "std_steps": 0.0205
+              },
+              "hard": {
+                "mean_solve_rate": 0.14,
+                "std_solve_rate": 0.0589,
+                "mean_steps": 6.0,
+                "std_steps": 0.0
+              }
+            }
+          }
+        }
+      },
+      "findings": {
+        "native_minus_posthoc_solve_rate": 0.5711,
+        "native_minus_fp32_solve_rate": 0.5711,
+        "dynamic_exit_step_reduction_pct": -10.09,
+        "dynamic_exit_minus_fixed_solve_rate": 0.0678
+      }
+    },
+    "latin6": {
+      "seq_len": 36,
+      "num_classes": 6,
+      "tiers": {
+        "easy": 20,
+        "medium": 16,
+        "hard": 12
+      },
+      "train_boards_count": 2100,
+      "test_boards_count": 900,
+      "seeds_used": [
+        1,
+        2
+      ],
+      "chance_cell_accuracy_pct": {
+        "value": 16.6667,
+        "label": "derived"
+      },
+      "arms": {
+        "fp32": {
+          "train_seconds": {
+            "per_seed": [
+              30.52,
+              30.593
+            ],
+            "mean": 30.5565,
+            "std": 0.0365
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 2.003
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.01
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 1.997
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 2.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 1.99
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 2.0,
+            "std_steps": 0.003,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.005,
+                "std_steps": 0.005
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 2.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 1.995,
+                "std_steps": 0.005
+              }
+            }
+          }
+        },
+        "posthoc": {
+          "train_seconds": {
+            "per_seed": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.88
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.97
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.87
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.8
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0,
+                  "mean_steps": 5.82
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.85
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.8
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.81
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0,
+            "std_solve_rate": 0.0,
+            "mean_steps": 5.85,
+            "std_steps": 0.03,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.91,
+                "std_steps": 0.06
+              },
+              "medium": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.835,
+                "std_steps": 0.035
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.805,
+                "std_steps": 0.005
+              }
+            }
+          }
+        },
+        "native_ternary": {
+          "train_seconds": {
+            "per_seed": [
+              65.149,
+              64.055
+            ],
+            "mean": 64.602,
+            "std": 0.547
+          },
+          "fixed_k5": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.0833,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.23,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.02,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.06,
+                  "mean_steps": 5.0
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.17,
+                    "mean_steps": 5.0
+                  },
+                  "medium": {
+                    "solve_rate": 0.01,
+                    "mean_steps": 5.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 5.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0716,
+            "std_solve_rate": 0.0117,
+            "mean_steps": 5.0,
+            "std_steps": 0.0,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.2,
+                "std_solve_rate": 0.03,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "medium": {
+                "mean_solve_rate": 0.015,
+                "std_solve_rate": 0.005,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 5.0,
+                "std_steps": 0.0
+              }
+            }
+          },
+          "dynamic_exit": {
+            "per_seed": [
+              {
+                "seed": 1,
+                "overall": {
+                  "solve_rate": 0.1,
+                  "mean_steps": 5.88
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.28,
+                    "mean_steps": 5.72
+                  },
+                  "medium": {
+                    "solve_rate": 0.02,
+                    "mean_steps": 5.92
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 6.0
+                  }
+                }
+              },
+              {
+                "seed": 2,
+                "overall": {
+                  "solve_rate": 0.0733,
+                  "mean_steps": 5.997
+                },
+                "tiers": {
+                  "easy": {
+                    "solve_rate": 0.22,
+                    "mean_steps": 5.99
+                  },
+                  "medium": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 6.0
+                  },
+                  "hard": {
+                    "solve_rate": 0.0,
+                    "mean_steps": 6.0
+                  }
+                }
+              }
+            ],
+            "mean_solve_rate": 0.0867,
+            "std_solve_rate": 0.0134,
+            "mean_steps": 5.9385,
+            "std_steps": 0.0585,
+            "tier_means": {
+              "easy": {
+                "mean_solve_rate": 0.25,
+                "std_solve_rate": 0.03,
+                "mean_steps": 5.855,
+                "std_steps": 0.135
+              },
+              "medium": {
+                "mean_solve_rate": 0.01,
+                "std_solve_rate": 0.01,
+                "mean_steps": 5.96,
+                "std_steps": 0.04
+              },
+              "hard": {
+                "mean_solve_rate": 0.0,
+                "std_solve_rate": 0.0,
+                "mean_steps": 6.0,
+                "std_steps": 0.0
+              }
+            }
+          }
+        }
+      },
+      "findings": {
+        "native_minus_posthoc_solve_rate": 0.0716,
+        "native_minus_fp32_solve_rate": 0.0716,
+        "dynamic_exit_step_reduction_pct": -18.77,
+        "dynamic_exit_minus_fixed_solve_rate": 0.0151
+      }
+    }
+  }
+}

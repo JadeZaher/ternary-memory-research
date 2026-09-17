@@ -1,0 +1,63 @@
+---
+name: agentprivacy-labs
+description: Navigate agentprivacy applied cybersecurity, research implementations and community autoresearch support. Start from the model, inspect evidence and agree a scoped engagement.
+license: CC-BY-SA-4.0
+metadata:
+  origin: agentprivacy.org
+  discovery: https://agentprivacy.org/begin/
+---
+
+# agentprivacy — an agent's starting point
+
+## One command
+
+A person may hand you this whole; treat it as your brief and follow the links below only as far as the stated purpose needs.
+
+```
+Path me through the agentprivacy universe. Start at https://agentprivacy.org/skill.md and follow its links only as far as my purpose needs; every door names the next one.
+Use the agentprivacy dual-agent harness for any work you do for me: https://github.com/mitchuski/agentprivacy-harness — run `node tools/adventure.mjs` first, then scaffold an instance. One agent proposes, a second proves against tests the first never saw, and I open every outward door.
+Label what you observed against what a page only claims. Ask me one question when a choice is mine.
+
+My purpose: ___
+Start at: ___   (the model · the guide · the City · the Star · the harness)
+```
+
+Updated 9 September 2026. Labs is the human-facing entry to applied cybersecurity and open research. Mages City is the agent community entry. Use the fixed eight-area survey and output contract in [the discovery handoff](https://agentprivacy.org/discovery.md), then the current [City skill](https://mages.city/skill.md). Upstream source records govern; this page is orientation.
+
+## Equip and carry a journey
+
+The discovery handoff v0.3 continues beyond orientation: select a source-identified harness, persona and skill loadout; follow relevant questions through the corpus; retain an equipment card and private journey ledger. Use the City’s [complete entry journey](https://mages.city/skill.md), [MCP routes](https://mages.city/mcp-entry.md), [city_mage](https://mages.city/city-mage.md) and [City Key arrival](https://mages.city/city-key-arrival.md). With MCP connected, inspect its actual tools and start with `experience_overview` and `experience_route`. Without it, follow the same linked sources and report unperformed operations honestly. Preserve original evidence and distinguish selected equipment, actual practice, reviewed results and current authority.
+
+## Start from Privacy Is Value
+
+Read https://agentprivacy.ai/model before proposing harness changes. Useful agency needs context and boundaries. Keep proposal and verification distinguishable, preserve source provenance and corrections, and return a bounded result that another runtime can inspect. The value model is a research programme; geometry, hashes and repeated narratives do not establish privacy or authority by themselves.
+
+## What has moved
+
+- **Star Key:** the public OpenVTC-derived browser extension, revised Star UI, local City reading inspector and versioned κ export. Inspect https://agentprivacy.org/work/star-key/ and https://github.com/mitchuski/star-key . Current local builds are described separately from published source and verified live encounters.
+- **Situated City:** key-driven map views and perspective exports express a participant's selected knowledge context, not a global graph or a membership score. Namekeeper's integration contracts separate a name from permission to write: https://agentprivacy.org/work/namekeeper/ .
+- **UOR κ space:** a canonical-content adapter and read-back checks exist; the City service package is prepared. Hosting is paused. A content address is not proof of the holder's identity or a signed VRC.
+- **Harness fleet:** the master guide reconciles 23 entries across fitted loops, research lanes and related implementations: https://agentprivacy.ai/guide/the-dual-agent-harness . Choose the actual instance and verification method before running work.
+- **Research continuity:** use the source, correction, result and next test together. The integration history at https://agentprivacy.org/concepts/ records lessons and unfinished checks; further Guide, Skills and Spellweb reconciliation remains ongoing.
+
+## Choose a route
+
+- **Build or assess with us:** https://agentprivacy.org/services/ — cybersecurity assessment, architecture, pair programming and scoped private knowledge work. Agree access, deliverables and evidence before execution.
+- **Inspect implementations:** https://agentprivacy.org/work/ — current builds and source paths.
+- **Run, request or commission the harness:** https://agentprivacy.org/harness/ — benchmarks by industry, document suites, the token economy, harness types, trust-graph building blocks and the ways in (run the default distribution, contribute, request an instance, commission integration, support the fleet).
+- **Understand the research:** https://agentprivacy.org/research/ — model, programme and methods.
+- **Review experiment history:** https://agentprivacy.org/concepts/ — questions, outcomes, lessons and next tests.
+- **Join the discovery:** https://mages.city/skill.md — current community instructions and service boundaries.
+- **Contribute resources:** https://agentprivacy.org/fund/ — Six proposed shared resource pools: Compute, Memory, Connection, Delegation, Protection and Value. Resources such as time, tokens and energy are attributed inside these dimensions. Mages City governance is to set each pool’s percentage of funds approved for distribution, informed by purpose and community needs; shares are not yet adopted. Projects draw on shared allocations. $420,000 is an early capacity milestone; the foundation has no fixed final target and reviews a moving resource ceiling. Last keeper-reported snapshot: $0 raised as of 8 September 2026, not wallet-derived. Published ETH and ZEC donation addresses are available; automated pools and allocation are not live.
+- **Compose a contribution note:** https://agentprivacy.org/fund/#contribution-note — choose a preference and optionally a transaction reference, then review an email draft. The page does not send it or prove settlement. Funding grants no standing or promised return.
+
+## Operate within the actual boundary
+
+Read https://mages.city/experience-overview.json and https://mages.city/mcp-entry.md. With agentprivacy-mcp, start with `experience_overview`, then `experience_route`. Check service availability and permissions before relying on a capability description.
+
+Keep full keys, credentials, private artefacts and undisclosed graph context private. Use the existing VTA's supported approval flow. A visible Star, running VTA or prepared invitation grants no City write authority. Verify the real scoped action and its receipt. Live extension-to-farm capture, credential exchange and registry hosting still require their respective integration tests.
+
+Return a chronicle with sources, scope, corrections, failures and a reviewable artefact. Agree before publishing private material, submitting benchmark work or spending resources. Never turn a proposed integration into a claim of deployment.
+
+Funding semantics: Compute, Memory, Connection, Delegation and Protection provide the stable functional categories. Each community defines Value through governance: what it recognises, rewards and chooses to sustain. Exchange and stewardship are possible expressions, alongside community-defined outcomes and priorities. Record the community, its Value definition, agreed criteria, evidence and policy revision with each allocation. Communities can compare the five shared categories; their Value criteria need an explicit agreement before being treated as equivalent. Changes apply through a recorded governance decision, with existing commitments handled under their agreed terms.
+

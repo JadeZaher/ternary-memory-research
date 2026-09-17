@@ -1,0 +1,84 @@
+{
+  "suite": "flow_math_verification",
+  "seed": 20260915,
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "accumulator_bounds_check",
+      "passed": true,
+      "details": [
+        {
+          "dimension": 128,
+          "max_theoretical": 16256,
+          "required_bits": 15,
+          "fits_int32": true,
+          "max_observed": 2138,
+          "observed_le_theoretical": true
+        },
+        {
+          "dimension": 512,
+          "max_theoretical": 65024,
+          "required_bits": 17,
+          "fits_int32": true,
+          "max_observed": 4257,
+          "observed_le_theoretical": true
+        },
+        {
+          "dimension": 1024,
+          "max_theoretical": 130048,
+          "required_bits": 18,
+          "fits_int32": true,
+          "max_observed": 6406,
+          "observed_le_theoretical": true
+        },
+        {
+          "dimension": 2048,
+          "max_theoretical": 260096,
+          "required_bits": 19,
+          "fits_int32": true,
+          "max_observed": 9200,
+          "observed_le_theoretical": true
+        },
+        {
+          "dimension": 4096,
+          "max_theoretical": 520192,
+          "required_bits": 20,
+          "fits_int32": true,
+          "max_observed": 14504,
+          "observed_le_theoretical": true
+        }
+      ]
+    },
+    {
+      "name": "fixed_point_contraction_check",
+      "passed": true,
+      "success_rate": 1.0,
+      "sample_trajectories": [
+        {
+          "trial": 0,
+          "converged_step": 3,
+          "initial_diff": 0.029779047763193137,
+          "final_diff": 0.0
+        },
+        {
+          "trial": 1,
+          "converged_step": 3,
+          "initial_diff": 0.028388965781561082,
+          "final_diff": 0.0
+        },
+        {
+          "trial": 2,
+          "converged_step": 3,
+          "initial_diff": 0.036884877617499076,
+          "final_diff": 0.0
+        }
+      ]
+    },
+    {
+      "name": "ternary_recurrent_stability_check",
+      "passed": true,
+      "stable_trials": 50,
+      "total_trials": 50
+    }
+  ]
+}

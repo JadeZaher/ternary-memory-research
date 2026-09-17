@@ -1,0 +1,18 @@
+[
+  {
+    "Name": "agentprivacy-academic",
+    "Expected": "e02189293c2a5cb41a4aff7bd49014dc1a576f05ad292f296fc519c069e65051",
+    "Computed": "e02189293c2a5cb41a4aff7bd49014dc1a576f05ad292f296fc519c069e65051",
+    "Match": true,
+    "Method": "SHA256 of UTF8 HTTP response content; remove exactly Set-Content appended platform newline from captured file",
+    "CheckedAt": "2026-09-12T00:34:58.5177281Z"
+  },
+  {
+    "Name": "dual-agent-harness",
+    "Expected": "d1576ffa9cf0faa0a86953af439547a56bc5cd9b834449666d0ab380b4918ce4",
+    "Computed": "d1576ffa9cf0faa0a86953af439547a56bc5cd9b834449666d0ab380b4918ce4",
+    "Match": true,
+    "Method": "SHA256 of UTF8 HTTP response content; remove exactly Set-Content appended platform newline from captured file",
+    "CheckedAt": "2026-09-12T00:34:58.5246517Z"
+  }
+]

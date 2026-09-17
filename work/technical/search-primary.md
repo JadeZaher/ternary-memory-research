@@ -1,0 +1,175 @@
+The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits (https://arxiv.org/abs/2402.17764)
+citeturn1academia12 [wordlim: 200] Published: 2.5 years ago; Title: The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits ... In this work, we introduce a 1-bit LLM variant, namely BitNet b1.58, in which every single parameter (or weight) of the LLM is ternary {-1, 0, 1}.
+Title: The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits
+Authors: Shuming Ma, Hongyu Wang, Lingxiao Ma, Lei Wang, Wenhui Wang, Shaohan Huang, Li Dong, Ruiping Wang, Jilong Xue, Furu Wei
+Date: Tue Feb 27 18:56:19 2024
+
+Recent research, such as BitNet, is paving the way for a new era of 1-bit Large Language Models (LLMs). In this work, we introduce a 1-bit LLM variant, namely BitNet b1.58, in which every single parameter (or weight) of the LLM is ternary {-1, 0, 1}. It matches the full-precision (i.e., FP16 or BF16) Transformer LLM with the same model size and training tokens in terms of both perplexity and end-task performance, while being significantly more cost-effective in terms of latency, memory, throughput, and energy consumption. More profoundly, the 1.58-bit LLM defines a new scaling law and recipe for training new generations of LLMs that are both high-performance and cost-effective. Furthermore, it enables a new computation paradigm and opens the door for designing specific hardware optimized for 1-bit LLMs.--------------------------------------------------------------------------------
+LLM in a flash: Efficient Large Language Model Inference with Limited Memory (https://arxiv.org/abs/2312.11514)
+citeturn1academia13 [wordlim: 200] Published: 2.8 years ago; Title: LLM in a flash: Efficient Large Language Model Inference with Limited Memory
+Title: LLM in a flash: Efficient Large Language Model Inference with Limited Memory
+Authors: Keivan Alizadeh, Iman Mirzadeh, Dmitry Belenko, Karen Khatamifard, Minsik Cho, Carlo C Del Mundo, Mohammad Rastegari, Mehrdad Farajtabar
+Date: Tue Dec 12 18:57:08 2023
+
+Large language models (LLMs) are central to modern natural language processing, delivering exceptional performance in various tasks. However, their substantial computational and memory requirements present challenges, especially for devices with limited DRAM capacity. This paper tackles the challenge of efficiently running LLMs that exceed the available DRAM capacity by storing the model parameters in flash memory, but bringing them on demand to DRAM. Our method involves constructing an inference cost model that takes into account the characteristics of flash memory, guiding us to optimize in two critical areas: reducing the volume of data transferred from flash and reading data in larger, more contiguous chunks. Within this hardware-informed framework, we introduce two principal techniques. First, "windowing" strategically reduces data transfer by reusing previously activated neurons, and second, "row-column bundling", tailored to the sequential data access strengths of flash memory, increases the size of data chunks read from flash memory. These methods collectively enable running models up to twice the size of the available DRAM, with a 4-5x and 20-25x increase in inference speed compared to naive loading approaches in CPU and GPU, respectively. Our integration of sparsity awareness, context-adaptive loading, and a hardware-oriented design paves the way for effective inference of LLMs on devices with limited memory.--------------------------------------------------------------------------------
+Analogue chips for energy-efficient AI | Nature Electronics (https://www.nature.com/articles/s41928-023-01035-6)
+citeturn1search0 [wordlim: 200] Published: 3.0 years ago; Crawled: last week; In-memory computing ... Nature Electronics volume 6, page 644 (2023) ... The researchers — who are based at IBM Research — fabricated a 14-nm inference chip containing 34 tiles, each of which contains a crossbar array of phase-change memory devices that can perform matrix–vector multiplications.
+
+  * Research Highlight
+  * Published: 25 September 2023
+
+In-memory computing
+
+# Analogue chips for energy-efficient AI
+
+  * Silvia Conti^{1} 
+
+Nature Electronics volume 6, page 644 (2023)
+
+
+  * 1041 Accesses
+
+  * Metrics details
+
+The researchers — who are based at IBM Research — fabricated a 14-nm inference chip containing 34 tiles, each of which contains a crossbar array of phase-change memory devices that can perform matrix–vector multiplications. Overall, the chip has 35 million phase-change memory devices. The chip also contains digital-to-analogue input, analogue-to-digital output, analogue peripheral circuitry and parallel-2D-mesh routing to interconnect the tiles, and offers a performance of up to 12.4 trillion operations per second per watt. By using 45 million synaptic weights across 5 chips, the team implemented a neural network model to achieve a speech-to-text transcription task from a widely used natural language dataset.
+
+Original reference: Nature 620, 768–775 (2023)
+
+This is a preview of subscription content, access via your institution
+
+### Subjects
+
+  * Electrical and electronic engineering
+  * Electronic devices
+
+## Author information
+
+### Authors and Affiliations
+
+  1. Nature Reviews Electrical Engineering https://www.nature.com/natrevelectreng/
+
+Silvia Conti
+
+### Corresponding author
+
+Correspondence to Silvia Conti.
+
+## About this article
+
+### Cite this article
+
+Conti, S. Analogue chips for energy-efficient AI. Nat Electron 6, 644 (2023). https://doi.org/10.1038/s41928-023-01035-6
+
+  * Published: 25 September 2023
+
+  * Version of record: 25 September 2023
+
+  * Issue date: September 2023
+
+  * DOI (Digital Object Identifier): https://doi.org/10.1038/s41928-023-01035-6
+--------------------------------------------------------------------------------
+FlexGen: High-Throughput Generative Inference of Large Language Models with a Single GPU (https://arxiv.org/abs/2303.06865)
+citeturn1academia14 [wordlim: 200] Published: 3.5 years ago; The high computational and memory requirements of large language model (LLM) inference make it feasible only with multiple high-end accelerators.Motivated by the emerging demand for latency-insensitive tasks with batched processing, this paper initiates the study of high-throughput LLM inference using limited resources, such as a single commodity GPU.We present FlexGen, a high-throughput generation engine for running LLMs with limited GPU memory.
+--------------------------------------------------------------------------------
+An analog-AI chip for energy-efficient speech recognition and transcription | Nature (https://www.nature.com/articles/s41586-023-06337-5)
+citeturn1search1 [wordlim: 200] Published: 3.1 years ago; Crawled: yesterday; Further optimization for analog AI can be achieved with the IBM analog HW acceleration kit (https://aihwkit.readthedocs.io/en/latest/). c, Trained model weights are then used on a 14-nm chip with 34 analog tiles, two processing elements (PE, not used for this work) and six ILP–OLP pairs. ... Analog-AI HW avoids these inefficiencies by leveraging arrays of non-volatile memory (NVM) to perform the ‘multiply and accumulate computation’ (MAC) operations which dominate these workloads directly in the memory^{3,4,5,6,7}. ... Our chip does not include on-chip digital computing cores or static random access memory (SRAM) to support the auxiliary operations (and data staging) needed in an eventual, marketable product.
+--------------------------------------------------------------------------------
+A 64-core mixed-signal in-memory compute chip based on phase-change memory for deep neural network inference for Nature Electronics - IBM Research (https://research.ibm.com/publications/a-64-core-mixed-signal-in-memory-compute-chip-based-on-phase-change-memory-for-deep-neural-network-inference)
+citeturn1search2 [wordlim: 200] Published: 3.1 years ago; Crawled: 6 days ago; 10 Aug 2023# A 64-core mixed-signal in-memory compute chip based on phase-change memory for deep neural network inference ... Analogue in-memory computing (AIMC) with resistive memory devices could reduce the latency and energy consumption of deep neural network inference tasks by directly performing computations within memory. ... Nature Electronics
+--------------------------------------------------------------------------------
+BitNet b1.58 2B4T Technical Report (https://arxiv.org/abs/2504.12285)
+citeturn1academia15 [wordlim: 200] Published: 1.4 years ago; We introduce BitNet b1.58 2B4T, the first open-source, native 1-bit Large Language Model (LLM) at the 2-billion parameter scale.
+--------------------------------------------------------------------------------
+Hardware-aware training for large-scale and diverse deep learning inference workloads using in-memory computing-based accelerators | Nature Communications (https://www.nature.com/articles/s41467-023-40770-4)
+citeturn1search3 [wordlim: 200] Published: 3.0 years ago; Crawled: today; Functions for our standard evaluation process are provided in an open-source IBM Analog Hardware Acceleration Toolkit (AIHWKit)^{50}, enabling future studies on noise robustness for AIMC to build seamlessly upon our work. ... IBM Research Europe, 8803, Rüschlikon, Switzerland
+--------------------------------------------------------------------------------
+All-analog photoelectronic chip for high-speed vision tasks | Nature (https://www.nature.com/articles/s41586-023-06558-8)
+citeturn1search4 [wordlim: 200] Published: 2.9 years ago; Crawled: yesterday; Nature volume 623, pages 48–57 (2023) ... Instead of turning to digital units to tackle optical computing limitations, ACCEL fuses diffractive optical analog computing (OAC) and electronic analog computing (EAC) with scalability, nonlinearity and flexibility in one chip.
+--------------------------------------------------------------------------------
+The design of analogue in-memory computing tiles | Nature Electronics (https://www.nature.com/articles/s41928-025-01537-5)
+citeturn1search5 [wordlim: 200] Published: 8 months ago; Crawled: today; Correspondence to Abhairaj Singh (abhairaj.singh@ibm.com) or Abu Sebastian (ase@zurich.ibm.com). ... 1–3. ... The design of analogue in-memory computing tiles.Nat Electron 8, 1156–1169 (2025). https://doi.org/10.1038/s41928-025-01537-5
+--------------------------------------------------------------------------------
+Kernel approximation using analogue in-memory computing | Nature Machine Intelligence (https://www.nature.com/articles/s42256-024-00943-2)
+citeturn1search6 [wordlim: 200] Published: 1.7 years ago; Crawled: 3 days ago; The data that support the plots within this article and other findings of this study are available at https://github.com/IBM/kernel-approximation-using-analog-in-memory-computing. ... The synthetic dataset is available at https://ibm.box.com/shared/static/c3brah3t04o8ruixb4m7z94e2rylsz8o.zip. ... J.B., G.C., A.V. and C.L. set up the infrastructure for automatically deploying trained models on the IBM Hermes project chip.
+--------------------------------------------------------------------------------
+An analog-AI chip for energy-efficient speech recognition and transcription for Nature - IBM Research (https://research.ibm.com/publications/an-analog-ai-chip-for-energy-efficient-speech-recognition-and-transcription)
+citeturn1search7 [wordlim: 200] Published: 3.1 years ago; Crawled: yesterday; Analog in-memory computing (analog-AI)3–7 can provide better energy efficiency by performing matrix–vector multiplications in parallel on ‘memory tiles’. ... Here we present an analog-AI chip that combines 35 million phase-change memory devices across 34 tiles, massively parallel inter-tile communication and analog, low-power peripheral circuitry that can achieve up to 12.4 tera-operations per second per watt (TOPS/W) chip-sustained performance. ... Nature
+--------------------------------------------------------------------------------
+An energy-efficient analog chip for AI inference - IBM Research (https://research.ibm.com/blog/analog-ai-chip-inference?sf180876106=1)
+citeturn1search8 [wordlim: 200] Published: 3.1 years ago; Crawled: 3 days ago; 10 Aug 2023 ... The chip was fabricated in IBM’s Albany NanoTech Complex, and is composed of 64 analog in-memory compute cores (or tiles), each of which contains 256-by-256 crossbar array of synaptic unit cells. ... Our vision combines many analog in-memory computing tiles with a mix of special-purpose, digital compute-cores connected with a massively-parallel 2D mesh.
+--------------------------------------------------------------------------------
+Research Communities by Springer Nature (https://communities.springernature.com/amp/posts/analogue-in-memory-computing-coming-of-age)
+citeturn1search9 [wordlim: 200] Published: 3.1 years ago; Crawled: 2 weeks ago; IBM introduces the IBM HERMES project chip: a fully integrated in-memory compute chip comprising 64 analogue in-memory computing cores, digital processing units and an on-chip communication network.Athanasios Vasilopoulos Aug 10, 2023 ... In our article, featured in Nature Electronics, we answer these questions by unveiling the first of its kind fully integrated mixed-signal in-memory compute chip based on back-end integrated phase-change memory (PCM) in a 14-nm complementary metal-oxide-semiconductor (CMOS) process.
+--------------------------------------------------------------------------------
+Efficient scaling of large language models with mixture of experts and 3D analog in-memory computing | Nature Computational Science (https://www.nature.com/articles/s43588-024-00753-x)
+citeturn1search10 [wordlim: 200] Published: 1.7 years ago; Crawled: yesterday; Nature Computational Science volume 5, pages 13–26 (2025) ... Here we explore the deployment of ‘mixture of experts’ (MoEs) networks—networks that use conditional computing to keep computational demands low despite having many parameters—on three-dimensional (3D) non-volatile memory (NVM)-based analog in-memory computing (AIMC) hardware. ... Using the IBM analog in-memory hardware acceleration kit for neural network training and inference.
+--------------------------------------------------------------------------------
+Linus/docs/paper-notes/2402.17764v1.md at main · dbrowneup/Linus · GitHub (https://github.com/dbrowneup/Linus/blob/main/docs/paper-notes/2402.17764v1.md)
+citeturn1search11 [wordlim: 200] Crawled: 4 weeks ago; title  | The Era of 1-bit LLMs — All Large Language Models are in 1.58 Bitssource  | arXiv 2402.17764v1 [cs.CL] ... Adding the zero state is the headline change vs. the original 1-bit BitNet (which only used `{-1, +1}`) — it gives the model an explicit "feature filter" (a way to drop a connection entirely), which the authors argue is what unlocks parity with FP16 baselines.
+--------------------------------------------------------------------------------
+LLM in a flash: (https://aclanthology.org/2024.acl-long.678.pdf)
+citeturn1search16 [wordlim: 200] Published: 2.1 years ago; LLM in a flash:Efficient Large Language Model Inference with Limited Memory ... This paper tackles the challenge of efficiently running LLMs that exceed the available DRAM capacity by storing the model parameters in flash memory, but bringing them on demand to DRAM.
+--------------------------------------------------------------------------------
+News & views (https://media.nature.com/original/magazine-assets/d41586-023-02569-7/d41586-023-02569-7.pdf)
+citeturn1search17 [wordlim: 200] Published: 3.1 years ago; Crawled: 3.1 years ago; memory technology itself, the circuits that connect various chip elements and the architecture — the way in which the entire chip is laid out. ... Analog computing is inherently prone to generating errors because it is vulnerable to problems such as thermal noise, manufacturing imperfections and variations in the thermal and electrical environment of the device. ... Nature 620, 768–775 (2023).
+--------------------------------------------------------------------------------
+[D] BitNet 1-b/b1.58 LLMs - is that a threat to nvidia? (https://www.reddit.com/r/MachineLearning/comments/1b4lhjt)
+citeturn1reddit18 [wordlim: 200] Published: 2.5 years ago; Crawled: 1.8 years ago; Link to paper: https://arxiv.org/pdf/2402.17764.pdf ... I think the incentive to try out a more efficient way is large enough in this field ...   What keeps a model from having a single final layer that concatenates or convolutes a low bit layer into a higher bit output? ... Language generate Language . ... We see you're considering BitNet's 1-b/b1.58 LLMs and potential impacts on Nvidia.
+--------------------------------------------------------------------------------
+WANG, MA, ET AL. (https://jmlr.org/papers/volume26/24-2050/24-2050.pdf)
+citeturn1search19 [wordlim: 200] Published: 1.2 years ago; Furthermore, large language models are typically scaled up to a much larger model size, while BERT and machine translation models do not undergo such extensive scaling. ... We propose BitNet b1 and BitNet b1.58, the 1-bit and 1.58-bit Transformer architecture for large language models, which aims to scale efficiently in terms of both memory and computation.
+--------------------------------------------------------------------------------
+BitNet b1.58: every single parameter (or weight) of the LLM is ternary {-1, 0, 1} (https://www.reddit.com/r/mlscaling/comments/1b3e5ym)
+citeturn1reddit20 [wordlim: 200] Published: 2.5 years ago; Crawled: 1.6 years ago; https://arxiv.org/abs/2402.17764> Recent research, such as BitNet, is paving the way for a new era of 1-bit Large Language Models (LLMs).In this work, we introduce a 1-bit LLM variant, namely BitNet b1.58, in which every single parameter (or weight) of the LLM is ternary {-1, 0, 1}.
+--------------------------------------------------------------------------------
+1.58-bit large language model (https://en.wikipedia.org/wiki/1.58-bit_large_language_model)
+citeturn1search21 [wordlim: 200] Crawled: 6 months ago; In 2025, Microsoft researchers had released an open-weights and open inference code model BitNet b1.58 2B4T demonstrating performance competitive with the full precision models at 2B parameters and 4T training tokens. ... The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits.
+--------------------------------------------------------------------------------
+IBM reports analog AI chip patterned after human brain (https://techxplore.com/news/2023-08-ibm-analog-ai-chip-patterned.pdf)
+citeturn1search22 [wordlim: 200] Published: 4 months ago; More information: Manuel Le Gallo et al, A 64-core mixed-signal in-memory compute chip based on phase-change memory for deep neural network inference, *Nature Electronics* (2023). ... Citation: IBM reports analog AI chip patterned after human brain (2023, August 22) retrieved 13 May 2026 from https://techxplore.com/news/2023-08-ibm-analog-ai-chip-patterned.html
+--------------------------------------------------------------------------------
+[Help/Serious Discussion] - I tried my hand at a 1.58 BitNet implementation - but I'm stuck. (https://www.reddit.com/r/LocalLLaMA/comments/1bjjywn)
+citeturn1reddit23 [wordlim: 200] Published: 2.5 years ago; Crawled: 1.9 years ago; Everyone knows about the 1.58 BitNet Ternary paper that was released a little while back: https://arxiv.org/pdf/2402.17764.pdf ... The BitNet guys have just posted tips on how to train 1.58b models
+--------------------------------------------------------------------------------
+LLM in a flash: (https://aclweb.org/anthology/2024.acl-long.678.pdf)
+citeturn1search24 [wordlim: 200] Published: 2.0 years ago; Notably, FlexGen is still theoretically bound by ... In evaluating the efficiency of our method, we com- ... lenge of running large language models (LLMs) ... inference cost model that aligns with these hard- ... LLMs in resource-limited environments, thereby ... works on building more efficient inference stacks. ... data transfer from flash memory during inference.
+--------------------------------------------------------------------------------
+Under review as a conference paper at ICLR 2026 (https://openreview.net/pdf?id=0Iw52EDu82)
+citeturn1search25 [wordlim: 200] Published: 9 months ago; 0% 30% | 300M 300M | 22.78 22.01 | 41.12 40.91 | 36.52 36.19 | 42.79 41.43 | 64.25 63.71 | 41.492 40.850 | +0.000 -0.642 --- | --- | --- | --- | --- | --- | --- | --- | --- 0% 50% | 300M 300M | 22.78 22.18 | 41.12 41.20 | 36.52 34.73 | 42.79 36.37 | 64.25 62.95 | 41.492 39.486 | +0.000 -2.006 0% 60% | 300M 300M | 22.78 22.53 | 41.12 40.24 | 36.52 32.94 | 42.79 32.47 | 64.25 61.86 | 41.492 38.008 | +0.000 -3.484 0% 0% | 300M 700M | 22.78 24.15 | 41.12 45.50 | 36.52 42.57 | 42.79 48.71 | 64.25 66.81 | 41.492 45.548 | +0.000 +0.000 0% 30% | 300M 700M | 22.78 24.74 | 41.12 44.91 | 36.52 41.98 | 42.79 47.25 | 64.25 66.54 | 41.492 45.084 | +0.000 -0.464 0% 50% | 300M 700M | 22.78 24.40 | 41.12 43.64 | 36.52 40.71 | 42.79 44.34 | 64.25 64.80 | 41.492 43.578 | +0.000 -1.970 0% 60% | 300M 700M | 22.78 24.57 | 41.12 41.71 | 36.52 39.15 | 42.79 41.55 | 64.25 63.71 | 41.492 42.138 | +0.000 -3.410 0% 0% | 300M 1.3B | 22.78 25.94 | 41.12 49.66 | 36.52 46.60 | 42.79 51.85 | 64.25 68.12 | 41.492 48.434 | +0.000 +0.000 0% 30% | 300M 1.3B | 22.78 27.82 | 41.12 46.30 | 36.52 46.36 | 42.79 51.12 | 64.25 68.39 | 41.492 47.998 | +0.000 -0.436 0% 50% | 300M 1.3B | 22.78 25.77 | 41.12 45.96 | 36.52 44.95 | 42.79 48.46 | 64.25 67.14 | 41.492 46.456 | +0.000 -1.978 0% 60% | 300M 1.3B | 22.78 24.83 | 41.12 45.37 | 36.52 43.61 | 42.79 47.99 | 64.25 66.32 | 41.492 45.624 | +0.000 -2.810 0% 0% | 300M 7B | 22.78 30.63 | 41.12 55.98 | 36.52 57.17 | 42.79 59.60 | 64.25 72.58 | 41.492 55.192 | +0.000 +0.000 0% 30% | 300M 7B | 22.78 29.61 | 41.12 55.18 | 36.52 56.44 | 42.79 59.27 | 64.25 72.09 | 41.492 54.518 | +0.000 -0.674 0% 50% | 300M 7B | 22.78 30.20 | 41.12 52.15 | 36.52 55.49 | 42.79 58.35 | 64.25 71.33 | 41.492 53.504 | +0.000 -1.688 0% 60% | 300M 7B | 22.78 30.29 | 41.12 51.94 | 36.52 53.81 | 42.79 56.01 | 64.25 71.00 | 41.492 52.610 | +0.000 -2.582392 ... the similar active model size, a large sparsely-activated model outperforms a small dense model. ... We train a series of BitNet b1.58 models of various scales and sparsity ratios with 50 billion tokens
+--------------------------------------------------------------------------------
+BitNet - Inference framework for 1-bit LLMs (https://www.reddit.com/r/LocalLLaMA/comments/1g6jmwl)
+citeturn1reddit26 [wordlim: 200] Published: 1.9 years ago; Crawled: 1.4 years ago;   Bitnet making a huge splash in the natural language field like. ...               https://arxiv.org/abs/2402.17764 ... python run\_inference.py -m models/BitNet-b1.58-2B-4T/ggml-model-i2\_s.gguf -p "Translate this sentence to French : 'Hello, how are you?
+--------------------------------------------------------------------------------
+Bitnet (https://en.wikipedia.org/wiki/Bitnet)
+citeturn1search27 [wordlim: 200] Crawled: 1.4 years ago; * BitNet (large language model), a 1.58-bit large language model
+--------------------------------------------------------------------------------
+I benchmarked every 1-bit model I could find, native 1-bit is 50% faster than post-quantized (https://www.reddit.com/r/LocalLLaMA/comments/1r5cby8/i_benchmarked_every_1bit_model_i_could_find/)
+citeturn1reddit28 [wordlim: 200] Published: 6 months ago; Everything was tested on an AMD Ryzen 9 7845HX (Zen 4) with 64 GB DDR5, AVX-512 VNNI+VBMI verified in bitnet.cpp system\_info. 170 test runs across 9 models from 3 vendors (Microsoft, TII, Community), 8 threads, 256 tokens, median of 5 runs per config. ... | Model              | Params | Type           | tok/s     | Energy\*     | ... | BitNet-b1.58-large | 0.7B   | Post-quantized | 118.25    | \~15 mJ/tok  |
+--------------------------------------------------------------------------------
+LLM in a flash: Efficient Large Language Model Inference with Limited Memory. "enable running models up to twice the size of the available DRAM, with a 4-5x and 20-25x increase in inference speed" (https://www.reddit.com/r/LocalLLaMA/comments/18mu4z4/llm_in_a_flash_efficient_large_language_model/)
+citeturn1reddit29 [wordlim: 200] Published: 2.7 years ago; > Large language models (LLMs) are central to modern natural language processing, delivering exceptional performance in various tasks. ... Our method involves constructing an inference cost model that harmonizes with the flash memory behavior, guiding us to optimize in two critical areas: reducing the volume of data transferred from flash and reading data in larger, more contiguous chunks. ... Our integration of sparsity awareness, context-adaptive loading, and a hardware-oriented design paves the way for effective inference of LLMs on devices with limited memory. ... There was definitely a certain feeling to that age of AI, where everything was research papers and obscure GitHub repos. ... Compellingly though, this inference speed-up is possible if you used sparisified activations with FFF networks and couple it with the inference framework described in -> https://arxiv.org/abs/2312.12456
+--------------------------------------------------------------------------------
+I benchmarked 1 bit models on CPU and the results surprised me (https://www.reddit.com/r/LocalLLaMA/comments/1r2ez9c/i_benchmarked_1_bit_models_on_cpu_and_the_results/)
+citeturn1reddit30 [wordlim: 200] Published: 7 months ago; I've been experimenting with BitNet b1.58 models via bitnet.cpp on my Ryzen 9 7845HX (8 threads, DDR5). ... BitNet b1.58 large (0.7B): 89.65 tok/s, \~400 MB RAM, \~11 mJ/token
+--------------------------------------------------------------------------------
+This is pretty revolutionary for the local LLM scene! (https://www.reddit.com/r/LocalLLaMA/comments/1b21bbx)
+citeturn1reddit31 [wordlim: 200] Published: 2.5 years ago; Crawled: 1.3 years ago; 1.58bit (ternary parameters 1,0,-1) LLMs, showing performance and perplexity equivalent to full fp16 models of same parameter size. ... https://arxiv.org/abs/2402.17764
+--------------------------------------------------------------------------------
+Hardware costs to drop by 8x after bitnet and Matmul free are adopted (https://www.reddit.com/r/LocalLLaMA/comments/1dptr6e)
+citeturn1reddit32 [wordlim: 200] Published: 2.2 years ago; Crawled: 1.3 years ago; https://arxiv.org/html/2402.17764v1 ... Lower cost to serve a model ...     From having done SIMD implementations of ternary-int8 dot products (used in BitLinear layers) in `llama.cpp`, I think GPU support is very likely, since ternary-int8 dot products are kind of similar to the other quants which use 8-bit activations.
+--------------------------------------------------------------------------------
+LLM in a flash: Efficient Large Language Model Inference with Limited Memory. "enable running models up to twice the size of the available DRAM, with a 4-5x and 20-25x increase in inference speed" (https://www.reddit.com/r/singularity/comments/18mqkuu)
+citeturn1reddit33 [wordlim: 200] Published: 2.7 years ago; Crawled: 2.7 years ago; > Large language models (LLMs) are central to modern natural language processing, delivering exceptional performance in various tasks. ... Our method involves constructing an inference cost model that harmonizes with the flash memory behavior, guiding us to optimize in two critical areas: reducing the volume of data transferred from flash and reading data in larger, more contiguous chunks. ... Our integration of sparsity awareness, context-adaptive loading, and a hardware-oriented design paves the way for effective inference of LLMs on devices with limited memory.
+--------------------------------------------------------------------------------
+Bitnet.cpp - Inference framework for 1-bit (ternary) LLM's (https://www.reddit.com/r/LocalLLaMA/comments/1r02xqc/bitnetcpp_inference_framework_for_1bit_ternary/)
+citeturn1reddit34 [wordlim: 200] Published: 7 months ago; **bitnet.cpp** is Microsoft’s official C++ inference framework for **1-bit Large Language Models (LLMs)**, optimized for **BitNet b1.58** and similar architectures. ...   HuggingFace Model: microsoft/bitnet-b1.58-2B-4T · Hugging Face
+--------------------------------------------------------------------------------
+I discovered this standout GitHub repo about lightning-fast, lossless inference for 1-bit LLMs, and it’s packed with serious innovations for developers and researchers working at the cutting edge of model efficiency. The project - bitnet.cpp - serves as the official framework... (https://www.reddit.com/r/u_alexiskirke/comments/1rw0t06/i_discovered_this_standout_github_repo_about/)
+citeturn1reddit35 [wordlim: 200] Published: 5 months ago; I discovered this standout GitHub repo about lightning-fast, lossless inference for 1-bit LLMs, and it’s packed with serious innovations for developers and researchers working at the cutting edge of model efficiency.The project - bitnet.cpp - serves as the official framework for BitNet b1.58 and similar 1-bit large language models.
+--------------------------------------------------------------------------------
+IBM Blue Gene (https://en.wikipedia.org/wiki/IBM_Blue_Gene)
+citeturn1search36 [wordlim: 200] Crawled: 4 months ago; The Blue Gene/Q "compute chip" is based on the 64-bit IBM A2 processor core. ... 16 Cores are used for application computing and a 17th core is used for handling operating system assist functions such as interrupt s, asynchronous I/O, MPI pacing, and RAS. ... The L2 cache is multi-versioned—supporting transactional memory and speculative execution—and has hardware support for atomic operations.
+--------------------------------------------------------------------------------
+Cognitive computer (https://en.wikipedia.org/wiki/Cognitive_computer)
+citeturn1search37 [wordlim: 200] Crawled: 6 months ago; Smart Machines: IBM's Watson and the Era of Cognitive Computing. ... - Intel's Pohoiki Beach, a 64-Chip Neuromorphic System, Delivers Breakthrough Results in Research Tests. ... In 2023, IBM released its NorthPole chip, which is a proof-of-concept for dramatically improving performance by intertwining compute with memory on-chip, thus eliminating the Von Neumann bottleneck.
+

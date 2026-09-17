@@ -1,0 +1,106 @@
+[
+  {
+    "spec": "skill-packet/0.1",
+    "name": "agentprivacy-academic",
+    "kind": "skill",
+    "title": "Academic",
+    "emoji": "",
+    "card": "Formal academic specification and research methodology for 0xagentprivacy. Activates when writing papers, proofs, formal specifications, literature reviews, or preparing work for peer review. Use for LaTeX formatting, citation standards, theorem-proof structure, or research pres…",
+    "body_ref": "assets/agentprivacy-academic/SKILL.md",
+    "origin": {
+      "author": "mitch",
+      "universe": "agentprivacy",
+      "category": "role",
+      "tier": "",
+      "version": "6.0",
+      "alignment": "",
+      "source_path": "~/agentprivacy-skills/role/agentprivacy-academic/SKILL.md"
+    },
+    "hash": "e02189293c2a5cb41a4aff7bd49014dc1a576f05ad292f296fc519c069e65051",
+    "published": "2026-06-21T14:29:33.341Z",
+    "listing": "listed",
+    "requires": [],
+    "trust": {
+      "adoptions": 0,
+      "attested_runs": 0
+    }
+  },
+  {
+    "spec": "skill-packet/0.1",
+    "name": "agentprivacy-algebraist",
+    "kind": "persona",
+    "title": "Algebraist",
+    "emoji": "⚔️🔢",
+    "card": "Specialist persona for UOR ring algebra and lattice mathematics. Activates for ring operations, stratum calculations, algebraic transformations, the five strikes, or mathematical foundations of the forge.",
+    "body_ref": "assets/agentprivacy-algebraist/SKILL.md",
+    "origin": {
+      "author": "mitch",
+      "universe": "agentprivacy",
+      "category": "persona",
+      "tier": "1",
+      "version": "5.2",
+      "alignment": "swordsman",
+      "source_path": "~/agentprivacy-skills/persona/agentprivacy-algebraist/SKILL.md"
+    },
+    "hash": "71f9feffb82276801986e3027073e00549920078aa23bfdac6942584f63ae15c",
+    "published": "2026-04-22T13:39:43.221Z",
+    "listing": "listed",
+    "requires": [],
+    "trust": {
+      "adoptions": 0,
+      "attested_runs": 0
+    }
+  },
+  {
+    "spec": "skill-packet/0.1",
+    "name": "agentprivacy-ring-algebra",
+    "kind": "skill",
+    "title": "Ring Algebra",
+    "emoji": "",
+    "card": "UOR ring algebra foundation for 0xagentprivacy. Activates when discussing Z/(2^6)Z structure, the five operations (neg, bnot, xor, and, or), the critical identity neg(bnot(x))=succ(x), stratum as popcount, Pascal's row distribution, or why the lattice has no dead ends.",
+    "body_ref": "assets/agentprivacy-ring-algebra/SKILL.md",
+    "origin": {
+      "author": "mitch",
+      "universe": "agentprivacy",
+      "category": "privacy-layer",
+      "tier": "",
+      "version": "5.2.1",
+      "alignment": "",
+      "source_path": "~/agentprivacy-skills/privacy-layer/agentprivacy-ring-algebra/SKILL.md"
+    },
+    "hash": "6719f7784cd2eaaa8c150e45ee5e9801d85d6b3056c0027f51bc2e28a34d2f13",
+    "published": "2026-06-12T02:46:13.655Z",
+    "listing": "listed",
+    "requires": [],
+    "trust": {
+      "adoptions": 0,
+      "attested_runs": 0
+    }
+  },
+  {
+    "spec": "skill-packet/0.1",
+    "name": "dual-agent-harness",
+    "kind": "pattern",
+    "title": "Dual Agent Harness",
+    "emoji": "",
+    "card": "Build and run interchangeable Swordsman ⚔️ ⊥ Mage 🧙 dual-agent harnesses: an autoresearch loop where a proposer (Mage, reduces) and a prover (Swordsman, validates) are held apart by a held-out gate the proposer cannot tune to. Use when building a \"propose a cheaper artifact, pr…",
+    "body_ref": "assets/dual-agent-harness/SKILL.md",
+    "origin": {
+      "author": "mitch",
+      "universe": "agentprivacy",
+      "category": "harness",
+      "tier": "",
+      "version": "1.0",
+      "alignment": "",
+      "source_path": "~/agentprivacy-dual-agent-harness/generic/SKILL.md"
+    },
+    "hash": "d1576ffa9cf0faa0a86953af439547a56bc5cd9b834449666d0ab380b4918ce4",
+    "published": "2026-06-10T23:11:11.815Z",
+    "listing": "featured",
+    "requires": [],
+    "trust": {
+      "adoptions": 0,
+      "attested_runs": 0
+    }
+  }
+]

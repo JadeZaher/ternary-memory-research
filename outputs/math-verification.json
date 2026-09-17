@@ -1,0 +1,51 @@
+{
+  "checked_at_utc": "2026-09-12T00:36:55.636215+00:00",
+  "status": "passed",
+  "checks": [
+    "supplied NOT equals sign inversion",
+    "supplied AND equals min",
+    "printed OR table equals max",
+    "supplied XOR-labelled table equals signed multiplication",
+    "printed XOR table equals negative signed product",
+    "strong-Kleene XOR construction equals negative product",
+    "reference XOR expression equals negative product",
+    "De Morgan min-to-max",
+    "De Morgan max-to-min",
+    "min and max associative",
+    "min and max mutually distributive",
+    "min and max commutative, identities and absorption",
+    "logical endpoints match Boolean truth tables",
+    "XOR is commutative and associative",
+    "unknown excluded middle remains unknown",
+    "unknown contradiction expression remains unknown",
+    "ordinary addition is not closed",
+    "printed mod3 addition table",
+    "printed mod3 subtraction table",
+    "mod3 addition is closed and associative",
+    "mod3 distributivity",
+    "mod3 multiplicative associativity, identities and inverses",
+    "balanced addition preserves carry",
+    "mod3 differs from ordinary dot product",
+    "three nontrivial involutive permutations",
+    "only sign inversion reverses the order bijectively",
+    "27 unary functions and six permutations",
+    "two cyclic shifts have order three",
+    "cyclic shifts undo each other",
+    "paired column and input sign changes preserve a matrix-vector product",
+    "paired column and input permutations preserve a matrix-vector product",
+    "unpaired representation change can change a result",
+    "a zero-moving swap can change ordinary dot products",
+    "sign reversal does not commute with ReLU",
+    "signed dot product is positive sum minus negative sum"
+  ],
+  "finite_scope": {
+    "states": 3,
+    "pairs_per_binary_law": 9,
+    "triples_per_ternary_law": 27,
+    "permutations": 6
+  },
+  "limitations": [
+    "Matrix identity checked on one example; the general proof is algebraic.",
+    "No neural model accuracy, timing, memory benchmark, hardware runtime, or ecosystem service test was performed."
+  ]
+}

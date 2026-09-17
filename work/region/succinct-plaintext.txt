@@ -1,0 +1,2536 @@
+ 
+ 
+ 
+ 
+ Succinct data structure - Wikipedia 
+
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Jump to content 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Main menu 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ Main menu 
+ move to sidebar 
+ hide 
+ 
+
+ 
+ 
+ 
+ Navigation
+ 
+ 
+ 
+ 
+ 
+ Main page Contents Current events Random article About Wikipedia Contact us 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ Contribute
+ 
+ 
+ 
+ 
+ 
+ Help Learn to edit Community portal Recent changes Upload file Special pages 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ Search 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Search 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ Appearance 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Donate 
+ 
+ Create account 
+ 
+ Log in 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ Personal tools 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Donate 
+ 
+ 
+
+ Create account 
+ 
+ 
+
+ Log in 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Contents 
+ move to sidebar 
+ hide 
+ 
+
+
+ 
+ 
+ 
+ (Top) 
+ 
+ 
+ 
+ 
+ 
+ 1 
+ Succinct indexable dictionaries 
+ 
+ 
+ 
+ 
+ 
+ Toggle Succinct indexable dictionaries subsection 
+ 
+ 
+ 
+ 
+ 
+ 
+ 1.1 
+ Entropy-compressed solutions 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 2 
+ Succinct hash tables 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 3 
+ Other examples 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 4 
+ See also 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 5 
+ References 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Toggle the table of contents 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Succinct data structure 
+ 
+ 
+ 
+ 
+
+ 7 languages 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ العربية فارسی עברית Italiano 日本語 Português Українська 
+ 
+ Edit links 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Article 
+ 
+ Talk 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ English 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Read 
+ 
+ Edit 
+ 
+ View history 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ Tools 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ Tools 
+ move to sidebar 
+ hide 
+ 
+
+ 
+ 
+ 
+ Actions
+ 
+ 
+ 
+ 
+ 
+
+ Read 
+ 
+ 
+
+ Edit 
+ 
+ 
+
+ View history 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ General
+ 
+ 
+ 
+ 
+ 
+ What links here Related changes Upload file Permanent link Page information Cite this page Get shortened URL Switch to legacy parser 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ Print/export
+ 
+ 
+ 
+ 
+ 
+ Download as PDF Printable version 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ In other projects
+ 
+ 
+ 
+ 
+ 
+ Wikidata item 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Appearance 
+ move to sidebar 
+ hide 
+ 
+
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ From Wikipedia, the free encyclopedia 
+ 
+ 
+ 
+ 
+ Data structure which is efficient to both store in memory and query 
+ In computer science , a succinct data structure is a data structure which uses an amount of space that is "close" to the information-theoretic lower bound, but (unlike other compressed representations) still allows for efficient query operations. The concept was originally introduced by Jacobson [ 1 ] to encode bit vectors , (unlabeled) trees , and planar graphs . Unlike general lossless data compression algorithms, succinct data structures retain the ability to use them in-place, without decompressing them first. A related notion is that of a compressed data structure , insofar as the size of the stored or encoded data similarly depends upon the specific content of the data itself. 
+
+ Suppose that 
+ 
+ 
+ 
+ Z 
+ 
+ 
+ {\displaystyle Z} 
+ 
+ is the information-theoretical optimal number of bits needed to store some data. A representation of this data is called: 
+
+ implicit if it takes 
+ 
+ 
+ 
+ Z 
+ + 
+ O 
+ ( 
+ 1 
+ ) 
+ 
+ 
+ {\displaystyle Z+O(1)} 
+ 
+ bits of space, 
+ succinct if it takes 
+ 
+ 
+ 
+ Z 
+ + 
+ o 
+ ( 
+ Z 
+ ) 
+ 
+ 
+ {\displaystyle Z+o(Z)} 
+ 
+ bits of space, and 
+ compact if it takes 
+ 
+ 
+ 
+ O 
+ ( 
+ Z 
+ ) 
+ 
+ 
+ {\displaystyle O(Z)} 
+ 
+ bits of space. 
+
+ For example, a data structure that uses 
+ 
+ 
+ 
+ 2 
+ Z 
+ 
+ 
+ {\displaystyle 2Z} 
+ 
+ bits of storage is compact, 
+ 
+ 
+ 
+ Z 
+ + 
+ 
+ 
+ Z 
+ 
+ 
+ 
+ 
+ {\displaystyle Z+{\sqrt {Z}}} 
+ 
+ bits is succinct, 
+ 
+ 
+ 
+ Z 
+ + 
+ lg 
+ ⁡ 
+ Z 
+ 
+ 
+ {\displaystyle Z+\lg Z} 
+ 
+ bits is also succinct, and 
+ 
+ 
+ 
+ Z 
+ + 
+ 3 
+ 
+ 
+ {\displaystyle Z+3} 
+ 
+ bits is implicit. 
+
+ Implicit structures are thus usually reduced to storing information using some permutation of the input data; the most well-known example of this is the heap . 
+
+ Succinct indexable dictionaries [ edit ] 
+ Succinct indexable dictionaries, also called rank/select dictionaries, form the basis of a number of succinct representation techniques, including binary trees , 
+ 
+ 
+ 
+ k 
+ 
+ 
+ {\displaystyle k} 
+ 
+ -ary trees and multisets , [ 2 ] as well as suffix trees and arrays . [ 3 ] The basic problem is to store a subset 
+ 
+ 
+ 
+ S 
+ 
+ 
+ {\displaystyle S} 
+ 
+ of a universe 
+ 
+ 
+ 
+ U 
+ = 
+ [ 
+ 0 
+ … 
+ n 
+ ) 
+ = 
+ { 
+ 0 
+ , 
+ 1 
+ , 
+ … 
+ , 
+ n 
+ − 
+ 1 
+ } 
+ 
+ 
+ {\displaystyle U=[0\dots n)=\{0,1,\dots ,n-1\}} 
+ 
+ , usually represented as a bit array 
+ 
+ 
+ 
+ B 
+ [ 
+ 0 
+ … 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle B[0\dots n)} 
+ 
+ where 
+ 
+ 
+ 
+ B 
+ [ 
+ i 
+ ] 
+ = 
+ 1 
+ 
+ 
+ {\displaystyle B[i]=1} 
+ 
+ iff 
+ 
+ 
+ 
+ i 
+ ∈ 
+ S 
+ . 
+ 
+ 
+ {\displaystyle i\in S.} 
+ 
+ An indexable dictionary supports the usual methods on dictionaries (queries, and insertions/deletions in the dynamic case) as well as the following operations: 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ r 
+ a 
+ n 
+ k 
+ 
+ 
+ q 
+ 
+ 
+ ( 
+ x 
+ ) 
+ = 
+ 
+ | 
+ 
+ { 
+ k 
+ ∈ 
+ [ 
+ 0 
+ … 
+ x 
+ ] 
+ : 
+ B 
+ [ 
+ k 
+ ] 
+ = 
+ q 
+ } 
+ 
+ | 
+ 
+ 
+ 
+ {\displaystyle \mathbf {rank} _{q}(x)=|\{k\in [0\dots x]:B[k]=q\}|} 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ s 
+ e 
+ l 
+ e 
+ c 
+ t 
+ 
+ 
+ q 
+ 
+ 
+ ( 
+ x 
+ ) 
+ = 
+ min 
+ { 
+ k 
+ ∈ 
+ [ 
+ 0 
+ … 
+ n 
+ ) 
+ : 
+ 
+ 
+ r 
+ a 
+ n 
+ k 
+ 
+ 
+ q 
+ 
+ 
+ ( 
+ k 
+ ) 
+ = 
+ x 
+ } 
+ 
+ 
+ {\displaystyle \mathbf {select} _{q}(x)=\min\{k\in [0\dots n):\mathbf {rank} _{q}(k)=x\}} 
+ 
+ 
+
+ for 
+ 
+ 
+ 
+ q 
+ ∈ 
+ { 
+ 0 
+ , 
+ 1 
+ } 
+ 
+ 
+ {\displaystyle q\in \{0,1\}} 
+ 
+ . 
+
+ In other words, 
+ 
+ 
+ 
+ 
+ 
+ r 
+ a 
+ n 
+ k 
+ 
+ 
+ q 
+ 
+ 
+ ( 
+ x 
+ ) 
+ 
+ 
+ {\displaystyle \mathbf {rank} _{q}(x)} 
+ 
+ returns the number of elements equal to 
+ 
+ 
+ 
+ q 
+ 
+ 
+ {\displaystyle q} 
+ 
+ up to position 
+ 
+ 
+ 
+ x 
+ 
+ 
+ {\displaystyle x} 
+ 
+ while 
+ 
+ 
+ 
+ 
+ 
+ s 
+ e 
+ l 
+ e 
+ c 
+ t 
+ 
+ 
+ q 
+ 
+ 
+ ( 
+ x 
+ ) 
+ 
+ 
+ {\displaystyle \mathbf {select} _{q}(x)} 
+ 
+ returns the position of the 
+ 
+ 
+ 
+ x 
+ 
+ 
+ {\displaystyle x} 
+ 
+ -th occurrence of 
+ 
+ 
+ 
+ q 
+ 
+ 
+ {\displaystyle q} 
+ 
+ . 
+
+ There is a simple representation [ 4 ] which uses 
+ 
+ 
+ 
+ n 
+ + 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle n+o(n)} 
+ 
+ bits of storage space (the original bit array and an 
+ 
+ 
+ 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle o(n)} 
+ 
+ auxiliary structure) and supports rank and select in constant time. It uses an idea similar to that for range-minimum queries ; there are a constant number of recursions before stopping at a subproblem of a limited size. The bit array 
+ 
+ 
+ 
+ B 
+ 
+ 
+ {\displaystyle B} 
+ 
+ is partitioned into large blocks of size 
+ 
+ 
+ 
+ l 
+ = 
+ 
+ lg 
+ 
+ 2 
+ 
+ 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle l=\lg ^{2}n} 
+ 
+ bits and small blocks of size 
+ 
+ 
+ 
+ s 
+ = 
+ lg 
+ ⁡ 
+ n 
+ 
+ / 
+ 
+ 2 
+ 
+ 
+ {\displaystyle s=\lg n/2} 
+ 
+ bits. For each large block, the rank of its first bit is stored in a separate table 
+ 
+ 
+ 
+ 
+ R 
+ 
+ l 
+ 
+ 
+ [ 
+ 0 
+ … 
+ n 
+ 
+ / 
+ 
+ l 
+ ) 
+ 
+ 
+ {\displaystyle R_{l}[0\dots n/l)} 
+ 
+ ; each such entry takes 
+ 
+ 
+ 
+ lg 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle \lg n} 
+ 
+ bits for a total of 
+ 
+ 
+ 
+ ( 
+ n 
+ 
+ / 
+ 
+ l 
+ ) 
+ lg 
+ ⁡ 
+ n 
+ = 
+ n 
+ 
+ / 
+ 
+ lg 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle (n/l)\lg n=n/\lg n} 
+ 
+ bits of storage. Within a large block, another directory 
+ 
+ 
+ 
+ 
+ R 
+ 
+ s 
+ 
+ 
+ [ 
+ 0 
+ … 
+ l 
+ 
+ / 
+ 
+ s 
+ ) 
+ 
+ 
+ {\displaystyle R_{s}[0\dots l/s)} 
+ 
+ stores the rank of each of the 
+ 
+ 
+ 
+ l 
+ 
+ / 
+ 
+ s 
+ = 
+ 2 
+ lg 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle l/s=2\lg n} 
+ 
+ small blocks it contains. The difference here is that it only needs 
+ 
+ 
+ 
+ lg 
+ ⁡ 
+ l 
+ = 
+ lg 
+ ⁡ 
+ 
+ lg 
+ 
+ 2 
+ 
+ 
+ ⁡ 
+ n 
+ = 
+ 2 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle \lg l=\lg \lg ^{2}n=2\lg \lg n} 
+ 
+ bits for each entry, since only the differences from the rank of the first bit in the containing large block need to be stored. Thus, this table takes a total of 
+ 
+ 
+ 
+ ( 
+ n 
+ 
+ / 
+ 
+ s 
+ ) 
+ lg 
+ ⁡ 
+ l 
+ = 
+ 4 
+ n 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ 
+ / 
+ 
+ lg 
+ ⁡ 
+ n 
+ 
+ 
+ {\displaystyle (n/s)\lg l=4n\lg \lg n/\lg n} 
+ 
+ bits. A lookup table 
+ 
+ 
+ 
+ 
+ R 
+ 
+ p 
+ 
+ 
+ 
+ 
+ {\displaystyle R_{p}} 
+ 
+ can then be used that stores the answer to every possible rank query on a bit string of length 
+ 
+ 
+ 
+ s 
+ 
+ 
+ {\displaystyle s} 
+ 
+ for 
+ 
+ 
+ 
+ i 
+ ∈ 
+ [ 
+ 0 
+ , 
+ s 
+ ) 
+ 
+ 
+ {\displaystyle i\in [0,s)} 
+ 
+ ; this requires 
+ 
+ 
+ 
+ 
+ 2 
+ 
+ s 
+ 
+ 
+ s 
+ lg 
+ ⁡ 
+ s 
+ = 
+ O 
+ ( 
+ 
+ 
+ n 
+ 
+ 
+ lg 
+ ⁡ 
+ n 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle 2^{s}s\lg s=O({\sqrt {n}}\lg n\lg \lg n)} 
+ 
+ bits of storage space. Thus, since each of these auxiliary tables take 
+ 
+ 
+ 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle o(n)} 
+ 
+ space, this data structure supports rank queries in 
+ 
+ 
+ 
+ O 
+ ( 
+ 1 
+ ) 
+ 
+ 
+ {\displaystyle O(1)} 
+ 
+ time and 
+ 
+ 
+ 
+ n 
+ + 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle n+o(n)} 
+ 
+ bits of space. 
+
+ To answer a query for 
+ 
+ 
+ 
+ 
+ 
+ r 
+ a 
+ n 
+ k 
+ 
+ 
+ 1 
+ 
+ 
+ ( 
+ x 
+ ) 
+ 
+ 
+ {\displaystyle \mathbf {rank} _{1}(x)} 
+ 
+ in constant time, a constant time algorithm computes: 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ r 
+ a 
+ n 
+ k 
+ 
+ 
+ 1 
+ 
+ 
+ ( 
+ x 
+ ) 
+ = 
+ 
+ R 
+ 
+ l 
+ 
+ 
+ [ 
+ ⌊ 
+ x 
+ 
+ / 
+ 
+ l 
+ ⌋ 
+ ] 
+ + 
+ 
+ R 
+ 
+ s 
+ 
+ 
+ [ 
+ ⌊ 
+ x 
+ 
+ / 
+ 
+ s 
+ ⌋ 
+ ] 
+ + 
+ 
+ R 
+ 
+ p 
+ 
+ 
+ [ 
+ x 
+ ⌊ 
+ x 
+ 
+ / 
+ 
+ s 
+ ⌋ 
+ , 
+ x 
+ 
+  mod  
+ 
+ s 
+ ] 
+ 
+ 
+ {\displaystyle \mathbf {rank} _{1}(x)=R_{l}[\lfloor x/l\rfloor ]+R_{s}[\lfloor x/s\rfloor ]+R_{p}[x\lfloor x/s\rfloor ,x{\text{ mod }}s]} 
+ 
+ 
+
+ In practice, the lookup table 
+ 
+ 
+ 
+ 
+ R 
+ 
+ p 
+ 
+ 
+ 
+ 
+ {\displaystyle R_{p}} 
+ 
+ can be replaced by bitwise operations and smaller tables that can be used to find the number of bits set in the small blocks. This is often beneficial, since succinct data structures find their uses in large data sets, in which case cache misses become much more frequent and the chances of the lookup table being evicted from closer CPU caches becomes higher. [ 5 ] Select queries can be easily supported by doing a binary search on the same auxiliary structure used for rank ; however, this takes 
+ 
+ 
+ 
+ O 
+ ( 
+ lg 
+ ⁡ 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle O(\lg n)} 
+ 
+ time in the worst case. A more complicated structure using 
+ 
+ 
+ 
+ 3 
+ n 
+ 
+ / 
+ 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ + 
+ O 
+ ( 
+ 
+ 
+ n 
+ 
+ 
+ lg 
+ ⁡ 
+ n 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ ) 
+ = 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle 3n/\lg \lg n+O({\sqrt {n}}\lg n\lg \lg n)=o(n)} 
+ 
+ bits of additional storage can be used to support select in constant time. [ 6 ] In practice, many of these solutions have hidden constants in the 
+ 
+ 
+ 
+ O 
+ ( 
+ ⋅ 
+ ) 
+ 
+ 
+ {\displaystyle O(\cdot )} 
+ 
+ notation which dominate before any asymptotic advantage becomes apparent; implementations using broadword operations and word-aligned blocks often perform better in practice. [ 7 ] 
+
+ Entropy-compressed solutions [ edit ] 
+ The 
+ 
+ 
+ 
+ n 
+ + 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle n+o(n)} 
+ 
+ space approach can be improved by noting that there are 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ( 
+ 
+ 
+ n 
+ m 
+ 
+ 
+ ) 
+ 
+ 
+ 
+ 
+ 
+ 
+ {\displaystyle \textstyle {\binom {n}{m}}} 
+ 
+ distinct 
+ 
+ 
+ 
+ m 
+ 
+ 
+ {\displaystyle m} 
+ 
+ -subsets of 
+ 
+ 
+ 
+ [ 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle [n)} 
+ 
+ (or binary strings of length 
+ 
+ 
+ 
+ n 
+ 
+ 
+ {\displaystyle n} 
+ 
+ with exactly 
+ 
+ 
+ 
+ m 
+ 
+ 
+ {\displaystyle m} 
+ 
+ 1’s), and thus 
+ 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ = 
+ ⌈ 
+ lg 
+ ⁡ 
+ 
+ 
+ 
+ ( 
+ 
+ 
+ n 
+ m 
+ 
+ 
+ ) 
+ 
+ 
+ 
+ ⌉ 
+ 
+ 
+ 
+ {\displaystyle \textstyle {\mathcal {B}}(m,n)=\lceil \lg {\binom {n}{m}}\rceil } 
+ 
+ is an information theoretic lower bound on the number of bits needed to store 
+ 
+ 
+ 
+ B 
+ 
+ 
+ {\displaystyle B} 
+ 
+ . There is a succinct (static) dictionary which attains this bound, namely using 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ o 
+ ( 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+o({\mathcal {B}}(m,n))} 
+ 
+ space. [ 8 ] This structure can be extended to support rank and select queries and takes 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ m 
+ + 
+ n 
+ lg 
+ ⁡ 
+ lg 
+ ⁡ 
+ n 
+ 
+ / 
+ 
+ lg 
+ ⁡ 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(m+n\lg \lg n/\lg n)} 
+ 
+ space. [ 2 ] Correct rank queries in this structure are however limited to elements contained in the set, analogous to how minimal perfect hashing functions work. This bound can be reduced to a space/time tradeoff by reducing the storage space of the dictionary to 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ n 
+ 
+ t 
+ 
+ t 
+ 
+ 
+ 
+ / 
+ 
+ 
+ lg 
+ 
+ t 
+ 
+ 
+ ⁡ 
+ n 
+ + 
+ 
+ n 
+ 
+ 3 
+ 
+ / 
+ 
+ 4 
+ 
+ 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(nt^{t}/\lg ^{t}n+n^{3/4})} 
+ 
+ with queries taking 
+ 
+ 
+ 
+ O 
+ ( 
+ t 
+ ) 
+ 
+ 
+ {\displaystyle O(t)} 
+ 
+ time. [ 9 ] 
+
+ If one wishes to support insertions and deletions, it is possible to achieve a space bound of 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ n 
+ 
+ / 
+ 
+ 
+ 2 
+ 
+ ( 
+ log 
+ ⁡ 
+ n 
+ 
+ ) 
+ 
+ Ω 
+ ( 
+ 1 
+ ) 
+ 
+ 
+ 
+ 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(n/2^{(\log n)^{\Omega (1)}})} 
+ 
+ while supporting each operation (insertion, deletion, rank, or select) in expected time 
+ 
+ 
+ 
+ O 
+ ( 
+ 1 
+ + 
+ log 
+ ⁡ 
+ n 
+ 
+ / 
+ 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle O(1+\log n/\log \log m)} 
+ 
+ . [ 10 ] 
+
+ It is also possible to construct a indexible dictionary supporting rank (but not select) that uses fewer than 
+ 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ 
+ 
+ 
+ {\displaystyle \textstyle {\mathcal {B}}(m,n)} 
+ 
+ bits, so long as rank queries are limited to elements contained in the set. Such a dictionary is called a monotone minimal perfect hash function , and can be implemented using as few as 
+ 
+ 
+ 
+ O 
+ ( 
+ m 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle O(m\log \log \log n)} 
+ 
+ bits. [ 11 ] [ 12 ] 
+
+ Succinct hash tables [ edit ] 
+ A succinct hash table , also known as a succinct unordered dictionary, is a data structure that stores 
+ 
+ 
+ 
+ m 
+ 
+ 
+ {\displaystyle m} 
+ 
+ keys from a universe 
+ 
+ 
+ 
+ { 
+ 0 
+ , 
+ 1 
+ , 
+ … 
+ , 
+ n 
+ − 
+ 1 
+ } 
+ 
+ 
+ {\displaystyle \{0,1,\dots ,n-1\}} 
+ 
+ using space 
+ 
+ 
+ 
+ ( 
+ 1 
+ + 
+ o 
+ ( 
+ 1 
+ ) 
+ ) 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle (1+o(1)){\mathcal {B}}(m,n)} 
+ 
+ bits, and while supporting membership queries in constant expected time. If a succinct hash table also supports insertions and deletions in constant expected time, then it is referred to as dynamic , and otherwise it is referred to as static. 
+
+ The first dynamic succinct hash table was due to Raman and Rao in 2003. [ 13 ] In the case where 
+ 
+ 
+ 
+ n 
+ = 
+ 
+ poly 
+ 
+ ( 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle n={\text{poly}}(m)} 
+ 
+ , their solution uses space 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ m 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(m\log \log m)} 
+ 
+ bits. Subsequently, it was shown that this space bound could be improved to 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ m 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ ⋯ 
+ log 
+ ⁡ 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(m\log \log \log \cdots \log m)} 
+ 
+ bits for any constant number of logarithms [ 14 ] and a little after that this bound was also optimal. [ 15 ] [ 16 ] The latter solution supports all operations in worst-case constant time with high probability . 
+
+ The first static succinct hash table was due to Pagh in 1999. [ 17 ] [ 18 ] In the case where 
+ 
+ 
+ 
+ n 
+ = 
+ 
+ poly 
+ 
+ ( 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle n={\text{poly}}(m)} 
+ 
+ , their solution uses space 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ O 
+ ( 
+ m 
+ ( 
+ log 
+ ⁡ 
+ log 
+ ⁡ 
+ m 
+ 
+ ) 
+ 
+ 2 
+ 
+ 
+ 
+ / 
+ 
+ log 
+ ⁡ 
+ m 
+ ) 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+O(m(\log \log m)^{2}/\log m)} 
+ 
+ bits, and supports worst-case constant-time queries. This bound was subsequently improved to 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ m 
+ 
+ / 
+ 
+ 
+ poly 
+ 
+ log 
+ ⁡ 
+ m 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+m/{\text{poly}}\log m} 
+ 
+ bits, [ 9 ] and then to 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ 
+ poly 
+ 
+ log 
+ ⁡ 
+ m 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+{\text{poly}}\log m} 
+ 
+ bits. [ 19 ] Whereas the first two solutions [ 18 ] [ 9 ] support worst-case constant-time queries, the final one supports constant expected-time queries. [ 19 ] The final solution also requires access to a lookup table of size 
+ 
+ 
+ 
+ 
+ n 
+ 
+ ϵ 
+ 
+ 
+ 
+ 
+ {\displaystyle n^{\epsilon }} 
+ 
+ , but this lookup table is independent of the set of elements being stored. [ 19 ] More recently, Hu et al. [ 20 ] devised a solution that uses space 
+ 
+ 
+ 
+ 
+ 
+ B 
+ 
+ 
+ ( 
+ m 
+ , 
+ n 
+ ) 
+ + 
+ 
+ n 
+ 
+ ϵ 
+ 
+ 
+ 
+ 
+ {\displaystyle {\mathcal {B}}(m,n)+n^{\epsilon }} 
+ 
+ while supporting worst-case constant-time queries. 
+
+ Other examples [ edit ] 
+ A string with an arbitrary length ( Pascal string ) takes Z + log( Z ) space, and is thus succinct. If there is a maximum length – which is the case in practice, since 2 32 = 4 GiB of data is a very long string, and 2 64 = 16 EiB of data is larger than any string in practice – then a string with a length is also implicit, taking Z + k space, where k is the number of data to represent the maximum length (e.g., 64 bits). 
+
+ When a sequence of variable-length items (such as strings) needs to be encoded, there are various possibilities. A direct approach is to store a length and an item in each record – these can then be placed one after another. This allows efficient next, but not finding the k th item. An alternative is to place the items in order with a delimiter (e.g., null-terminated string ). This uses a delimiter instead of a length, and is substantially slower, since the entire sequence must be scanned for delimiters. Both of these are space-efficient. An alternative approach is out-of-band separation: the items can simply be placed one after another, with no delimiters. Item bounds can then be stored as a sequence of length, or better, offsets into this sequence. Alternatively, a separate binary string consisting of 1s in the positions where an item begins, and 0s everywhere else is encoded along with it. Given this string, the 
+ 
+ 
+ 
+ s 
+ e 
+ l 
+ e 
+ c 
+ t 
+ 
+ 
+ {\displaystyle select} 
+ 
+ function can quickly determine where each item begins, given its index. [ 21 ] This is compact but not succinct, as it takes 2 Z space, which is O( Z ). 
+
+ Another example is the representation of a binary tree : an arbitrary binary tree on 
+ 
+ 
+ 
+ n 
+ 
+ 
+ {\displaystyle n} 
+ 
+ nodes can be represented in 
+ 
+ 
+ 
+ 2 
+ n 
+ + 
+ o 
+ ( 
+ n 
+ ) 
+ 
+ 
+ {\displaystyle 2n+o(n)} 
+ 
+ bits while supporting a variety of operations on any node, which includes finding its parent, its left and right child, and returning the size of its subtree, each in constant time. The number of different binary trees on 
+ 
+ 
+ 
+ n 
+ 
+ 
+ {\displaystyle n} 
+ 
+ nodes is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ( 
+ 
+ 
+ 
+ 2 
+ n 
+ 
+ n 
+ 
+ 
+ ) 
+ 
+ 
+ 
+ 
+ 
+ 
+ {\displaystyle {\tbinom {2n}{n}}} 
+ 
+ 
+ 
+ 
+ 
+ 
+ / 
+ 
+ ( 
+ n 
+ + 
+ 1 
+ ) 
+ 
+ 
+ {\displaystyle /(n+1)} 
+ 
+ . For large 
+ 
+ 
+ 
+ n 
+ 
+ 
+ {\displaystyle n} 
+ 
+ , this is about 
+ 
+ 
+ 
+ 
+ 4 
+ 
+ n 
+ 
+ 
+ 
+ 
+ {\displaystyle 4^{n}} 
+ 
+ ; thus we need at least about 
+ 
+ 
+ 
+ 
+ log 
+ 
+ 2 
+ 
+ 
+ ⁡ 
+ ( 
+ 
+ 4 
+ 
+ n 
+ 
+ 
+ ) 
+ = 
+ 2 
+ n 
+ 
+ 
+ {\displaystyle \log _{2}(4^{n})=2n} 
+ 
+ bits to encode it. A succinct binary tree therefore would occupy only 
+ 
+ 
+ 
+ 2 
+ 
+ 
+ {\displaystyle 2} 
+ 
+ bits per node. 
+
+ See also [ edit ] 
+ Minimal perfect hash function 
+ Succinct Non-Interactive Arguments of Knowledge 
+
+ References [ edit ] 
+ &lt;a href=\"./Succinct_data_structure#cite_note-jacobson1988succinct-1\" id=\"mwASU\">&lt;span class=\"mw-reflink-text\" id=\"mwASY\">&lt;span class=\"cite-bracket\" id=\"mwASc\">[&lt;/span>1&lt;span class=\"cite-bracket\" id=\"mwASg\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt147\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwASk\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"raman2002succinct\"},\"body\":{\"id\":\"mw-reference-text-cite_note-raman2002succinct-2\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-raman2002succinct-2\" id=\"mwASo\">&lt;span class=\"mw-reflink-text\" id=\"mwASs\">&lt;span class=\"cite-bracket\" id=\"mwASw\">[&lt;/span>2&lt;span class=\"cite-bracket\" id=\"mwAS0\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt150\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwAS4\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"sadakane2006squeezing\"},\"body\":{\"id\":\"mw-reference-text-cite_note-sadakane2006squeezing-3\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-sadakane2006squeezing-3\" id=\"mwAS8\">&lt;span class=\"mw-reflink-text\" id=\"mwATA\">&lt;span class=\"cite-bracket\" id=\"mwATE\">[&lt;/span>3&lt;span class=\"cite-bracket\" id=\"mwATI\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt153\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwATM\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"jacobson1989space\"},\"body\":{\"id\":\"mw-reference-text-cite_note-jacobson1989space-4\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-jacobson1989space-4\" id=\"mwATQ\">&lt;span class=\"mw-reflink-text\" id=\"mwATU\">&lt;span class=\"cite-bracket\" id=\"mwATY\">[&lt;/span>4&lt;span class=\"cite-bracket\" id=\"mwATc\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt156\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwATg\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"gonzález2005practical\"},\"body\":{\"id\":\"mw-reference-text-cite_note-gonzález2005practical-5\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-gonzález2005practical-5\" id=\"mwATk\">&lt;span class=\"mw-reflink-text\" id=\"mwATo\">&lt;span class=\"cite-bracket\" id=\"mwATs\">[&lt;/span>5&lt;span class=\"cite-bracket\" id=\"mwATw\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt159\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwAT0\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"clark1998compact\"},\"body\":{\"id\":\"mw-reference-text-cite_note-clark1998compact-6\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-clark1998compact-6\" id=\"mwAT4\">&lt;span class=\"mw-reflink-text\" id=\"mwAT8\">&lt;span class=\"cite-bracket\" id=\"mwAUA\">[&lt;/span>6&lt;span class=\"cite-bracket\" id=\"mwAUE\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt163\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwAUI\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"vigna2008broadword\"},\"body\":{\"id\":\"mw-reference-text-cite_note-vigna2008broadword-7\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-vigna2008broadword-7\" id=\"mwAUM\">&lt;span class=\"mw-reflink-text\" id=\"mwAUQ\">&lt;span class=\"cite-bracket\" id=\"mwAUU\">[&lt;/span>7&lt;span class=\"cite-bracket\" id=\"mwAUY\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n&lt;sup about=\"#mwt167\" class=\"mw-ref reference\" rel=\"dc:references\" typeof=\"mw:Extension/ref\" id=\"mwAUc\" data-mw=&apos;{\"name\":\"ref\",\"attrs\":{\"name\":\"brodnik1999membership\"},\"body\":{\"id\":\"mw-reference-text-cite_note-brodnik1999membership-8\"}}&apos;>&lt;a href=\"./Succinct_data_structure#cite_note-brodnik1999membership-8\" id=\"mwAUg\">&lt;span class=\"mw-reflink-text\" id=\"mwAUk\">&lt;span class=\"cite-bracket\" id=\"mwAUo\">[&lt;/span>8&lt;span class=\"cite-bracket\" id=\"mwAUs\">]&lt;/span>&lt;/span>&lt;/a>&lt;/sup>\n"}}'> ↑ 
+ Jacobson, G. J (1988). Succinct static data structures (Ph.D. thesis). Pittsburgh, PA: Carnegie Mellon University. 
+ 
+ 1 2 
+ Raman, R.; V. Raman; S. S Rao (2002). "Succinct indexable dictionaries with applications to encoding k-ary trees and multisets" . Proceedings of the thirteenth annual ACM-SIAM symposium on Discrete algorithms . pp.   233–242 . arXiv : 0705.0552 . CiteSeerX   10.1.1.246.3123 . doi : 10.1145/1290672.1290680 . ISBN   0-89871-513-X . {{ cite conference }} : Cite uses deprecated parameter | citeseerx= ( help ) 
+ 
+ ↑ 
+ Sadakane, K.; R. Grossi (2006). "Squeezing succinct data structures into entropy bounds" (PDF) . Proceedings of the seventeenth annual ACM-SIAM symposium on Discrete algorithm . pp.   1230– 1239. ISBN   0-89871-605-5 . Archived from the original (PDF) on 2011-09-29. 
+ 
+ ↑ 
+ Jacobson, G. (1 November 1989). Space-efficient static trees and graphs (PDF) . 30th IEEE Symposium on Foundations of Computer Science. doi : 10.1109/SFCS.1989.63533 . Archived from the original (PDF) on 2016-03-12. 
+ 
+ ↑ 
+ González, R.; S. Grabowski; V. Mäkinen; G. Navarro (2005). "Practical implementation of rank and select queries" (PDF) . Poster Proceedings Volume of 4th Workshop on Efficient and Experimental Algorithms (WEA) . pp.   27– 38. 
+ 
+ ↑ 
+ Clark, David (1996). Compact pat trees (PDF) (Ph.D. thesis). University of Waterloo. 
+ 
+ ↑ 
+ Vigna, S. (2008). "Broadword Implementation of Rank/Select Queries" (PDF) . Experimental Algorithms . Lecture Notes in Computer Science. Vol.   5038. pp.   154– 168. CiteSeerX   10.1.1.649.8950 . doi : 10.1007/978-3-540-68552-4_12 . ISBN   978-3-540-68548-7 . S2CID   13963489 . {{ cite book }} : Cite uses deprecated parameter | citeseerx= ( help ) 
+ 
+ ↑ 
+ Brodnik, A.; J. I Munro (1999). "Membership in constant time and almost-minimum space" (PDF) . SIAM J. Comput . 28 (5): 1627– 1640. CiteSeerX   10.1.1.530.9223 . doi : 10.1137/S0097539795294165 . {{ cite journal }} : Cite uses deprecated parameter | citeseerx= ( help ) 
+ 
+ 1 2 3 Patrascu, Mihai (October 2008). "Succincter" . 2008 49th Annual IEEE Symposium on Foundations of Computer Science . IEEE. pp.   305– 313. doi : 10.1109/focs.2008.83 . ISBN   978-0-7695-3436-7 . S2CID   257721481 . 
+ ↑ Kuszmaul, William; Liang, Jingxun; Zhou, Renfei (2026), "Succinct Dynamic Rank/Select: Bypassing the Tree-Structure Bottleneck" , Proceedings of the 2026 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA) , Philadelphia, PA: Society for Industrial and Applied Mathematics, pp.   3760– 3804, doi : 10.1137/1.9781611978971.138 , ISBN   978-1-61197-897-1 , retrieved 2026-04-03 
+ ↑ Belazzougui, Djamal; Boldi, Paolo; Pagh, Rasmus; Vigna, Sebastiano (2009-01-04). "Monotone Minimal Perfect Hashing: Searching a Sorted Table with O (1) Accesses". Proceedings of the Twentieth Annual ACM-SIAM Symposium on Discrete Algorithms . Philadelphia, PA: Society for Industrial and Applied Mathematics. pp.   785– 794. doi : 10.1137/1.9781611973068.86 . ISBN   978-0-89871-680-1 . 
+ ↑ Assadi, Sepehr; Farach-Colton, Martín; Kuszmaul, William (January 2023), "Tight Bounds for Monotone Minimal Perfect Hashing" , Proceedings of the 2023 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA) , Philadelphia, PA: Society for Industrial and Applied Mathematics, pp.   456– 476, arXiv : 2207.10556 , doi : 10.1137/1.9781611977554.ch20 , ISBN   978-1-61197-755-4 , retrieved 2023-04-28 
+ ↑ Raman, Rajeev; Rao, Satti Srinivasa (2003), "Succinct Dynamic Dictionaries and Trees" , Automata, Languages and Programming , Berlin, Heidelberg: Springer Berlin Heidelberg, pp.   357– 368, doi : 10.1007/3-540-45061-0_30 , ISBN   978-3-540-40493-4 , retrieved 2023-04-28 
+ ↑ Bender, Michael A.; Farach-Colton, Martín; Kuszmaul, John; Kuszmaul, William; Liu, Mingmou (2022-06-09). "On the optimal time/Space tradeoff for hash tables" . Proceedings of the 54th Annual ACM SIGACT Symposium on Theory of Computing . New York, NY, USA: ACM. pp.   1284– 1297. arXiv : 2111.00602 . doi : 10.1145/3519935.3519969 . hdl : 1721.1/146419 . ISBN   9781450392648 . S2CID   240354692 . 
+ ↑ Li, Tianxiao; Liang, Jingxun; Yu, Huacheng; Zhou, Renfei (2023). "Tight Cell-Probe Lower Bounds for Dynamic Succinct Dictionaries". arXiv : 2306.02253 [ cs.DS ]. 
+ ↑ Nadis, Steve (8 February 2024). "Scientists Find Optimal Balance of Data Storage and Time" . Quanta Magazine . 
+ ↑ Pagh, Rasmus (1998-01-28). "Low Redundancy in Dictionaries with O(1) Worst Case Lookup Time" . BRICS Report Series . 5 (28). doi : 10.7146/brics.v5i28.19434 . ISSN   1601-5355 . 
+ 1 2 Pagh, Rasmus (January 2001). "Low Redundancy in Static Dictionaries with Constant Query Time" . SIAM Journal on Computing . 31 (2): 353– 363. doi : 10.1137/s0097539700369909 . ISSN   0097-5397 . 
+ 1 2 3 Yu, Huacheng (2020-06-22). "Nearly optimal static Las Vegas succinct dictionary" . Proceedings of the 52nd Annual ACM SIGACT Symposium on Theory of Computing . New York, NY, USA: ACM. pp.   1389– 1401. arXiv : 1911.01348 . doi : 10.1145/3357713.3384274 . ISBN   9781450369794 . S2CID   207780523 . 
+ ↑ Hu, Yang; Liang, Jingxun; Yu, Huacheng; Zhang, Junkai; Zhou, Renfei (2025-06-15). "Optimal Static Dictionary with Worst-Case Constant Query Time" . Proceedings of the 57th Annual ACM Symposium on Theory of Computing . New York, NY, USA: ACM. pp.   278– 289. doi : 10.1145/3717823.3718278 . ISBN   979-8-4007-1510-5 . 
+ ↑ Belazzougui, Djamal. "Hash, displace, and compress" (PDF) . 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ 
+ Retrieved from " https://en.wikipedia.org/w/index.php?title=Succinct_data_structure&oldid=1365857838 " 
+ Category : Succinct data structure Hidden categories: Articles with short description Short description is different from Wikidata CS1 errors: deprecated parameters 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ This page was last edited on 24 July 2026, at 21:13 &#160;(UTC) . 
+ Page was rendered with Parsoid . 
+ Text is available under the Creative Commons Attribution-ShareAlike 4.0 License ;
+additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy . Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc. , a non-profit organization. 
+ 
+
+ 
+ Privacy policy 
+ About Wikipedia 
+ Disclaimers 
+ Contact Wikipedia 
+ Legal & safety contacts 
+ Code of Conduct 
+ Developers 
+ Statistics 
+ Cookie statement 
+ Mobile view 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Search 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Search 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Toggle the table of contents 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Succinct data structure 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 7 languages 
+ 
+ 
+
+ Add topic 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+ 
+ 

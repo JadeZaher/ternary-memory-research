@@ -1,0 +1,134 @@
+{
+  "status": "COMPLETED",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda",
+  "seed": 20260916,
+  "config": {
+    "vocab_size": 50257,
+    "hidden_size": 384,
+    "intermediate_size": 1024,
+    "num_hidden_layers": 6,
+    "num_attention_heads": 6,
+    "max_position_embeddings": 512,
+    "block_size": 256,
+    "use_trained_router": true
+  },
+  "cli": {
+    "train_steps": 3000,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0006,
+    "lambda_sparse": 0.02,
+    "router_warmup_frac": 0.2,
+    "eval_batches": 0
+  },
+  "optimizer": "AdamW betas=(0.9, 0.95), weight_decay=0.1 on >=2D params only, 0.0 elsewhere; linear warmup 100 steps then cosine to 10% of lr; grad clip 1.0; FP32, no autocast.",
+  "arms": {
+    "fp32": {
+      "train_time_s": 265.99,
+      "eval": {
+        "val_loss": 2.4752,
+        "val_perplexity": 11.88,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98
+      }
+    },
+    "ternary": {
+      "train_time_s": 302.45,
+      "eval": {
+        "val_loss": 2.6152,
+        "val_perplexity": 13.67,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98
+      },
+      "latency_ms_batch1_seq128": 9.956
+    },
+    "ternary_router": {
+      "train_time_s": 308.27,
+      "router_on": {
+        "val_loss": 2.6445,
+        "val_perplexity": 14.08,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98,
+        "layer_action_histogram": [
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          },
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          },
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          },
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          },
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          },
+          {
+            "EXECUTE": 1562,
+            "ROUTE_AROUND": 0,
+            "EARLY_EXIT": 0
+          }
+        ]
+      },
+      "router_forced_execute": {
+        "val_loss": 2.6445,
+        "val_perplexity": 14.08,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98
+      },
+      "router_no_exit": {
+        "val_loss": 2.6445,
+        "val_perplexity": 14.08,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98
+      },
+      "router_random_matched": {
+        "val_loss": 2.6445,
+        "val_perplexity": 14.08,
+        "layer_exec_fraction": 1.0,
+        "layer_bypass_fraction": 0.0,
+        "layer_exit_fraction": 0.0,
+        "evaluated_tokens": 199936,
+        "evaluated_batches": 98
+      },
+      "latency_ms_batch1_seq128": 10.38
+    }
+  },
+  "findings": {
+    "ternary_minus_fp32_val_loss": 0.14,
+    "router_on_minus_forced_execute_val_loss": 0.0,
+    "router_on_minus_random_matched_val_loss": 0.0,
+    "router_beats_random_control": false,
+    "router_beats_forced_execute": false,
+    "bypass_fraction_router_on": 0.0,
+    "router_latency_ratio_vs_ternary": 1.0426
+  }
+}

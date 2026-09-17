@@ -1,0 +1,151 @@
+{
+  "project": "ternary-memory-research",
+  "conductor_version": "3.2",
+  "timestamp": "2026-09-16T14:45:00-06:00",
+  "roadmap_structure": "4-Track Multi-Phase Lifecycle",
+  "active_phase": "Phase I-B (Optimizations, Generalization & Combined Architecture)",
+  "active_gate": "Gate 12 (Comprehensive Paper Drafting & Open Artifact Release)",
+  "phases": {
+    "phase_1_foundation": {
+      "track_a": {
+        "paper_title": "Beyond Truncation: Native 1.58-bit Transformers with Tri-State Continuation Routing",
+        "model_name": "BitRoute-135M",
+        "target_venues": ["MLSys", "ASPLOS", "ICLR"],
+        "status": "VALIDATED_ON_RTX_4060",
+        "parameters": 134133540,
+        "measured_speedup_bypass": "2.24x",
+        "measured_speedup_early_exit": "4.03x",
+        "records": ["experiments/bitlinear.py", "experiments/tristate_router.py", "experiments/bitroute_model.py", "outputs/bitroute-test.json"]
+      },
+      "track_b": {
+        "paper_title": "Ternary Flow Reasoners: Attractor Stability and Fixed-Point Early Exits in Low-Bit Recurrent Networks",
+        "model_name": "FlowTrit-40M",
+        "target_venues": ["NeurIPS", "ICML"],
+        "status": "VALIDATED_ON_RTX_4060",
+        "compression_ratio": "16.22x",
+        "native_recovery": "+12.2% absolute solve rate over post-hoc clipping",
+        "dynamic_exit_step_reduction": "30.0% compute savings on easy puzzles (3.50 avg steps)",
+        "dram_traffic_reduction": "5.0x (8.05 MB resident in 32MB cache)",
+        "records": ["experiments/flowtrit_model.py", "experiments/test_flowtrit.py", "outputs/flowtrit-test.json"]
+      }
+    },
+    "phase_1b_generalization_and_optimizations": {
+      "arithmetic_upgrade": {
+        "mechanism": "Multiplication-free ternary GEMM (ternary_additive_gemm) with masked additions/subtractions",
+        "zero_weight_sparsity": "24.9% physically skipped operations",
+        "status": "PASSED_GO_NO_GO_GATE",
+        "records": ["experiments/bitlinear.py", "experiments/test_arithmetic_upgrade.py", "outputs/arithmetic-upgrade-test.json"]
+      },
+      "track_a_tinystories": {
+        "task": "BitRoute-135M Language Modeling Generalization on TinyStories",
+        "trained_router": "Gumbel-Softmax straight-through differentiable routing",
+        "validation_perplexity": "408.87 (Trained Router) vs 609.78 (Full Baseline)",
+        "validation_loss": "6.0134 (Trained Router) vs 6.4131 (Full Baseline)",
+        "bypass_rate": "13.7% layer bypass with improved perplexity",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": ["experiments/train_bitroute_tinystories.py", "experiments/benchmark_bitroute_inference.py", "outputs/bitroute-tinystories-results.json"]
+      },
+      "track_b_sudoku9": {
+        "task": "FlowTrit-80M 9x9 Constraint Satisfaction Generalization",
+        "grid_dimensions": "81 positions, 9 classes (729 logits)",
+        "training_loss": "0.8651 (Native FlowTrit) vs 0.8107 (FP32 baseline)",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": ["experiments/sudoku9x9_dataset.py", "experiments/train_flowtrit_sudoku9.py", "outputs/flowtrit-sudoku9-results.json"]
+      },
+      "track_c_flowroute": {
+        "paper_title": "FlowRoute: Multiplicative Compute Efficiency via Dual-Axis Routing in Low-Bit Recurrent Reasoners",
+        "model_name": "FlowRoute-Combined",
+        "mechanism": "Weight-tied recurrence with TwoStateLayerRouter (EXECUTE vs ROUTE_AROUND)",
+        "multiplicative_compute_savings": "39.6% - 52.7% reduction in total layer evaluations",
+        "average_steps": "4.02 steps vs 5.0 fixed",
+        "average_layer_passes": "12.07 passes vs 20.0 fixed",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": ["experiments/flowroute_model.py", "experiments/train_flowroute_sudoku.py", "outputs/flowroute-test.json"]
+      }
+    },
+    "phase_2_dynamical_scaling": {
+      "track_d": {
+        "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
+        "model_name": "Liquid-Mamba-Trit",
+        "target_venues": ["ICLR", "NeurIPS"],
+        "status": "FUTURE_ROADMAP"
+      }
+    },
+    "phase_3_neuromorphic_hardware": {
+      "track_e": {
+        "paper_title": "Ternary on Metal: Physical Attractor Relaxation and Zero-Energy In-Memory Computing in Memristive Crossbars",
+        "hardware_prototype": "Ternary-Crossbar-v1",
+        "target_venues": ["Nature Electronics", "IEEE JSSC"],
+        "status": "PHYSICAL_DESTINATION"
+      }
+    }
+  },
+  "stages": [
+    {
+      "gate": "Gate 1",
+      "track": "Mathematical Foundations",
+      "status": "PASSED",
+      "records": ["research/flow-reasoning-and-ternary.md", "outputs/flow-math-verification.json"]
+    },
+    {
+      "gate": "Gate 2",
+      "track": "Algorithmic Simulation & Ledgers",
+      "status": "PASSED",
+      "records": ["outputs/continuation-simulation.json", "outputs/toy-frm-recurrent.json"]
+    },
+    {
+      "gate": "Gate 3",
+      "track": "Architecture & 4-Track Roadmap Specification",
+      "status": "PASSED",
+      "records": ["research/architecture-ternary-continuations.md", "research/conductor-track.md"]
+    },
+    {
+      "gate": "Gate 4",
+      "track": "Phase I Track A: BitRoute-135M Implementation & Benchmarking",
+      "status": "PASSED",
+      "records": ["experiments/bitroute_model.py", "outputs/bitroute-test.json"]
+    },
+    {
+      "gate": "Gate 5",
+      "track": "Phase I Track B: FlowTrit-40M Implementation & Benchmarking",
+      "status": "PASSED",
+      "records": ["experiments/flowtrit_model.py", "outputs/flowtrit-test.json"]
+    },
+    {
+      "gate": "Gate 7",
+      "track": "Phase I-B: Multiplication-Free Ternary GEMM & Sparsity Audit",
+      "status": "PASSED",
+      "records": ["experiments/test_arithmetic_upgrade.py", "outputs/arithmetic-upgrade-test.json"]
+    },
+    {
+      "gate": "Gate 8",
+      "track": "Phase I-B: Differentiable Gumbel-Softmax Trained Router",
+      "status": "PASSED",
+      "records": ["experiments/tristate_router.py", "experiments/bitroute_model.py"]
+    },
+    {
+      "gate": "Gate 9",
+      "track": "Phase I-B Track A: TinyStories Language Modeling Generalization",
+      "status": "PASSED",
+      "records": ["experiments/train_bitroute_tinystories.py", "outputs/bitroute-tinystories-results.json"]
+    },
+    {
+      "gate": "Gate 10",
+      "track": "Phase I-B Track B: 9x9 Sudoku Reasoning Scaling",
+      "status": "PASSED",
+      "records": ["experiments/train_flowtrit_sudoku9.py", "outputs/flowtrit-sudoku9-results.json"]
+    },
+    {
+      "gate": "Gate 11",
+      "track": "Phase I-B Track C: FlowRoute Combined Dual-Axis Routing",
+      "status": "PASSED",
+      "records": ["experiments/train_flowroute_sudoku.py", "outputs/flowroute-test.json"]
+    },
+    {
+      "gate": "Gate 12",
+      "track": "Phase I/I-B Comprehensive Paper Drafting & Artifact Compilation",
+      "status": "IN_PROGRESS",
+      "records": []
+    }
+  ]
+}

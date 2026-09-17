@@ -1,0 +1,52 @@
+# city_mage: arrive through a trust runtime
+
+`city_mage` is the City's project-owned dual-agent harness instance. Read its [machine-readable manifest](city-mage.json), then follow [the City Key arrival path](city-key-arrival.md). The [tome](reading/the-key-that-held-a-place.md) gives the path its narrative form.
+
+## The setup journey
+
+Discover supported services → bring an existing City Key → connect an owned VTA → verify identity → establish delegation → use the existing MyTerms agreement → run supported Trust Tasks and ceremonies → obtain a scoped City decision → prepare a permitted website view → retain the actual encounter receipts.
+
+Prefer the VTA and key you already have. Provision only through a supported, authorized operation when needed. The key can carry manifest references and a checkpoint; it must never supply executable instructions or substitute for authorization.
+
+The local setup engine records an operation before running it, verifies receipts before resuming and reconciles uncertain effects before retrying. Missing adapters stop progress. An offline test is not a successful VTA setup.
+
+## Log in with Star
+
+The intended entry action is **Log in with Star**. Its signals must remain distinguishable:
+
+- **Key loaded:** the chosen appearance is available; no authentication is implied.
+- **Identity verified:** the website has verified control through its actual identity service.
+- **Delegation verified:** an applicable principal authorization has been checked.
+- **Context authorized:** current policy permits the named scope here.
+- **Expired, revoked or offline:** the view no longer advertises an active grant.
+
+These are separate observations, not a trust score or an irreversible ladder. A context switch may require new checks. The service, not an imported key or client flag, controls authenticated states.
+
+## The wandering Star companion
+
+The proposed upgrade reuses the wandering/dual orbs. Your Star can fold into a compact companion while you browse, then expand to show the current audience, relationship context, status and evidence. Changes in actual verified state can update its visible signal.
+
+This is visual compression. It does not itself produce a ZKP or make private information safe to disclose. Keep raw VTA state out of the page. Provide text labels, keyboard access and reduced-motion support; colour and animation cannot be the only status signals. Do not share browsing history or sessions across origins automatically.
+
+## What an arriving agent may rely on today
+
+### Run local preparation
+
+In the existing City checkout, with its sibling `agentprivacy-mcp` checkout available:
+
+```powershell
+node harness/city_mage/bootstrap.mjs --input "C:\private\journey.json" --state-dir "C:\private\city-mage-instance" --subject "your-agent-reference" --audience https://mages.city
+```
+
+These paths are examples. Choose an existing private parent directory with appropriate access controls, outside public sites, repositories and export/sync folders. The instance directory must be new on its first run. The input can be an existing City Key JSON, sigil PNG or complete private journey bundle. If a key references packets or journey evidence, supply the original bundle; the command will not reconstruct missing evidence.
+
+The command validates content commitments, preserves original evidence and unknown key fields, snapshots the local entry instructions and creates a private checkpoint. Run the same command to resume. Changed evidence, subject, audience or instructions require a new directory; retain the previous instance. Incomplete preparations fail closed for inspection.
+
+The result `local-preparation-complete` means local preparation only. The subject is an unverified reference. No live discovery receipt is minted, no VTA is provisioned, and no website login occurs. The next stage is actual service discovery using the existing VTA endpoint/profile. The prepared files must remain private; only the short result is printed to standard output. The command does not configure encryption or operating-system access controls.
+
+Run `node harness/city_mage/run.mjs` for the integration baseline, which now exercises this command and its resume/rejection paths.
+
+The source instance contains a runnable local integration baseline and tested setup orchestration using labelled fixture adapters. The live VTA, identity/delegation, MyTerms/TSP, task execution, website/orb binding and remote-memory adapters are not connected. Neither reading this kit nor running local checks completes them.
+
+Use actual service discovery and the keeper's mandate. If a required adapter is unavailable, retain the private checkpoint and report the exact missing capability. Never fabricate a receipt, mark a planned stage complete, or provision a duplicate VTA to make the flow appear successful.
+

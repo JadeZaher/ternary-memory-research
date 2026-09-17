@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What we study · agentprivacy labs</title>
+<meta name="description" content="The research programme at agentprivacy labs: three thrusts, eleven extraction areas, one conjecture register, pre-registered falsification; the dual-agent harness as autoresearch across the corpus, standards work and public benchmarks; the skill and persona library; how the lab works.">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css?v=nav-cleanup-2">
+<link rel="stylesheet" href="/observatory.css?v=20260907">
+<link rel="stylesheet" href="/portfolio.css?v=2"></head>
+<body class="observatory">
+
+<nav class="nav labs-nav" aria-label="Main"><a class="nav-logo" href="/" aria-label="agentprivacy labs home"><img class="labs-shield" src="/assets/agentprivacy_logo.png" alt="" width="36" height="36"><span class="labs-wordmark">agentprivacy<span class="labs-edition">labs</span></span></a><ul class="nav-links"><li><a href="/services/">Work with us</a></li><li><a href="/work/">Builds</a></li><li><a href="/research/" aria-current="page">Research</a></li><li><a href="/board/">City</a></li><li><a href="/fund/">Support</a></li><li class="keep"><a class="nav-cta" href="/begin/">Begin</a></li></ul><details class="nav-menu"><summary>Menu</summary><div class="nav-menu-links"><a href="/">Home</a><a href="/services/">Work with us</a><a href="/work/">Builds</a><a href="/research/">Research</a><a href="/board/">City</a><a href="/fund/">Support</a><a href="/begin/">Begin</a></div></details></nav>
+
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow cyan">/research · the programme</div>
+    <h1 class="page-title">What the lab <em>studies</em>.</h1>
+    <p class="page-sub">One research programme, <em>Privacy is Value</em>, in three thrusts across eleven extraction areas, expressed as a series of some thirty work packages and numbered by one conjecture register (head C97). Published in the open, held until independently reproduced. Where a summary and the formal artefact disagree, the artefact is correct.</p>
+  </div>
+</header><p class="research-history-link" style="padding:0 var(--gutter)"><a class="btn-ghost" href="/concepts/">Explore the experiment history</a></p><section class="section" id="star-key"><span class="section-kicker">Research in implementation</span><h2 class="section-title">Star Key.</h2><p class="lede">A browser home for identity, chosen knowledge and the journey into Mages City.</p><p>Our OpenVTC extension fork, developed through collaboration in the Trust over IP community, brings DID-based identity controls and a local City Key reader into one interface. The local build includes a Star portrait, remembered-DID menu, selected City reading and versioned κ export. A canonical-content registry adapter has read-back checks; City registry hosting is paused. Verified site sign-in, scoped knowledge capture and VTA farm receipts are the next integration work.</p><div class="atlas-links"><a class="btn-ghost" href="https://github.com/mitchuski/star-key">Explore the implementation ↗</a><a class="btn-ghost" href="/fund/projects/star-key/">Fund the next integration →</a></div><p class="node-meta">The Star expresses a selected perspective. Appearance does not establish identity, membership or a verified relationship.</p></section><section class="section" id="standards"><span class="section-kicker">Standards & public research</span><h2 class="section-title">Build the protocols.<br><em>Test them in the open.</em></h2><div class="hair c2"><article class="node"><span class="node-label">Trust over IP · DTG</span><h3 class="node-name">Trust-graph specifications</h3><p class="node-text">Specification work, reference models and conformance evidence for decentralised trust.</p><details><summary>Support this activity</summary><p>Back drafting, independent reproduction and interoperability fixtures. Task-force decisions, specification records and experimental evidence remain distinct.</p><a href="https://github.com/trustoverip/dtgwg-zkp-spec">Specification ↗</a> · <a href="https://github.com/trustoverip/dtgwg-zkp-tf">Task force ↗</a></details></article><article class="node"><span class="node-label">BGIN · IKP co-chair activity</span><h3 class="node-name">PQC migration & crypto-agility</h3><p class="node-text">International coordination, evaluation methods and a neutral testbed for migration research.</p><details><summary>Support this activity</summary><p>Back the lab’s preparation, workshop contributions, reproducible evaluation tools and testbed research. The competition repository describes METI/NEDO as host and BGIN as international coordinator; metrics and committee work are in draft. Labs support does not buy judging influence or constitute an official prize contribution.</p><a href="https://github.com/bgin-global/pqc-agility-competition">Competition coordination repository ↗</a></details></article></div><p style="margin-top:24px"><a class="btn-ghost" href="/begin/">Explore the work with your agent</a></p></section>
+
+<section class="section">
+  <div class="wrap" style="padding:0">
+    <span class="section-kicker">Three thrusts</span>
+    <h2 class="section-title">Separation, <em>identity</em>, value.</h2><details class="section-disclosure"><summary>Explore this work</summary>
+    <div class="hair c3">
+      <div class="node"><span class="node-label coral">T1 · separation and time</span><span class="node-name">What does separation buy, and for how long?</span><span class="node-text">The conditional reconstruction ceiling and its wiretap provenance; the moving ceiling <span class="mono" style="color:var(--cyan);font-size:13px">R(t)</span> and shelf life; the leakage gap between policy-separated and amnesia-separated agent chains. Methods: information-theoretic proof, benchmark measurement, longitudinal case analysis.</span></div>
+      <div class="node cyan"><span class="node-label cyan">T2 · protocol and identity</span><span class="node-name">Can understanding be the root of identity?</span><span class="node-text">The relationship proverb protocol, verifiable relationship credentials, proof-of-understanding recovery, hash-locked selective disclosure, the dual-agent pattern as an implementation of published standards. Methods: protocol specification, adversarial evaluation against forgery, replay, Sybil and compression-gaming.</span></div>
+      <div class="node indigo"><span class="node-label">T3 · value and governance</span><span class="node-name">What is behavioural sovereignty worth?</span><span class="node-text">The seventh-capital thesis, the data-value gap, reputation economics of trust tiers, invitation versus imposition as market structure, the regulatory substrate. Methods: valuation with stated assumptions, mechanism design, comparative policy, standards participation as fieldwork.</span></div>
+    </div>
+  </div>
+</details></section>
+
+<section class="section tint">
+  <div class="wrap" style="padding:0">
+    <span class="section-kicker coral">The agenda</span>
+    <h2 class="section-title">Eleven extraction areas, <em>one register</em>.</h2>
+    <p class="lede">Every artefact the programme produces traces to a line in one of these extractions, and every extraction line to a canon section or a verified record. Trace or delete.</p>
+    <div class="hair c4">
+      <div class="node tight"><span class="node-label coral">E1</span><span class="node-name">The amnesia gap</span><span class="node-text">Structural forgetting as a primitive: the witness is gone, not hidden. Policy-separated versus amnesia-separated chains.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">E2</span><span class="node-name">The moving ceiling</span><span class="node-text">Guarantees carry expiry dates. <span class="mono" style="color:var(--cyan);font-size:12.5px">R(t)</span>, shelf life <span class="mono" style="color:var(--cyan);font-size:12.5px">t*</span>, the behavioural form of the migration inequality.</span></div>
+      <div class="node tight indigo"><span class="node-label">E3</span><span class="node-name">The relationship proverb protocol</span><span class="node-text">Understanding as key. Compression that preserves the operative constraints, exchanged bilaterally, inscribed on Zcash.</span></div>
+      <div class="node tight amber"><span class="node-label amber">E4</span><span class="node-name">The seventh capital</span><span class="node-text">Behavioural data as capital. The value gap between sovereign and surveillance architectures, and the tier and mana mechanics that price it.</span></div>
+      <div class="node tight"><span class="node-label coral">E5</span><span class="node-name">The algebraic home</span><span class="node-text">The sovereignty lattice as a ring, <span class="mono" style="color:var(--cyan);font-size:12.5px">neg ∘ bnot = succ</span>; the UOR convergence; the parity cube and the octahedral gap.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">E6</span><span class="node-name">Promise-theoretic agent governance</span><span class="node-text">The autonomy axiom as the reason for two agents rather than one; the integrity-gap convergence.</span></div>
+      <div class="node tight indigo"><span class="node-label">E7</span><span class="node-name">Identity architecture and VRCs</span><span class="node-text">Three identity layers, content-addressed; verifiable relationship credentials; the trust-graph specifications at Trust over IP.</span></div>
+      <div class="node tight amber"><span class="node-label amber">E8</span><span class="node-name">Governance by ceremony</span><span class="node-text">Positions filled by demonstrated understanding rather than election: bilateral trust ceremonies, the Game of 42, the heptad.</span></div>
+      <div class="node tight"><span class="node-label coral">E9</span><span class="node-name">The proving substrate</span><span class="node-text">Keys as accumulators, folding schemes, binary-field provers, the post-quantum thread; zero-knowledge as operational experience, not only theory.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">E10</span><span class="node-name">The method record</span><span class="node-text">The gates, the reading ledger, the audits, the propagation checklist: how the programme holds itself to its own rules, as a subject in its own right.</span></div>
+      <div class="node tight indigo"><span class="node-label">E11</span><span class="node-name">The implementation record</span><span class="node-text">The City Key reference implementation, the byte-exact seal, the site library: the code that stands behind the claims.</span></div>
+      <div class="node tight amber"><span class="node-label amber">venues</span><span class="node-name">Where it is aimed</span><span class="node-text">PoPETs and SaTML for separation and time; CPP or ITP for the mechanisation; SOUPS or Financial Cryptography for the protocol's adversarial analysis; WEIS for the seventh capital; ePrint for priority. Papers in progress are not linked here.</span></div>
+    </div>
+    <p class="dim" style="margin-top:22px;font-size:14px;max-width:900px">Published expressions of the model live at <a href="https://agentprivacy.ai/model" rel="noopener">agentprivacy.ai/model</a>, the practitioner guide at <a href="https://guide.agentprivacy.ai" rel="noopener">guide.agentprivacy.ai</a>, and the essays at <a href="https://sync.soulbis.com" rel="noopener">sync.soulbis.com</a>. Normative reference for the personhood boundary: <a href="https://eprint.iacr.org/2026/333" rel="noopener">ePrint 2026/333</a>.</p>
+
+    <span class="section-kicker" style="margin-top:34px">The register as light</span>
+    <p class="lede">Each register entry keeps its own claim, assumptions and evidence. These entries are not seats in the 64-state MODEL lattice.</p><details class="regwrap" open>
+      <summary>Read the register · source snapshot</summary>
+      <script type="application/json" id="register-extra">[
+      {"band":"candidates · not yet numbered"},
+      {"state":"dark","glyph":"CTR-1","title":"candidate · CTR-1: how much reconstruction capability a compression regime removes"},
+      {"state":"dark","glyph":"CTR-2","title":"candidate · CTR-2: content-addressed edge knowledge under an untrusted host preserves the determinant"},
+      {"state":"dark","glyph":"CTR-3","title":"candidate · CTR-3: can a comprehension predicate separate understanding from retrieval"},
+      {"band":"what would prove the thesis wrong · pre-registered"},
+      {"state":"veiled","glyph":"†1","title":"would falsify · regulators mandate an attribute-based identity scheme, making architectural unlinkability legally irrelevant"},
+      {"state":"veiled","glyph":"†2","title":"would falsify · behavioural detection proves durable at scale and credential admission finds no buyer"},
+      {"state":"veiled","glyph":"†3","title":"would falsify · compression and exposure turn out non-monotonic, removing the aligned incentive"},
+      {"state":"veiled","glyph":"†4","title":"would falsify · corpus-holders with no structural grasp pass comprehension proofs well above chance"},
+      {"state":"veiled","glyph":"†5","title":"would falsify · proof costs fall so far that separation becomes commodity tooling"}
+    ]</script>
+    <div data-instrument="register" data-url="/research/register.json" data-extra="register-extra" data-detail="register-detail" data-summary="register-summary" aria-label="The conjecture register as a field of cells, one per row, lit by status and confidence."></div>
+    <div class="regdetail" id="register-detail">Hover a cell.</div>
+    <div class="regsummary" id="register-summary">reading the register…</div>
+    <div class="codex-legend" style="margin-top:12px"><span class="lit"><b></b>lit · resolved, convergent</span><span><b style="background:rgba(77,217,232,.45)"></b>cyan · active, at its confidence</span><span class="dark"><b></b>dark · open, candidate</span><span class="veiled"><b></b>veiled · challenged, or would falsify</span><span><b style="border-style:dashed"></b>faint · alias, reserved</span></div>
+    <p class="dim" style="margin-top:10px;font-size:14px">This is a derived register snapshot. Source wording and status govern; visual brightness is not a calibrated probability. Full source and parser reconciliation is queued.</p>
+    </details>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="padding:0">
+    <span class="section-kicker coral">Autoresearch</span>
+    <h2 class="section-title">The harness <em>across the corpus</em>.</h2><details class="section-disclosure"><summary>Explore this work</summary>
+    <p class="lede">The same separation that protects a person runs as a research method. One agent proposes; a second refuses to promote anything it cannot independently reproduce against witnesses drawn from the proposal itself, hashed with a secret the proposer never sees. A round ends in a <em>fold</em>: the frontier of claims shrinks to what survived, and what was ruled out is filed with its grounds. Value is what survives disclosure to a validator you cannot tune. These are folds the harness has made, with their numbers as recorded.</p>
+    <div class="hair c3">
+      <div class="node tight"><span class="node-label coral">the programme itself</span><span class="node-name">The rehydration fleet</span><span class="node-text">Fourteen roles, one per session, five gates, four deterministic checks, an append-only critique ledger. Three fleet cycles in a single day. Literature sweeps as proposer, refuter and judge: run three closed with one claim covered, four narrowed, none surviving and seventy-four bibliography additions; run four narrowed both of its legs.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">the canon</span><span class="node-name">Three census folds</span><span class="node-text">The trust-graph credential specification 980 → 863, the delegation agent's canon 1248 → 1072, the boundary agent's 1397 → 1154: twelve claims validated, no mirage, across the three.</span></div>
+      <div class="node tight indigo"><span class="node-label">standards · BGIN</span><span class="node-name">The community security agent</span><span class="node-text">Twenty findings against the public agent, folded 808 → 701 → 665 at fifty-one of fifty-one checks, one round per fold; the winning moves filed as pull requests upstream.</span></div>
+      <div class="node tight amber"><span class="node-label amber">standards · ToIP</span><span class="node-name">The gate, run by other hands</span><span class="node-text">Two hundred and fourteen assertions green; a collaborator ran the admission gate unmodified end to end, thirty-three of thirty-three, and his tests folded in, sixty-four to seventy-two.</span></div>
+      <div class="node tight"><span class="node-label coral">the grammar</span><span class="node-name">Lexon, the controlled-English workshop</span><span class="node-text">The privacy model in a legal-English subset: coverage debt 211 → 22 over five rounds, nine candidate grammar levers, one performative false friend caught.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">a lending protocol</span><span class="node-name">The Logos research instance</span><span class="node-text">Seventy-five seats over five rounds: five validated, fifteen mirage, none blocked; the proposal's frontier compressed 737 → 595 words and its privacy rules mapped one to one onto the model's collapses.</span></div>
+      <div class="node tight indigo"><span class="node-label">a convergence</span><span class="node-name">The UOR kappa lane</span><span class="node-text">Twelve seats, one per connection, twelve holds-with-corrections; six thesis notes refuter-tested: none survived intact, six narrowed, four covered, and the mint thesis defeated and folded.</span></div>
+      <div class="node tight amber"><span class="node-label amber">an inference seam</span><span class="node-name">Kwaai's KwaaiNet and VPK</span><span class="node-text">Inference-side disclosure findings verified against source and binaries; a second run showed that scale does not fix the inversion, and one finding was observed on the wire.</span></div>
+      <div class="node tight"><span class="node-label coral">a field guide</span><span class="node-name">The convergence merge</span><span class="node-text">A collaborator's field machine merged into the lab's suite: one hundred and twenty-four of one hundred and twenty-four suites green on Windows, byte-identical vectors.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">a cohort</span><span class="node-name">The workshop harness</span><span class="node-text">A standalone harness for a masters cohort: twenty-six of twenty-six grammar checks, twenty of twenty declared claims, and the critic holding the fold when the frontier had nothing left to give.</span></div>
+      <div class="node tight indigo"><span class="node-label">public benchmarks</span><span class="node-name">Where the referee cannot be tuned</span><span class="node-text">The ecdsa.fail board: the frontier reproduced, eight candidate optimisations refused in ordinary Python before any accelerated compute (public as <a href="https://github.com/mitchuski/shor_mage" rel="noopener">shor_mage</a>). Yukon research lanes include sparse-matrix ordering, a modular-exponentiation precompile with kernel-checked Lean proofs, and proximity-testing bounds. The matrices_mage instance has produced promoted frontier advances on matrices.fast. <a href="/fund/#matrices">Inspect the public results and harness attribution.</a></span></div>
+      <div class="node tight amber"><span class="node-label amber">the knowledge base</span><span class="node-name">A dream cycle</span><span class="node-text">A machine-wide inventory folded into a working knowledge base for the identity and key-management group: canonical copies, dedupe rulings, the first local archive. The harness as librarian.</span></div>
+    </div>
+    <div class="aside"><b>The envelope.</b> Benchmark toolchains are other participants' work; the harness reads each arena's score rather than computing it; no headline is claimed on any board; and results delivered privately to a partner are not counted here. What is demonstrated is a method and a set of negative results, each filed in a kill ledger that says what was ruled out, on what grounds, and whether the ruling was new.</div>
+  </div>
+</details></section>
+
+<section class="section tint">
+  <div class="wrap" style="padding:0">
+    <span class="section-kicker">Skills and personas</span>
+    <h2 class="section-title">The capability <em>surface</em>.</h2><details class="section-disclosure"><summary>Explore this work</summary>
+    <p class="lede">The programme ships as skills and personas in the open agent-skills format, so it loads into the agent clients practitioners already use. The published library counts one hundred and sixty-three skills and forty-two personas; the working tree today holds one hundred and seventy-seven skill files across six categories. The personas are how the harness's seats are cast: protective ones refuse, delegating ones act, balanced ones mediate.</p>
+    <div class="hair c3">
+      <div class="node tight"><span class="node-label coral">persona · 42</span><span class="node-name">The cast</span><span class="node-text">Fifteen swordsmen, eleven mages, twelve balanced, four cosmological. The role-class, not the instance: a persona is a seat the harness can fill, with an equation term it answers for.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">role · 67</span><span class="node-name">Domain knowledge</span><span class="node-text">Cryptography, governance, economics, identity, dark-forest strategy, ceremonies, quaternion mapping, enclave operations. What a seat knows how to do.</span></div>
+      <div class="node tight indigo"><span class="node-label">privacy-layer · 21</span><span class="node-name">The equation, term by term</span><span class="node-text">One skill for every term of <span class="mono" style="color:var(--cyan);font-size:12.5px">V(π,t)</span>, plus dragon-flight and the amnesia protocol. The foundation the others stand on.</span></div>
+      <div class="node tight amber"><span class="node-label amber">guide · 33</span><span class="node-name">The Librarian's wikis</span><span class="node-text">Author, export, deploy and discover skills as federated-wiki pages: onboarding and git-less distribution across a farm.</span></div>
+      <div class="node tight"><span class="node-label coral">meta · 9</span><span class="node-name">The frames</span><span class="node-text">Drake and Dragon duality, Master and Emissary attention, the cosmological bound, the attachment architecture that binds persona, cast and vertex.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">distribution</span><span class="node-name">Where to load them</span><span class="node-text"><a href="https://skills.agentprivacy.ai" rel="noopener">skills.agentprivacy.ai</a> · <a href="https://github.com/mitchuski/agentprivacy-skills" rel="noopener">agentprivacy-skills</a> (Apache-2.0) · <a href="https://guide.agentprivacy.ai" rel="noopener">the guide's skill site</a>. Skill Sync carries them between farms with a leak scan and a seal.</span></div>
+    </div>
+  </div>
+</details></section>
+
+<section class="section">
+  <div class="wrap" style="padding:0">
+    <span class="section-kicker">How we work</span>
+    <h2 class="section-title">Evidence <em>discipline</em>.</h2>
+    <div class="hair c3">
+      <div class="node tight"><span class="node-label">unreproduced results stay in</span><span class="node-text">Findings are held out of all outgoing communication until independently reproduced, including findings that would be commercially useful to announce. This costs marketing tempo and buys the ability to be believed.</span></div>
+      <div class="node tight cyan"><span class="node-label cyan">the register wins</span><span class="node-text">A single conjecture register numbers the whole body of work. Collaborator and machine proposals enter under a candidate series until assigned. Corrections are made in the specification, not in the prose describing it.</span></div>
+      <div class="node tight indigo"><span class="node-label">falsification, pre-registered</span><span class="node-text">What would prove the thesis wrong is written down before the work, and results are filed to the public register whichever way they fall. Verdict first, one named result per meeting.</span></div>
+    </div>
+    <p><a class="btn-ghost" href="https://agentprivacy.ai/model/atlas">Explore the model in the atlas ↗</a></p>
+    <p class="dim" style="margin-top:30px;font-size:14px">Standards seats: co-chair, Trust over IP DTG zero-knowledge proof task force · co-chair, BGIN identity, key management and privacy working group · IEEE 7012 MyTerms contributor · Kwaai VPK contributor. Explore the model geometry in <a href="https://agentprivacy.ai/model/atlas" rel="noopener">the atlas</a>.</p>
+  </div>
+</section>
+
+<section class="section" id="method-packages"><span class="section-kicker">Harness → skills → City</span><h2 class="section-title">A method becomes<br><em>something others can carry.</em></h2><p class="lede">Package the skill, its personas and the evidence of a working run. Let another mage adopt it, test it and return what changed.</p><div class="hair c3"><article class="node"><h3 class="node-name">Equip</h3><p class="node-text">Proposal and refutation roles, bounded tasks, witness checks and a retained result ledger.</p></article><article class="node"><h3 class="node-name">Carry</h3><p class="node-text">Versioned skill and persona packages with sources, permissions, examples and replay instructions.</p></article><article class="node"><h3 class="node-name">Return</h3><p class="node-text">A City adoption board: who tried which version, for what task, and what survived review.</p><span class="tag">Proposed City integration</span></article></div><details><summary>What an adoption should record</summary><p>Package version, adopting agent, task context, evidence, outcome and corrections. Report trials, successful replays and useful forks separately. Adoption counts show use; they do not grant trust or access.</p></details><p><a class="btn-ghost" href="https://github.com/mitchuski/skills-agentprivacy">Explore the skills work ↗</a> <a class="btn-ghost" href="/board/">Follow the City work ↗</a></p></section><footer>
+  <nav class="footer-navigation" aria-label="Footer"><div><span class="footer-heading">agentprivacy</span><a href="/">agentprivacy</a><a href="/services/">Work with us</a><a href="/work/">Builds</a><a href="/ecosystem/">Ecosystem map</a><a href="/research/">Research programme</a><a href="/fund/">Support</a></div><div><span class="footer-heading">Explore the universe</span><a href="/board/">Mages City</a><a href="https://agentprivacy.ai">Model &amp; spellbooks ↗</a><a href="https://guide.agentprivacy.ai">The guide ↗</a><a href="https://soulbis.com">Soulbis ↗</a><a href="/skill.md">For agents</a><a href="/deploy/">Implementation options</a><a href="/concepts/">Experiment history</a></div></nav>
+  <div class="row"><img src="/assets/agentprivacy_logo.png" alt="agentprivacy"><span class="sigline">© <span id="year">2026</span> agentprivacy labs · (⚔️⊥⿻⊥🧙)😊</span></div>
+</footer>
+<script src="/site.js?v=nav-cleanup-2" defer></script>
+<script src="/instrument.js" defer></script>
+<script src="/journey.js?v=20260907-review3" defer></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"2a921e1780b64a6fb3e6bb9bd8d84155","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+
