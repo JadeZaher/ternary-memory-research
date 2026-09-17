@@ -1,0 +1,148 @@
+{
+  "status": "COMPLETED",
+  "gate": "Gate 15 (Track D-4)",
+  "model_size": "10m",
+  "total_parameters": 11925675,
+  "train_time_s": 306.81,
+  "cli": {
+    "model_size": "10m",
+    "data_path": "data/multicorpus_10m.pt",
+    "train_steps": 2500,
+    "stage1_steps": 800,
+    "batch_size": 32,
+    "seq_len": 128,
+    "lr": 0.0008,
+    "max_hops": 6,
+    "seed": 20260917,
+    "json": "outputs/navitrit-10m-results.json",
+    "save_checkpoint": true
+  },
+  "arms": {
+    "navitrit_learned": {
+      "val_loss": 0.2214,
+      "val_perplexity": 1.25,
+      "avg_hops": 6,
+      "attention_ratio": 0.5,
+      "node_visitations": [
+        0,
+        80,
+        80,
+        0,
+        40,
+        0,
+        0,
+        40,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          7,
+          2,
+          1,
+          2,
+          4,
+          1
+        ],
+        [
+          7,
+          2,
+          1,
+          2,
+          4,
+          1
+        ],
+        [
+          7,
+          2,
+          1,
+          2,
+          4,
+          1
+        ],
+        [
+          7,
+          2,
+          1,
+          2,
+          4,
+          1
+        ],
+        [
+          7,
+          2,
+          1,
+          2,
+          4,
+          1
+        ]
+      ]
+    },
+    "monotonic_baseline": {
+      "val_loss": 0.2231,
+      "val_perplexity": 1.25,
+      "avg_hops": 6,
+      "attention_ratio": 0.5,
+      "node_visitations": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ]
+    }
+  },
+  "findings": {
+    "val_loss_delta": -0.0017,
+    "navitrit_beats_monotonic": true,
+    "attention_ratio": 0.5,
+    "reasoning_core_visitations": 0
+  }
+}

@@ -251,10 +251,16 @@
     },
     {
       "gate": "Gate 15",
-      "track": "Phase II Track D-4: Frontier Scale Multi-Corpus Pretraining (NaviTrit-135M)",
-      "status": "QUEUED",
+      "track": "Phase II Track D-4: Frontier Scale Multi-Corpus Pretraining (NaviTrit-10M)",
+      "status": "PASSED",
       "records": [
-        "research/frontier-scale-track.md"
+        "experiments/frontier_scaling/navitrit_scale_model.py",
+        "experiments/frontier_scaling/prepare_multicorpus.py",
+        "experiments/frontier_scaling/test_scale.py",
+        "experiments/frontier_scaling/train_scale.py",
+        "experiments/frontier_scaling/audit_scale.py",
+        "outputs/navitrit-10m-results.json",
+        "outputs/navitrit-10m-generation-audit.json"
       ]
     }
   ]
