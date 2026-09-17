@@ -192,7 +192,11 @@ def run_benchmark(
 
         print(f"\n--- Loading and Evaluating Checkpoint: {ckpt_name} ({model_size}) ---")
         cfg = get_scale_config(model_size)
-        model = NaviTritScaleForCausalLM(cfg).to(device)
+        if "dual" in ckpt_name:
+            from experiments.frontier_scaling.navitrit_dual_model import NaviTritDualForCausalLM
+            model = NaviTritDualForCausalLM(cfg).to(device)
+        else:
+            model = NaviTritScaleForCausalLM(cfg).to(device)
         model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
 
         completions = generate_completions(model, tokenizer, test_prompts, device, max_tokens=45)
@@ -273,6 +277,11 @@ if __name__ == "__main__":
         {
             "name": "navitrit-100m-step10000",
             "path": "outputs/checkpoints/navitrit-100m-step10000.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-dual-grpo",
+            "path": "outputs/checkpoints/navitrit-100m-dual-grpo.pt",
             "model_size": "100m",
         },
     ]

@@ -30,8 +30,8 @@
             "mathematical_correctness": 1.0,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": true,
-            "diagnosis": "The model completely hallucinates the problem context, introducing new characters (Tom), new items (books), and completely different numbers (43, 10, 41, 8, 6, 27) that have no relation to the original problem (15 apples, gave 4). It also skips 'Step 2' and provides an incomplete calculation.",
-            "remedy_recommendation": "The model needs significant improvement in grounding its responses to the provided prompt. This could involve better prompt understanding, improved context retention, and more robust reasoning capabilities. For mathematical problems, it should be trained to extract the relevant numbers and operations directly from the problem statement before attempting any calculations. A 'chain of thought' or 'step-by-step' reasoning process should be strictly tied to the initial problem's entities and values."
+            "diagnosis": "The model completely hallucinates the problem context, introducing new characters (Tom), new items (books), and completely different numbers that are unrelated to the original problem. It also starts with 'Step 1' and then jumps to 'Step 3', indicating a lack of coherent thought process. The arithmetic shown is also incorrect and incomplete.",
+            "remedy_recommendation": "The model needs significant improvement in understanding and adhering to the given problem context. This could involve better prompt grounding, improved attention mechanisms to focus on the provided entities and numbers, and more robust reasoning capabilities for mathematical problems. Training data should emphasize consistency in problem-solving steps and entity tracking."
           }
         },
         {
@@ -54,8 +54,8 @@
             "mathematical_correctness": 1.0,
             "arithmetic_calculation_performed": "41 - 6 = 38",
             "hallucination_detected": true,
-            "diagnosis": "The model completely hallucinates the problem context, introducing 'marbles' and 'Tom' and different numbers (41, 2, 7, 6) that are not present in the original problem about cookies. The arithmetic calculation provided (41 - 6 = 38) is also incorrect.",
-            "remedy_recommendation": "The model needs significant improvement in understanding and adhering to the given problem context. It should be trained to extract relevant entities and numbers from the prompt and use them consistently throughout the reasoning. Reinforce grounding mechanisms to prevent hallucination of new entities and numbers. Also, improve basic arithmetic accuracy."
+            "diagnosis": "The model completely hallucinates the problem statement, introducing 'marbles' and 'Tom' and different numbers (41, 2, 7, 6) that are not present in the original problem about cookies. The arithmetic calculation performed (41 - 6 = 38) is also incorrect, as 41 - 6 = 35. The reasoning provided is irrelevant to the actual problem.",
+            "remedy_recommendation": "The model needs significant improvement in understanding and adhering to the given problem context. This could involve better fine-tuning on math word problems, stronger grounding mechanisms to prevent hallucination of entities and numbers, and improved numerical reasoning capabilities. A 'copy-mechanism' or attention to the input problem's entities and numbers would be beneficial."
           }
         },
         {
@@ -74,12 +74,12 @@
             "score": 1.0,
             "verdict": "INCORRECT",
             "entity_consistency": 1.0,
-            "syntactic_validity": 1.0,
+            "syntactic_validity": 2.0,
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": true,
-            "diagnosis": "The model completely abandons the initial prompt and starts a new, nonsensical story. It repeats phrases and makes no logical sense. It also includes the <|endoftext|> token mid-generation, which is an error.",
-            "remedy_recommendation": "The model needs significant improvements in maintaining context, coherence, and avoiding repetition. The presence of <|endoftext|> mid-generation suggests issues with generation control or training data. Training on more diverse and coherent narrative data, potentially with stronger penalties for repetition and early termination tokens, could help."
+            "diagnosis": "The model completely abandons the initial prompt and starts a new, nonsensical story. It repeats phrases and makes no logical sense. It also includes the '<|endoftext|>' token which should not be part of the generated text.",
+            "remedy_recommendation": "The model needs significant improvements in coherence, context adherence, and avoiding repetition. The presence of '<|endoftext|>' suggests an issue with the training data or the decoding process. The model should be fine-tuned on more diverse and coherent story continuations, and potentially penalized for generating special tokens during inference."
           }
         },
         {
@@ -102,8 +102,8 @@
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": true,
-            "diagnosis": "The model completely loses the plot. It introduces a tree, then repeatedly states 'she was a big tree' which makes no sense in the context of a dog named Spot. The repetition indicates a severe lack of coherence and an inability to continue a narrative logically. The last line is also incomplete.",
-            "remedy_recommendation": "Improve narrative coherence and long-range dependency handling. The model needs to maintain context about the main character (Spot the dog) and avoid nonsensical transformations of entities. Training on more diverse and logically structured narratives could help. Techniques like attention mechanisms with larger context windows might also be beneficial."
+            "diagnosis": "The model completely loses the plot and repeats the same nonsensical sentence multiple times. It introduces a 'big tree' and then claims 'she was a big tree' without any logical connection to the initial character, Spot, or any narrative progression. The repetition indicates a severe failure in maintaining coherence and generating meaningful content.",
+            "remedy_recommendation": "Improve the model's ability to maintain narrative coherence and avoid repetitive, nonsensical output. This could involve stronger conditioning on the initial prompt, better understanding of character and plot development, and potentially a penalty for high repetition during generation. Training on more diverse and coherent story datasets might also help."
           }
         },
         {
@@ -126,8 +126,8 @@
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": false,
-            "diagnosis": "The model provided an empty continuation, which is not helpful for completing the function. It should have continued with the logic for a binary search algorithm.",
-            "remedy_recommendation": "The model needs to be trained on more complete code examples and understand the logical flow of common algorithms. It should be able to predict the next steps in a function definition."
+            "diagnosis": "The model provided an empty continuation, which is not helpful for completing the binary search function. It did not generate any meaningful code.",
+            "remedy_recommendation": "The model needs to be trained on more code completion examples, specifically for common algorithms like binary search, to understand the logical flow and expected next steps. It should be able to generate the loop and conditional statements required for the algorithm."
           }
         }
       ]
@@ -135,9 +135,9 @@
     "navitrit-100m-step10000": {
       "checkpoint_path": "outputs/checkpoints/navitrit-100m-step10000.pt",
       "model_size": "100m",
-      "overall_score": 3.83,
+      "overall_score": 4.0,
       "math_score": 1.0,
-      "story_score": 2.0,
+      "story_score": 2.5,
       "code_score": 8.5,
       "records": [
         {
@@ -160,8 +160,8 @@
             "mathematical_correctness": 1.0,
             "arithmetic_calculation_performed": "15 - 3 = 17",
             "hallucination_detected": true,
-            "diagnosis": "The model completely hallucinates the names of the people (Mia, Lily instead of Olivia, Liam) and the number of apples given away (3 instead of 4). It also performs incorrect arithmetic (15 - 3 = 17). The reasoning is completely off-topic and incorrect.",
-            "remedy_recommendation": "The model needs significant improvement in understanding and extracting key entities and numerical values from the prompt. It also requires better arithmetic capabilities. Training on more diverse and accurate math problems with clear entity tracking would be beneficial. Reinforcement learning with human feedback (RLHF) could help penalize such blatant factual and mathematical errors."
+            "diagnosis": "The model completely hallucinates the names of the people (Mia, Lily instead of Olivia, Liam) and the number of apples given (3 instead of 4). It also performs incorrect arithmetic (15 - 3 = 17). The reasoning is completely off-topic and incorrect.",
+            "remedy_recommendation": "The model needs significant improvement in understanding the prompt's entities and numerical values. It should be trained to correctly identify and use the names and numbers provided in the problem statement. Additionally, its arithmetic capabilities need to be drastically improved to perform basic subtraction correctly. A retrieval-augmented generation (RAG) approach or fine-tuning on more math word problems with explicit entity and number tracking could help."
           }
         },
         {
@@ -180,12 +180,12 @@
             "score": 1.0,
             "verdict": "INCORRECT",
             "entity_consistency": 1.0,
-            "syntactic_validity": 10.0,
+            "syntactic_validity": 8.0,
             "mathematical_correctness": 1.0,
             "arithmetic_calculation_performed": "10 - 10 = 10",
             "hallucination_detected": true,
-            "diagnosis": "The model completely hallucinates the context, changing the problem from cookies to crayons and introducing new entities (Mia, Sam) that were not in the original prompt. The mathematical operations are also incorrect (10 = 10 is not a step in solving the problem, and 10 - 10 = 10 is arithmetically wrong).",
-            "remedy_recommendation": "The model needs significant improvement in understanding and maintaining context from the prompt. It should be trained to identify key entities and quantities and ensure consistency throughout its reasoning. Additionally, its mathematical reasoning capabilities need to be enhanced to perform correct arithmetic operations."
+            "diagnosis": "The model completely hallucinates the context of the problem, changing 'cookies' to 'crayons' and introducing 'Mia' and 'Sam'. The arithmetic performed is also incorrect (10 - 10 = 10). The steps are out of order (Step 1 followed by Step 3).",
+            "remedy_recommendation": "Improve context understanding and entity tracking. Reinforce basic arithmetic operations. Ensure sequential step generation."
           }
         },
         {
@@ -201,15 +201,15 @@
             19
           ],
           "judge_evaluation": {
-            "score": 2.0,
-            "verdict": "INCORRECT",
+            "score": 3.0,
+            "verdict": "CONFUSED",
             "entity_consistency": 2.0,
-            "syntactic_validity": 8.0,
+            "syntactic_validity": 9.0,
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
-            "hallucination_detected": true,
-            "diagnosis": "The model completely loses the plot. The initial prompt is about finding a ball, but the continuation immediately shifts to wanting a toy car, which is an entirely new and unrelated topic. The dialogue is also nonsensical and repetitive, indicating a lack of coherent thought.",
-            "remedy_recommendation": "The model needs significant improvement in maintaining narrative consistency and coherence. This could involve better training on story structures, character motivations, and logical progression of events. Techniques like attention mechanisms focused on key entities and events from the prompt could help prevent such drastic topic shifts."
+            "hallucination_detected": false,
+            "diagnosis": "The model completely loses the plot. The initial prompt introduces a ball, but the continuation immediately shifts to a 'toy car' without any logical transition or explanation. The dialogue is also repetitive and nonsensical, with Lily asking for a toy car and then her mom seemingly confirming she already has one, followed by a fragmented sentence. The story does not progress meaningfully.",
+            "remedy_recommendation": "Improve coherence and topic consistency. The model needs to be better at maintaining the initial context and developing the narrative logically. Training on more diverse and coherent story continuations, perhaps with a focus on maintaining key entities and themes, could help. Also, improve dialogue generation to be more natural and less repetitive."
           }
         },
         {
@@ -232,8 +232,8 @@
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": true,
-            "diagnosis": "The story quickly devolves into incoherence. It introduces a new character 'Tim' who then sees 'a big dog named Tim', which is confusing. The repetition of 'Sam' at the end is a clear sign of the model losing track of the narrative and generating repetitive, nonsensical text. The initial setup with 'Spot' is completely abandoned.",
-            "remedy_recommendation": "Improve the model's ability to maintain character consistency and narrative flow. Implement stronger mechanisms to detect and prevent repetitive text generation. Potentially, increase the context window or improve attention mechanisms to better track entities and plot points over longer sequences."
+            "diagnosis": "The story quickly devolves into incoherence. It introduces a new character 'Tim' who then sees 'a big dog named Tim', which is confusing. The repetition of 'Sam, Sam, Sam, Sam' at the end indicates a complete loss of narrative structure and a failure to maintain character consistency or logical progression. The story is not engaging and makes no sense.",
+            "remedy_recommendation": "The model needs significant improvements in maintaining character consistency, logical flow, and avoiding repetitive phrases. Training on more diverse and coherent narrative structures, potentially with a focus on entity tracking and avoiding self-referential character naming, would be beneficial. A mechanism to detect and avoid excessive repetition would also help."
           }
         },
         {
@@ -256,8 +256,133 @@
             "mathematical_correctness": null,
             "arithmetic_calculation_performed": "None",
             "hallucination_detected": false,
-            "diagnosis": "The model correctly continues the binary search algorithm, setting up the while loop and the condition for finding the target. However, it stops abruptly before completing the `if` block (returning the index) and the `elif`/`else` conditions for adjusting `low` or `high`. The generated code is syntactically valid up to the point it stops.",
-            "remedy_recommendation": "The model needs to be trained on more complete code examples, especially for common algorithms. The stopping criteria for code generation should be improved to ensure logical blocks are completed, or at least a clear indication of incompleteness is given if a hard stop is necessary. Increasing the context window or attention span might help it 'remember' the full structure of the algorithm."
+            "diagnosis": "The model correctly continues the binary search algorithm, including the while loop condition, mid-point calculation, and the check for the target. However, it stops abruptly mid-statement, leaving the 'if' block incomplete. This makes the generated code syntactically invalid as a complete function.",
+            "remedy_recommendation": "The model should be trained to complete logical blocks of code, especially conditional statements, before stopping. This could involve reinforcing patterns of 'if/else' or 'if/elif/else' structures and ensuring that generated code segments are syntactically complete at common stopping points."
+          }
+        }
+      ]
+    },
+    "navitrit-100m-dual-grpo": {
+      "checkpoint_path": "outputs/checkpoints/navitrit-100m-dual-grpo.pt",
+      "model_size": "100m",
+      "overall_score": 3.17,
+      "math_score": 1.0,
+      "story_score": 1.0,
+      "code_score": 7.5,
+      "records": [
+        {
+          "type": "math",
+          "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many apples remain?\nReasoning:",
+          "continuation": " Let's track the end. How many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many many",
+          "trajectory_sample": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "judge_evaluation": {
+            "score": 1.0,
+            "verdict": "INCORRECT",
+            "entity_consistency": 1.0,
+            "syntactic_validity": 1.0,
+            "mathematical_correctness": 1.0,
+            "arithmetic_calculation_performed": "None",
+            "hallucination_detected": true,
+            "diagnosis": "The model did not provide any reasoning or answer to the mathematical problem. Instead, it generated repetitive and nonsensical text, indicating a complete failure to understand or address the prompt.",
+            "remedy_recommendation": "The model needs significant improvements in its ability to understand mathematical prompts and generate coherent, relevant reasoning. This could involve more targeted training on mathematical problem-solving datasets, better prompt understanding mechanisms, and potentially a 'stop generation' mechanism for repetitive outputs."
+          }
+        },
+        {
+          "type": "math",
+          "prompt": "Problem: A bakery bakes 24 cookies. They sell 10 in the morning and 6 in the afternoon. How many cookies are left?\nReasoning:",
+          "continuation": " Tom's track the count step by step.\nStep 2: Let's track the end?\n\nReasoning: Let's track the end?\n\nReasoning: Let's track the count step by step.\n",
+          "trajectory_sample": [
+            5,
+            10,
+            5,
+            10,
+            5
+          ],
+          "judge_evaluation": {
+            "score": 1.0,
+            "verdict": "INCORRECT",
+            "entity_consistency": 1.0,
+            "syntactic_validity": 1.0,
+            "mathematical_correctness": null,
+            "arithmetic_calculation_performed": "None",
+            "hallucination_detected": true,
+            "diagnosis": "The model's output is nonsensical and repetitive. It does not attempt to solve the problem or provide any relevant reasoning. The phrases 'Tom's track the count step by step' and 'Let's track the end?' are repeated and do not contribute to a solution.",
+            "remedy_recommendation": "The model needs significant improvement in its ability to understand and respond to mathematical reasoning prompts. It should be trained on more examples of step-by-step problem-solving and reasoning. The repetition suggests a lack of coherent thought process or a failure to generate new, relevant tokens. Techniques like increasing the diversity of training data, improving attention mechanisms, or implementing more robust decoding strategies could help."
+          }
+        },
+        {
+          "type": "story",
+          "prompt": "One sunny day, Lily and her brother found a big, red ball.",
+          "continuation": " Sue was very happy. Sue. Sue was happy. Sue. Sue was sad. Sue was sad and said, \"I'm sorry, but I am sad. I was sad. I was sad. I was sad.",
+          "trajectory_sample": [
+            5,
+            10,
+            5,
+            10,
+            5
+          ],
+          "judge_evaluation": {
+            "score": 1.0,
+            "verdict": "INCORRECT",
+            "entity_consistency": 1.0,
+            "syntactic_validity": 5.0,
+            "mathematical_correctness": null,
+            "arithmetic_calculation_performed": "None",
+            "hallucination_detected": true,
+            "diagnosis": "The model completely hallucinates a new character 'Sue' who was not mentioned in the prompt. The generated text is highly repetitive and nonsensical, repeating 'Sue was happy' and 'Sue was sad' multiple times without any coherent narrative or progression. It fails to continue the story about Lily and her brother or the red ball. The grammar is technically valid in short phrases, but the overall structure is poor.",
+            "remedy_recommendation": "The model needs significant improvements in maintaining character consistency and narrative coherence. Training data should emphasize story continuation where new entities are introduced logically or not at all, and repetition is minimized. Reinforcement learning with human feedback (RLHF) could help penalize repetitive and nonsensical outputs. A stronger focus on long-range dependencies and planning in the generation process would also be beneficial."
+          }
+        },
+        {
+          "type": "story",
+          "prompt": "Once upon a time, there was a little dog named Spot.",
+          "continuation": " Sam. Sam. Sam, 24 - 2 = 20 pencils remain.\nStep 3: After gave 8 pencils remain. - 8 = 3 pencils remain.\nStep 4: Then Sam picked 8 pencils =",
+          "trajectory_sample": [
+            5,
+            10,
+            5,
+            10,
+            5
+          ],
+          "judge_evaluation": {
+            "score": 1.0,
+            "verdict": "INCORRECT",
+            "entity_consistency": 1.0,
+            "syntactic_validity": 1.0,
+            "mathematical_correctness": 1.0,
+            "arithmetic_calculation_performed": "24 - 2 = 20, 8 - 8 = 3",
+            "hallucination_detected": true,
+            "diagnosis": "The model completely deviates from the initial prompt, introducing a new character 'Sam' and then abruptly switching to a math problem involving pencils. There is no logical continuation of the story about 'Spot'. The mathematical calculations are also incorrect (24 - 2 = 22, not 20; 8 - 8 = 0, not 3).",
+            "remedy_recommendation": "The model needs significant improvements in maintaining context and coherence. Training data should emphasize story continuation over abrupt topic shifts. For mathematical errors, the model needs better arithmetic capabilities or a mechanism to avoid generating math problems when not explicitly prompted for them within a story context."
+          }
+        },
+        {
+          "type": "code",
+          "prompt": "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n",
+          "continuation": "   while low <= high:\n           mid = (low + high) // 2\n           if arr[mid] == target",
+          "trajectory_sample": [
+            5,
+            10,
+            5,
+            10,
+            5
+          ],
+          "judge_evaluation": {
+            "score": 7.5,
+            "verdict": "PARTIALLY_CORRECT",
+            "entity_consistency": 9.0,
+            "syntactic_validity": 7.0,
+            "mathematical_correctness": null,
+            "arithmetic_calculation_performed": "None",
+            "hallucination_detected": false,
+            "diagnosis": "The model correctly continues the binary search algorithm by initializing the `while` loop and calculating the `mid` index. It also correctly sets up the `if` condition to check if the target is found. However, there is an indentation error for the `while` loop, which makes the code syntactically incorrect as a direct continuation. The `while` loop should be at the same indentation level as `low` and `high`.",
+            "remedy_recommendation": "Improve the model's understanding of Python's indentation rules, especially in the context of function bodies. This could involve more training data with correctly indented code blocks and potentially specific fine-tuning on code formatting and syntax."
           }
         }
       ]
