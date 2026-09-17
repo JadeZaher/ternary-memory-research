@@ -180,9 +180,16 @@
     },
     {
       "gate": "Gate 12",
-      "track": "Phase I/I-B Comprehensive Paper Drafting & Artifact Compilation",
-      "status": "IN_PROGRESS",
-      "records": []
+      "track": "Phase I/I-B/II Multi-Paper Compilation & Research Synthesis",
+      "status": "PASSED",
+      "records": [
+        "research/paper-1-bitroute-systems.md",
+        "research/paper-2-flowtrit-reasoning.md",
+        "research/paper-3-flowroute-architecture.md",
+        "research/paper-4-navitrit-graph-navigation.md",
+        "research/synthesis-executive-summary.md",
+        "experiments/verify_gate12_corpus.py"
+      ]
     },
     {
       "gate": "Gate 13",
