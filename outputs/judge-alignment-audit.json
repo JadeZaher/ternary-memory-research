@@ -1,0 +1,224 @@
+{
+  "status": "COMPLETED",
+  "benchmark": "Head-to-Head LLM-as-a-Judge Audit (Hardened vs Judge-Aligned NaviTrit)",
+  "judge_model": "TinyLlama-1.1B-Chat-v1.0",
+  "evaluated_prompts_count": 10,
+  "hardened_metrics": {
+    "mean_rubric_score": 4.5,
+    "mean_judge_loss": 3.545,
+    "mean_combined_reward": 0.359
+  },
+  "aligned_metrics": {
+    "mean_rubric_score": 3.5,
+    "mean_judge_loss": 3.496,
+    "mean_combined_reward": 0.295
+  },
+  "pairwise_head_to_head": {
+    "aligned_wins": 3,
+    "hardened_wins": 7,
+    "ties": 0,
+    "aligned_win_rate_percent": 30.0
+  },
+  "detailed_prompts": [
+    {
+      "prompt_idx": 1,
+      "prompt": "Once upon a time, there was a little dog named Spot.",
+      "hardened": {
+        "continuation": "Spot was very happy. One day, he found a big, and shiny.\nSpot wanted to help. It help his friend, Sam, and Sam. They both played",
+        "score": 10,
+        "cond_loss": 3.1953,
+        "combined_reward": 0.7379,
+        "reason": "The story's beginning and continuation are well-structured and coherent, with logical and grammatically sound sentences. The characters and"
+      },
+      "aligned": {
+        "continuation": "Spot loved to play with his friends in the park. One day, Spot's friends saw him playing outside. Spot was playing near a big.\nSpot's friend, saw",
+        "score": 5,
+        "cond_loss": 2.3574,
+        "combined_reward": 0.449,
+        "reason": "Story Continuation: \"Spot's friends were amazed by his playfulness and curiosity"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story A: \"Spot was very happy. One day, he found a big, and shiny toy. Spot want"
+    },
+    {
+      "prompt_idx": 2,
+      "prompt": "One sunny day, Lily and her brother found a",
+      "hardened": {
+        "continuation": "toy car. Lily's toy car and wanted to play with it. She thought it was fun to play with it. And that day, Lily and her dad would run away",
+        "score": 5,
+        "cond_loss": 2.5801,
+        "combined_reward": 0.4359,
+        "reason": "Story Continuation: \"Lily's dad was a busy man, and he had to work late. Lily an"
+      },
+      "aligned": {
+        "continuation": "big box in her room. Lily wanted to pick it.\nLily took a big box and started to shake. She climbed up and blew her friends. They all played",
+        "score": 5,
+        "cond_loss": 3.207,
+        "combined_reward": 0.404,
+        "reason": "Story Continuation: \"Lily's friends were surprised and asked her what was going "
+      },
+      "pairwise_winner": "ALIGNED",
+      "judge_explanation": "Both stories have a continuation that is coherent, grammatical, and logical. How"
+    },
+    {
+      "prompt_idx": 3,
+      "prompt": "Tim wanted to build a big tower with his",
+      "hardened": {
+        "continuation": "mom. He was very old and not very sad.\nTim wanted to his mom. But Tim did not know what to do. He did not want to be fun.",
+        "score": 1,
+        "cond_loss": 3.3672,
+        "combined_reward": 0.1302,
+        "reason": "Tim wanted to build a big tower with his mom"
+      },
+      "aligned": {
+        "continuation": "mom. He saw a big house with a big cake. Tim thought it was pretty.\" Tim was very happy to help him. He wanted to his mom, but he knew",
+        "score": 1,
+        "cond_loss": 3.584,
+        "combined_reward": 0.1211,
+        "reason": "Score: 1 Grammar & Syntax: 1 (sentence is grammatically sound and complete) Comm"
+      },
+      "pairwise_winner": "ALIGNED",
+      "judge_explanation": "Story B: \"mom. He saw a big house with a big cake. Tim thought it was pretty. He"
+    },
+    {
+      "prompt_idx": 4,
+      "prompt": "The little bird looked out of the nest and saw",
+      "hardened": {
+        "continuation": "how strong that the bird was safe. The little bird was scared and the bunny was scared. The little bird liked the little bird.\nThe little bird was scared of the",
+        "score": 1,
+        "cond_loss": 2.7441,
+        "combined_reward": 0.1603,
+        "reason": "Score: 1 Grammar & Syntax: 10 Common-Sense Realism: 1  Story Continuation: \"The "
+      },
+      "aligned": {
+        "continuation": "that could do something he never move, as fast and could get the little bird was very happy.",
+        "score": 1,
+        "cond_loss": 4.793,
+        "combined_reward": 0.0809,
+        "reason": "Score: 1 Grammar & Syntax: 10 Common-Sense Realism: 1  Story Continuation: \"The "
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story B is a continuation of Story A, as it follows the same plot and theme. The"
+    },
+    {
+      "prompt_idx": 5,
+      "prompt": "Mia had a magical red paintbrush that could",
+      "hardened": {
+        "continuation": "have a long way to come out of the big cake and see the cake. She said, \"Thank you for being so happy and said, \"Thank you, Lily.",
+        "score": 1,
+        "cond_loss": 3.5,
+        "combined_reward": 0.1246,
+        "reason": "Score: 1 Grammar & Syntax: Sentence structure is sound and complete. Common-Sens"
+      },
+      "aligned": {
+        "continuation": "make the other things with her mommy, even better. She was very happy and said, \"Thank you, Tom. You're sorry for being selfish and not to be",
+        "score": 1,
+        "cond_loss": 3.707,
+        "combined_reward": 0.1163,
+        "reason": "Mia had a magical red paintbrush"
+      },
+      "pairwise_winner": "ALIGNED",
+      "judge_explanation": "Story B: \"make the other things with her mommy, even better. She was very happy "
+    },
+    {
+      "prompt_idx": 6,
+      "prompt": "Sam the puppy went to the park and met",
+      "hardened": {
+        "continuation": "flying. They played together all day long.",
+        "score": 10,
+        "cond_loss": 4.1562,
+        "combined_reward": 0.7001,
+        "reason": "The story's continuation is logical and makes sense as a continuation. The narrative coherence is excellent, with clear and logical"
+      },
+      "aligned": {
+        "continuation": "a little girl named Lily. Lily was very happy to play. He did not have his friends. They played with the other flowers and had lots of fun.",
+        "score": 10,
+        "cond_loss": 2.7148,
+        "combined_reward": 0.7618,
+        "reason": "The story's continuation is a logical extension of the beginning, with Sam the puppy meeting Lily and playing with her friends. The"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story A: \"Sam the puppy went to the park and met Lily, a little girl named Lily."
+    },
+    {
+      "prompt_idx": 7,
+      "prompt": "Two little kittens found a mysterious basket of",
+      "hardened": {
+        "continuation": "leaves.\nThe moral of the story is to be kind.",
+        "score": 10,
+        "cond_loss": 3.1602,
+        "combined_reward": 0.7395,
+        "reason": "The story is a moral lesson that teaches the importance of being kind to others."
+      },
+      "aligned": {
+        "continuation": "fun in the woods.",
+        "score": 5,
+        "cond_loss": 4.0039,
+        "combined_reward": 0.372,
+        "reason": "Story Continuation: \"As they explored the woods, they stumbled upon a hidden tre"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story A: \"leaves.\nThe moral of the story is to be kind.\"\n\nStory B: \"fun in the w"
+    },
+    {
+      "prompt_idx": 8,
+      "prompt": "A happy frog sat by the cool blue pond and",
+      "hardened": {
+        "continuation": "danced together.",
+        "score": 5,
+        "cond_loss": 4.25,
+        "combined_reward": 0.3637,
+        "reason": "Story Continuation: \"As the frog danced, a beautiful butterfly landed on its bac"
+      },
+      "aligned": {
+        "continuation": "the park. The frog were very happy. The frog said, \"Hi, there is a magic frog.\" The frog said, \"I need to be your toy?\"",
+        "score": 1,
+        "cond_loss": 3.0605,
+        "combined_reward": 0.1442,
+        "reason": "The frog's sentence is grammatically sound"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story A: \"The frog danced together, twirling and spinning, while the park bustle"
+    },
+    {
+      "prompt_idx": 9,
+      "prompt": "On a windy morning, Lucy's yellow kite flew up into",
+      "hardened": {
+        "continuation": "the house.\nWhen they got to the room, Tom was so excited to take a very proud of him. Then, she saw a big tree. She thought it would",
+        "score": 1,
+        "cond_loss": 3.8984,
+        "combined_reward": 0.1091,
+        "reason": "Lucy's yellow kite flew up into"
+      },
+      "aligned": {
+        "continuation": "the sky.\nLucy was so happy that she could have a new friend. From that day on, a little boy who always played together in the forest. And every",
+        "score": 5,
+        "cond_loss": 2.9082,
+        "combined_reward": 0.4184,
+        "reason": "Story Continuation: \"Lucy's yellow kite flew up into the sky, and the little boy"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Both stories have a continuation that is coherent, grammatical, and logical.\n\nSt"
+    },
+    {
+      "prompt_idx": 10,
+      "prompt": "The friendly dolphin swam up to the wooden boat and",
+      "hardened": {
+        "continuation": "started to talk! They laughed and had a fun day at all their day.",
+        "score": 1,
+        "cond_loss": 4.5938,
+        "combined_reward": 0.0865,
+        "reason": "The friendly dolphin swam up to the"
+      },
+      "aligned": {
+        "continuation": "the race. The duck felt very happy and happy.",
+        "score": 1,
+        "cond_loss": 4.6211,
+        "combined_reward": 0.0857,
+        "reason": "The friendly dolphin swam up to the"
+      },
+      "pairwise_winner": "HARDENED",
+      "judge_explanation": "Story B is a continuation of Story A, and it is more coherent, grammatical, and "
+    }
+  ]
+}

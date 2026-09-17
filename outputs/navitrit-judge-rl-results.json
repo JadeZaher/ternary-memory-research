@@ -1,0 +1,85 @@
+{
+  "status": "COMPLETED",
+  "alignment_method": "Group Relative Policy Optimization (GRPO) with Local LLM-as-a-Judge",
+  "judge_model": "TinyLlama-1.1B-Chat-v1.0",
+  "rl_steps": 75,
+  "k_candidates_per_group": 4,
+  "total_time_s": 500.32,
+  "initial_mean_reward": 0.3583,
+  "final_mean_reward": 0.3845,
+  "reward_gain": 0.0261,
+  "step_telemetry": [
+    {
+      "step": 10,
+      "mean_reward": 0.3772,
+      "best_reward": 0.4045,
+      "std_reward": 0.0221,
+      "mean_attn_ratio": 0.565,
+      "loss": 0.0109,
+      "sample_winner": "woods. \nThe little girl was so happy that she had been able to help of the other girl. \nThe"
+    },
+    {
+      "step": 20,
+      "mean_reward": 0.1793,
+      "best_reward": 0.3468,
+      "std_reward": 0.1118,
+      "mean_attn_ratio": 0.6081,
+      "loss": -0.0324,
+      "sample_winner": "it would use it. They both have fun and have a fun.\n<|endoftext|>"
+    },
+    {
+      "step": 30,
+      "mean_reward": 0.3036,
+      "best_reward": 0.3929,
+      "std_reward": 0.1293,
+      "mean_attn_ratio": 0.6553,
+      "loss": 0.0262,
+      "sample_winner": "see the bird on the bird. The bird was so happy!\nThe bird flew away. The bird thanked the bird and"
+    },
+    {
+      "step": 40,
+      "mean_reward": 0.3657,
+      "best_reward": 0.3804,
+      "std_reward": 0.0244,
+      "mean_attn_ratio": 0.6562,
+      "loss": -0.043,
+      "sample_winner": "the bird could not find its beak.\nThe bird looked at home and then, but it was too scared. The"
+    },
+    {
+      "step": 50,
+      "mean_reward": 0.3751,
+      "best_reward": 0.3983,
+      "std_reward": 0.0205,
+      "mean_attn_ratio": 0.6637,
+      "loss": 0.0169,
+      "sample_winner": "forest. The rabbit tried to climb up the bear and the bird to climb the bird. The bird got wet and the bird"
+    },
+    {
+      "step": 60,
+      "mean_reward": 0.3147,
+      "best_reward": 0.394,
+      "std_reward": 0.1286,
+      "mean_attn_ratio": 0.6396,
+      "loss": 0.022,
+      "sample_winner": "sun.\nSuddenly, the forest came across the bear and said, \"Oh no! I can't get a real dog"
+    },
+    {
+      "step": 70,
+      "mean_reward": 0.3596,
+      "best_reward": 0.375,
+      "std_reward": 0.016,
+      "mean_attn_ratio": 0.68,
+      "loss": -0.0566,
+      "sample_winner": "talk! She was so happy and thanked the magic friends. She ate the big and they all played together all day long."
+    },
+    {
+      "step": 75,
+      "mean_reward": 0.3313,
+      "best_reward": 0.402,
+      "std_reward": 0.1316,
+      "mean_attn_ratio": 0.6433,
+      "loss": -0.0139,
+      "sample_winner": "the water. The frog said, \"I will help you for you be your friends.\" The frog was happy and thanked the"
+    }
+  ]
+}

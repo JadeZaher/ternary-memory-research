@@ -196,7 +196,20 @@
         "outputs/navitrit-hardened-results.json",
         "outputs/language-coherence-audit.json"
       ]
+    },
+    {
+      "gate": "Gate 13-B",
+      "track": "Phase II Track D-2: LLM-as-a-Judge Router Alignment (GRPO)",
+      "status": "PASSED",
+      "records": [
+        "experiments/navitrit/llm_judge.py",
+        "experiments/navitrit/train_navitrit_judge_rl.py",
+        "experiments/navitrit/audit_judge_coherence.py",
+        "outputs/navitrit-judge-rl-results.json",
+        "outputs/judge-alignment-audit.json"
+      ]
     }
   ]
 }
+
 
