@@ -248,6 +248,14 @@
         "outputs/navitrit-nm-results.json",
         "outputs/navitrit-nm-coherence-audit.json"
       ]
+    },
+    {
+      "gate": "Gate 15",
+      "track": "Phase II Track D-4: Frontier Scale Multi-Corpus Pretraining (NaviTrit-135M)",
+      "status": "QUEUED",
+      "records": [
+        "research/frontier-scale-track.md"
+      ]
     }
   ]
 }
