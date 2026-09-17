@@ -220,9 +220,9 @@ class FlowNavigationController(nn.Module):
 
         # Action selection
         if self.random_policy is not None and not self.training:
-            # Matched random walk control
-            logits_uniform = torch.zeros_like(logits)
-            gumbel_weights = F.softmax(logits_uniform, dim=-1)
+            # Matched random walk control: sample random node uniformly
+            rand_ids = torch.randint(0, self.total_nodes, (B,), device=logits.device)
+            gumbel_weights = F.one_hot(rand_ids, num_classes=self.total_nodes).to(logits.dtype)
         elif self.training:
             gumbel_weights = F.gumbel_softmax(logits, tau=self.gumbel_tau, hard=True, dim=-1)
         else:
@@ -423,12 +423,10 @@ class NaviTritForCausalLM(nn.Module):
                 h_next = torch.sum(gw * h_stack, dim=1)
 
                 # Track dominant node for telemetry
-                dominant_node = int(torch.argmax(logits[0]).item())
-                curr_node_id = dominant_node
+                curr_node_id = int(torch.argmax(gumbel_weights[0]).item())
             else:
                 # Discrete branch execution (zero compute for unselected nodes)
-                dominant_node = int(torch.argmax(logits[0]).item())
-                curr_node_id = dominant_node
+                curr_node_id = int(torch.argmax(gumbel_weights[0]).item())
                 if curr_node_id == self.graph.exit_node_idx:
                     # Early exit triggered
                     early_exits += 1
