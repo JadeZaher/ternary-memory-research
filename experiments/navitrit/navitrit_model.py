@@ -21,6 +21,7 @@ Reference: research/layer-navigation-flow-theory.md
 
 import sys
 import os
+import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
@@ -53,18 +54,25 @@ class NaviTritConfig:
     vocab_size: int = 50257
     hidden_size: int = 384
     intermediate_size: int = 1024
-    num_layers: int = 4            # 4 Attention + 4 FFN = 8 stationary nodes + 1 EXIT = 9 nodes
+    num_layers: int = 3            # 3 Attention + 3 FFN = 6 stationary nodes + 1 EXIT = 7 nodes
     num_attention_heads: int = 6
     max_position_embeddings: int = 512
     rms_norm_eps: float = 1e-5
     block_size: int = 256
-    max_hops: int = 8              # Max non-monotonic trajectory length T_max
+    max_hops: int = 6              # Max non-monotonic trajectory length T_max
     d_nav_route: int = 128         # Routing state vector dimension
     flow_dt: float = 0.5           # Velocity integration step
     eps_contraction: float = 1e-3  # Dynamic contraction halting threshold
     gumbel_tau: float = 1.0        # Straight-through temperature
+    gumbel_hard: bool = False      # Differentiable soft blend in training (discrete in eval)
     lambda_hop: float = 0.02       # Economic hop cost penalty
     lambda_fpf: float = 0.01       # Attractor velocity penalty
+    lambda_attn_div: float = 0.5   # Attention diversity penalty weight
+    lambda_layer_entropy: float = 0.2 # Layer hierarchy entropy penalty weight
+    lambda_cohere: float = 0.1     # Semantic coherence prediction loss weight
+    min_attn_ratio: float = 0.40   # Minimum desired attention utilization ratio
+    tau_cohere: float = 0.85       # Coherence threshold for certified early exit
+    min_hops_exit: int = 2         # Minimum hops before early exit allowed
     ternary: bool = True           # Native ternary BitLinear weights
     tie_word_embeddings: bool = False
 
@@ -79,6 +87,7 @@ class NaviTritTrajectoryStep:
     transition_type: str           # FORWARD, BACKWARD, SELF_LOOP, INTRA_LAYER, EXIT
     step_norm: float               # ||h_{t+1} - h_t||_inf
     logits: torch.Tensor           # [B, 2L + 1]
+    coherence_score: float = 0.0   # Semantic coherence prediction c_t in [0, 1]
 
 
 @dataclass
@@ -94,6 +103,12 @@ class NaviTritOutput:
     trajectory_steps: List[NaviTritTrajectoryStep]
     nav_budget_loss: torch.Tensor
     fpf_loss: torch.Tensor
+    diversity_loss: torch.Tensor
+    coherence_loss: torch.Tensor
+    attn_ratio: float
+    layer_entropy: float
+    mean_coherence: float
+    exit_reason: str
     bytes_streamed: int
     full_pipeline_bytes: int
 
@@ -115,6 +130,7 @@ class FlowNavigationController(nn.Module):
         self.d_model = config.hidden_size
         self.flow_dt = config.flow_dt
         self.gumbel_tau = config.gumbel_tau
+        self.gumbel_hard = config.gumbel_hard
 
         # Embedding for previous node index (0 .. 2L)
         self.node_embed = nn.Embedding(self.total_nodes + 1, self.d_route)
@@ -142,6 +158,15 @@ class FlowNavigationController(nn.Module):
         self.dest_head = nn.Sequential(
             nn.LayerNorm(self.d_route),
             nn.Linear(self.d_route, self.total_nodes),
+        )
+
+        # Semantic Coherence Head: predicts semantic completion confidence c_t in [0, 1]
+        self.coherence_head = nn.Sequential(
+            nn.LayerNorm(self.d_route),
+            nn.Linear(self.d_route, self.d_route // 2),
+            nn.GELU(),
+            nn.Linear(self.d_route // 2, 1),
+            nn.Sigmoid(),
         )
 
         # Matched random policy control (for unbiased baseline testing)
@@ -194,7 +219,7 @@ class FlowNavigationController(nn.Module):
         h: torch.Tensor,
         prev_node: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Takes single navigation step:
         Returns:
@@ -202,6 +227,7 @@ class FlowNavigationController(nn.Module):
             logits: destination logits [B, 2L + 1]
             gumbel_weights: straight-through weights [B, 2L + 1]
             fpf_step_loss: terminal velocity penalty
+            coherence: semantic coherence score [B]
         """
         B = h.shape[0]
         h_pool = self.pool_representation(h, attention_mask)
@@ -218,18 +244,22 @@ class FlowNavigationController(nn.Module):
         # Destination logits
         logits = self.dest_head(r_next)  # [B, 2L + 1]
 
+        # Semantic coherence score c_t in [0, 1]
+        coherence = self.coherence_head(r_next).squeeze(-1)  # [B]
+
         # Action selection
         if self.random_policy is not None and not self.training:
             # Matched random walk control: sample random node uniformly
             rand_ids = torch.randint(0, self.total_nodes, (B,), device=logits.device)
             gumbel_weights = F.one_hot(rand_ids, num_classes=self.total_nodes).to(logits.dtype)
         elif self.training:
-            gumbel_weights = F.gumbel_softmax(logits, tau=self.gumbel_tau, hard=True, dim=-1)
+            gumbel_weights = F.gumbel_softmax(logits, tau=self.gumbel_tau, hard=self.gumbel_hard, dim=-1)
         else:
             argmax_ids = torch.argmax(logits, dim=-1)
             gumbel_weights = F.one_hot(argmax_ids, num_classes=self.total_nodes).to(logits.dtype)
 
-        return r_next, logits, gumbel_weights, fpf_step_loss
+        return r_next, logits, gumbel_weights, fpf_step_loss, coherence
+
 
 
 class StationaryModuleGraph(nn.Module):
@@ -376,6 +406,9 @@ class NaviTritForCausalLM(nn.Module):
 
         trajectory_steps: List[NaviTritTrajectoryStep] = []
         trajectory_nodes: List[int] = []
+        gumbel_weights_all: List[torch.Tensor] = []
+        coherence_all: List[torch.Tensor] = []
+        h_intermediates: List[torch.Tensor] = []
 
         total_fpf_loss = torch.tensor(0.0, device=device)
         total_hops = 0
@@ -384,8 +417,7 @@ class NaviTritForCausalLM(nn.Module):
         self_loops = 0
         early_exits = 0
         bytes_streamed = 0
-
-        halted_mask = torch.zeros(B, dtype=torch.bool, device=device)
+        exit_reason = "MAX_HOPS"
 
         # -------------------------------------------------------------
         # Non-Monotonic Graph Navigation Walk Loop
@@ -393,22 +425,29 @@ class NaviTritForCausalLM(nn.Module):
         for hop in range(self.config.max_hops):
             # Monotonic baseline override
             if force_monotonic:
-                # Force node sequence 0, 1, 2, 3, ... 2L-1
                 if hop < 2 * self.config.num_layers:
                     curr_node_id = hop
                 else:
+                    exit_reason = "MONOTONIC_COMPLETE"
                     break
                 h = self.graph.execute_node(curr_node_id, h, attention_mask=attention_mask)
                 total_hops += 1
                 forward_hops += 1
                 trajectory_nodes.append(curr_node_id)
+                exit_reason = "MONOTONIC_COMPLETE"
                 continue
 
-            # Navigation controller step
-            r, logits, gumbel_weights, fpf_step_loss = self.controller.forward_step(
+            h_intermediates.append(h)
+
+            # Navigation controller step (relaxes r, computes logits, gumbel weights, and coherence)
+            r, logits, gumbel_weights, fpf_step_loss, coherence = self.controller.forward_step(
                 r, h, prev_node, attention_mask=attention_mask
             )
             total_fpf_loss = total_fpf_loss + fpf_step_loss
+            gumbel_weights_all.append(gumbel_weights)
+            coherence_all.append(coherence)
+
+            step_coherence = float(coherence.mean().item())
 
             if self.training:
                 # Differentiable forward blend over all candidate nodes
@@ -427,9 +466,9 @@ class NaviTritForCausalLM(nn.Module):
             else:
                 # Discrete branch execution (zero compute for unselected nodes)
                 curr_node_id = int(torch.argmax(gumbel_weights[0]).item())
-                if curr_node_id == self.graph.exit_node_idx:
-                    # Early exit triggered
+                if curr_node_id == self.graph.exit_node_idx and hop >= self.config.min_hops_exit:
                     early_exits += 1
+                    exit_reason = "EXPLICIT_EXIT_NODE"
                     break
                 h_next = self.graph.execute_node(curr_node_id, h, attention_mask=attention_mask)
 
@@ -458,6 +497,7 @@ class NaviTritForCausalLM(nn.Module):
                 transition_type=trans_type,
                 step_norm=step_norm,
                 logits=logits.detach(),
+                coherence_score=step_coherence,
             ))
             trajectory_nodes.append(curr_node_id)
 
@@ -472,13 +512,70 @@ class NaviTritForCausalLM(nn.Module):
             prev_node = torch.full((B,), curr_node_id, dtype=torch.long, device=device)
             total_hops += 1
 
-            # Dynamic Contraction Exit: if representation stops changing significantly
-            if not self.training and step_norm < self.config.eps_contraction and hop >= 2:
-                break
+            # Certified Coherence Early Exit (eval mode)
+            if not self.training and hop >= self.config.min_hops_exit:
+                if step_coherence >= self.config.tau_cohere and step_norm < self.config.eps_contraction:
+                    early_exits += 1
+                    exit_reason = "CERTIFIED_COHERENCE_CONTRACTION"
+                    break
 
         # Final projection
         h_norm = self.norm(h)
         logits = self.lm_head(h_norm)
+
+        # Telemetry metrics and Regularization Losses
+        attn_nodes = [2 * l for l in range(self.config.num_layers)]
+
+        diversity_loss = torch.tensor(0.0, device=device)
+        coherence_loss = torch.tensor(0.0, device=device)
+        attn_ratio = 0.0
+        layer_entropy = 0.0
+        mean_cohere = 0.0
+
+        if gumbel_weights_all:
+            # all_gw: [B, T, 2L+1]
+            all_gw = torch.stack(gumbel_weights_all, dim=1)
+            T_hops = all_gw.shape[1]
+
+            # 1. Attention Diversity Regularization:
+            # Fraction of hops assigned to attention tiles
+            p_attn_per_step = all_gw[:, :, attn_nodes].sum(dim=-1)  # [B, T]
+            rho_attn_per_b = p_attn_per_step.mean(dim=-1)           # [B]
+            attn_ratio = float(rho_attn_per_b.mean().item())
+            attn_div_penalty = torch.mean(F.relu(self.config.min_attn_ratio - rho_attn_per_b))
+
+            # 2. Layer Hierarchy Entropy Coverage:
+            layer_probs = []
+            for l in range(self.config.num_layers):
+                p_l = all_gw[:, :, 2 * l] + all_gw[:, :, 2 * l + 1]  # [B, T]
+                layer_probs.append(p_l.sum(dim=-1))                  # [B]
+            layer_probs = torch.stack(layer_probs, dim=-1)           # [B, L]
+            norm_layer_probs = layer_probs / (layer_probs.sum(dim=-1, keepdim=True) + 1e-8)
+            entropy_per_b = -torch.sum(norm_layer_probs * torch.log(norm_layer_probs + 1e-8), dim=-1)  # [B]
+            layer_entropy = float(entropy_per_b.mean().item())
+            max_entropy = math.log(max(1, self.config.num_layers))
+            entropy_penalty = torch.mean(F.relu(0.70 * max_entropy - entropy_per_b))
+
+            diversity_loss = (
+                self.config.lambda_attn_div * attn_div_penalty +
+                self.config.lambda_layer_entropy * entropy_penalty
+            )
+
+            # 3. Coherence Head Loss:
+            # Supervise c_t to track cosine alignment with the final representation
+            if coherence_all and h_intermediates:
+                mean_cohere = float(torch.stack(coherence_all, dim=1).mean().item())
+                h_final_pool = self.controller.pool_representation(h.detach(), attention_mask)
+                h_final_norm = F.normalize(h_final_pool, p=2, dim=-1)
+
+                step_c_losses = []
+                for t_idx, h_t in enumerate(h_intermediates):
+                    h_t_pool = self.controller.pool_representation(h_t, attention_mask)
+                    h_t_norm = F.normalize(h_t_pool, p=2, dim=-1)
+                    cos_sim = torch.sum(h_t_norm * h_final_norm, dim=-1)  # [B]
+                    target_c = torch.clamp((cos_sim + 1.0) / 2.0, 0.0, 1.0).detach()
+                    step_c_losses.append(F.mse_loss(coherence_all[t_idx], target_c))
+                coherence_loss = self.config.lambda_cohere * torch.stack(step_c_losses).mean()
 
         # Navigation budget loss: penalizes total hops taken
         hop_ratio = total_hops / max(1, self.config.max_hops)
@@ -495,6 +592,13 @@ class NaviTritForCausalLM(nn.Module):
             trajectory_steps=trajectory_steps,
             nav_budget_loss=nav_budget_loss,
             fpf_loss=self.config.lambda_fpf * total_fpf_loss,
+            diversity_loss=diversity_loss,
+            coherence_loss=coherence_loss,
+            attn_ratio=round(attn_ratio, 4),
+            layer_entropy=round(layer_entropy, 4),
+            mean_coherence=round(mean_cohere, 4),
+            exit_reason=exit_reason,
             bytes_streamed=bytes_streamed,
             full_pipeline_bytes=self.full_pipeline_bytes,
         )
+

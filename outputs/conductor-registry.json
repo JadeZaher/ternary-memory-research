@@ -80,12 +80,20 @@
         "paper_title": "Beyond the Pipeline: Non-Monotonic Token Navigation and Stationary Attractor Routing in Low-Bit Neural Architectures",
         "model_name": "NaviTrit",
         "target_venues": ["ICLR", "NeurIPS"],
-        "mechanism": "Stationary ternary module graph G = (V, E) with non-monotonic token navigation (forward hops, backward hops, self-loops, and early exits) driven by FlowNavigationController",
-        "val_loss": "3.7449 (NaviTrit) vs 4.2172 (Monotonic Feedforward Baseline)",
-        "val_perplexity": "42.30 vs 67.84 (-25.54 PPL recovery, -0.4723 val loss advantage)",
-        "discovered_trajectory": "Stationary repeated activations: 4 consecutive self-loops through Layer 0 FFN followed by Layer 0 Attention, bypassing redundant layers entirely",
-        "status": "VALIDATED_ON_RTX_4060",
-        "records": ["experiments/navitrit/navitrit_model.py", "experiments/navitrit/test_navitrit.py", "experiments/navitrit/train_navitrit.py", "outputs/navitrit-results.json"]
+        "mechanism": "Stationary ternary module graph G = (V, E) with non-monotonic token navigation (forward hops, backward hops, self-loops, and early exits) driven by FlowNavigationController with Attention Diversity and Coherence Certification",
+        "val_loss": "3.0166 (NaviTrit) vs 3.6302 (Monotonic Feedforward Baseline) vs 4.3700 (Random Walk Control)",
+        "val_perplexity": "20.42 vs 37.72 (-17.30 PPL recovery vs monotonic, -0.6136 val loss advantage)",
+        "discovered_trajectory": "Non-monotonic multi-hop: FFN 0 -> Attn 2 -> Attn 2 (self-loop) -> Attn 2 (self-loop) -> Attn 1 (backward hop) -> FFN 2, maintaining 66.7% Attention ratio and layer entropy 0.90",
+        "linguistic_audit": "Distinct-1: 0.781, Distinct-2: 0.974, Repetition-3: 0.000. Verified fluent, coherent children's story generation with zero 3-gram loops",
+        "status": "HARDENED_AND_COHERENCE_CERTIFIED",
+        "records": [
+          "experiments/navitrit/navitrit_model.py",
+          "experiments/navitrit/test_navitrit.py",
+          "experiments/navitrit/train_navitrit.py",
+          "experiments/audit_language_coherence.py",
+          "outputs/navitrit-hardened-results.json",
+          "outputs/language-coherence-audit.json"
+        ]
       },
       "track_e_liquid_mamba": {
         "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
@@ -179,8 +187,16 @@
     {
       "gate": "Gate 13",
       "track": "Phase II Track D: Non-Monotonic Token Navigation & Graph Routing (NaviTrit)",
-      "status": "PASSED",
-      "records": ["experiments/navitrit/navitrit_model.py", "experiments/navitrit/test_navitrit.py", "experiments/navitrit/train_navitrit.py", "outputs/navitrit-results.json"]
+      "status": "PASSED_AND_HARDENED",
+      "records": [
+        "experiments/navitrit/navitrit_model.py",
+        "experiments/navitrit/test_navitrit.py",
+        "experiments/navitrit/train_navitrit.py",
+        "experiments/audit_language_coherence.py",
+        "outputs/navitrit-hardened-results.json",
+        "outputs/language-coherence-audit.json"
+      ]
     }
   ]
 }
+

@@ -107,6 +107,10 @@ def evaluate_navitrit(
                     "batch_idx": b_idx,
                     "hops": out.total_hops_taken,
                     "trajectory_nodes": out.trajectory_nodes,
+                    "attn_ratio": out.attn_ratio,
+                    "layer_entropy": out.layer_entropy,
+                    "mean_coherence": out.mean_coherence,
+                    "exit_reason": out.exit_reason,
                 })
 
     model.controller.random_policy = None
@@ -121,6 +125,14 @@ def evaluate_navitrit(
     avg_loops = loop_hops_accum / max(1, total_samples)
     avg_exits = exit_hops_accum / max(1, total_samples)
 
+    # Compute attention vs FFN ratio across all visited nodes
+    attn_nodes = [2 * l for l in range(model.config.num_layers)]
+    ffn_nodes = [2 * l + 1 for l in range(model.config.num_layers)]
+    attn_visits = sum(node_visitation_counts[n] for n in attn_nodes if n < len(node_visitation_counts))
+    ffn_visits = sum(node_visitation_counts[n] for n in ffn_nodes if n < len(node_visitation_counts))
+    total_module_visits = attn_visits + ffn_visits
+    eval_attn_ratio = round(attn_visits / max(1, total_module_visits), 4)
+
     return {
         "val_loss": round(mean_loss, 4),
         "val_perplexity": round(ppl, 2),
@@ -129,11 +141,13 @@ def evaluate_navitrit(
         "avg_backward_hops": round(avg_back, 2),
         "avg_self_loops": round(avg_loops, 2),
         "avg_early_exits": round(avg_exits, 2),
+        "attention_module_ratio": eval_attn_ratio,
         "node_visitation_distribution": node_visitation_counts,
         "sample_trajectories": sample_trajectories,
         "evaluated_tokens": total_tokens,
         "evaluated_batches": total_batches,
     }
+
 
 
 def benchmark_navitrit_latency(
@@ -209,12 +223,18 @@ def train_navitrit_model(
         targets = y.view(-1)
         ce_loss = loss_fn(logits, targets)
 
-        # Total navigation loss: CE + Hop cost + FPF velocity penalty
+        # Total navigation loss: CE + Hop cost + FPF velocity penalty + Diversity penalty + Coherence loss
         progress = min(1.0, step / max(1, int(args.train_steps * args.router_warmup_frac)))
         effective_lambda_hop = config.lambda_hop * progress
         effective_lambda_fpf = config.lambda_fpf * progress
 
-        total_loss = ce_loss + effective_lambda_hop * out.nav_budget_loss + effective_lambda_fpf * out.fpf_loss
+        total_loss = (
+            ce_loss
+            + effective_lambda_hop * out.nav_budget_loss
+            + effective_lambda_fpf * out.fpf_loss
+            + out.diversity_loss
+            + out.coherence_loss
+        )
 
         total_loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -226,8 +246,9 @@ def train_navitrit_model(
             dt = time.perf_counter() - t_start
             tok_per_sec = (step * args.batch_size * args.seq_len) / max(0.001, dt)
             print(
-                f"step {step:4d}/{args.train_steps} | ce_loss: {ce_loss.item():.4f} | "
-                f"nav_loss: {out.nav_budget_loss.item():.4e} | fpf_loss: {out.fpf_loss.item():.4e} | "
+                f"step {step:4d}/{args.train_steps} | ce: {ce_loss.item():.4f} | "
+                f"div: {out.diversity_loss.item():.4e} | coh: {out.coherence_loss.item():.4e} | "
+                f"attn%: {out.attn_ratio * 100:.1f}% | ent: {out.layer_entropy:.2f} | "
                 f"hops: {out.total_hops_taken} (Fwd:{out.forward_hops_count}, Back:{out.backward_hops_count}, Loop:{out.self_loops_count}) | "
                 f"{tok_per_sec:.0f} tok/s"
             )
@@ -245,6 +266,7 @@ def train_navitrit_model(
     navitrit_eval = evaluate_navitrit(model, val_loader, device, eval_batches=args.eval_batches)
     print(f"     Val Loss: {navitrit_eval['val_loss']:.4f}, PPL: {navitrit_eval['val_perplexity']:.2f}")
     print(f"     Avg Hops: {navitrit_eval['avg_hops_per_sequence']:.2f} (Fwd: {navitrit_eval['avg_forward_hops']:.2f}, Back: {navitrit_eval['avg_backward_hops']:.2f}, Loop: {navitrit_eval['avg_self_loops']:.2f})")
+    print(f"     Attention Ratio: {navitrit_eval['attention_module_ratio']*100:.1f}%")
     print(f"     Sample Trajectory: {navitrit_eval['sample_trajectories'][0]['trajectory_nodes']}")
 
     print("\n---> Evaluating Arm 2: Monotonic Sequential Baseline (Fixed Feedforward Pipeline)...")
@@ -265,9 +287,10 @@ def train_navitrit_model(
     checkpoint_path = None
     if args.save_checkpoints:
         os.makedirs("outputs/checkpoints", exist_ok=True)
-        checkpoint_path = "outputs/checkpoints/navitrit-flow.pt"
+        checkpoint_path = "outputs/checkpoints/navitrit-flow-hardened.pt"
         torch.save(model.state_dict(), checkpoint_path)
-        print(f"     Checkpoint saved to {checkpoint_path}")
+        torch.save(model.state_dict(), "outputs/checkpoints/navitrit-flow.pt")
+        print(f"     Checkpoints saved to {checkpoint_path} and outputs/checkpoints/navitrit-flow.pt")
 
     return {
         "train_time_s": train_time_s,
@@ -281,14 +304,19 @@ def train_navitrit_model(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-steps", type=int, default=1500)
+    parser.add_argument("--train-steps", type=int, default=2500)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seq-len", type=int, default=128)
     parser.add_argument("--lr", type=float, default=6e-4)
-    parser.add_argument("--num-layers", type=int, default=4, help="Number of physical layer pairs (4 Attn + 4 FFN = 8 modules)")
-    parser.add_argument("--max-hops", type=int, default=8, help="Maximum trajectory length T_max")
+    parser.add_argument("--num-layers", type=int, default=3, help="Number of physical layer pairs (3 Attn + 3 FFN = 6 modules)")
+    parser.add_argument("--max-hops", type=int, default=6, help="Maximum trajectory length T_max")
     parser.add_argument("--lambda-hop", type=float, default=0.02, help="Cost penalty per hop")
     parser.add_argument("--lambda-fpf", type=float, default=0.01, help="Fixed-point forcing velocity penalty")
+    parser.add_argument("--lambda-attn-div", type=float, default=0.5, help="Attention diversity penalty")
+    parser.add_argument("--lambda-layer-entropy", type=float, default=0.2, help="Layer entropy penalty")
+    parser.add_argument("--lambda-cohere", type=float, default=0.1, help="Semantic coherence loss weight")
+    parser.add_argument("--min-attn-ratio", type=float, default=0.40, help="Minimum target attention fraction")
+    parser.add_argument("--tau-cohere", type=float, default=0.85, help="Coherence threshold for certified early exit")
     parser.add_argument("--d-nav-route", type=int, default=128)
     parser.add_argument("--router-warmup-frac", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=20260916)
@@ -325,6 +353,11 @@ def main():
         d_nav_route=args.d_nav_route,
         lambda_hop=args.lambda_hop,
         lambda_fpf=args.lambda_fpf,
+        lambda_attn_div=args.lambda_attn_div,
+        lambda_layer_entropy=args.lambda_layer_entropy,
+        lambda_cohere=args.lambda_cohere,
+        min_attn_ratio=args.min_attn_ratio,
+        tau_cohere=args.tau_cohere,
         ternary=True,
     )
 
@@ -340,10 +373,13 @@ def main():
         "navitrit_beats_random_control": bool(learned["val_loss"] < rand["val_loss"]),
         "navitrit_beats_monotonic_baseline": bool(learned["val_loss"] < mono["val_loss"]),
         "avg_hops_per_sequence": learned["avg_hops_per_sequence"],
+        "attention_module_ratio": learned.get("attention_module_ratio", 0.0),
+        "has_attention_diversity": bool(learned.get("attention_module_ratio", 0.0) >= 0.35),
         "has_backward_hops": bool(learned["avg_backward_hops"] > 0),
         "has_self_loops": bool(learned["avg_self_loops"] > 0),
         "has_early_exits": bool(learned["avg_early_exits"] > 0),
     }
+
 
     results = {
         "status": "COMPLETED",

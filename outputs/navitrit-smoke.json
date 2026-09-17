@@ -1,0 +1,350 @@
+{
+  "status": "COMPLETED",
+  "model_architecture": "NaviTrit (Stationary Module Graph G + Flow-Reasoned Navigation Controller)",
+  "track": "Track D (Paper 4: Non-Monotonic Token Navigation)",
+  "gate": "Gate 13",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda",
+  "seed": 20260916,
+  "cli": {
+    "train_steps": 30,
+    "batch_size": 4,
+    "seq_len": 32,
+    "lr": 0.0006,
+    "num_layers": 3,
+    "max_hops": 6,
+    "lambda_hop": 0.02,
+    "lambda_fpf": 0.01,
+    "lambda_attn_div": 0.05,
+    "lambda_layer_entropy": 0.05,
+    "lambda_cohere": 0.05,
+    "min_attn_ratio": 0.4,
+    "tau_cohere": 0.85,
+    "d_nav_route": 128,
+    "router_warmup_frac": 0.2,
+    "seed": 20260916,
+    "eval_batches": 5,
+    "save_checkpoints": true,
+    "smoke": true,
+    "json": "outputs/navitrit-smoke.json"
+  },
+  "arms": {
+    "train_time_s": 5.24,
+    "checkpoint_path": "outputs/checkpoints/navitrit-flow-hardened.pt",
+    "latency_ms_batch1_seq128": 15.014,
+    "navitrit_learned": {
+      "val_loss": 10.6221,
+      "val_perplexity": 41031.33,
+      "avg_hops_per_sequence": 6.0,
+      "avg_forward_hops": 1.0,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 5.0,
+      "avg_early_exits": 0.0,
+      "attention_module_ratio": 0.0,
+      "node_visitation_distribution": [
+        0,
+        120,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.5355,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.538,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.537,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.5368,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.538,
+          "exit_reason": "MAX_HOPS"
+        }
+      ],
+      "evaluated_tokens": 640,
+      "evaluated_batches": 5
+    },
+    "monotonic_baseline": {
+      "val_loss": 10.6401,
+      "val_perplexity": 41775.44,
+      "avg_hops_per_sequence": 6.0,
+      "avg_forward_hops": 6.0,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 0.0,
+      "avg_early_exits": 0.0,
+      "attention_module_ratio": 0.5,
+      "node_visitation_distribution": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.0,
+          "exit_reason": "MONOTONIC_COMPLETE"
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.0,
+          "exit_reason": "MONOTONIC_COMPLETE"
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.0,
+          "exit_reason": "MONOTONIC_COMPLETE"
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.0,
+          "exit_reason": "MONOTONIC_COMPLETE"
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "attn_ratio": 0.0,
+          "layer_entropy": 0.0,
+          "mean_coherence": 0.0,
+          "exit_reason": "MONOTONIC_COMPLETE"
+        }
+      ],
+      "evaluated_tokens": 640,
+      "evaluated_batches": 5
+    },
+    "random_walk_control": {
+      "val_loss": 10.6815,
+      "val_perplexity": 43543.03,
+      "avg_hops_per_sequence": 4.6,
+      "avg_forward_hops": 2.0,
+      "avg_backward_hops": 1.2,
+      "avg_self_loops": 0.2,
+      "avg_early_exits": 1.0,
+      "attention_module_ratio": 0.5714,
+      "node_visitation_distribution": [
+        28,
+        20,
+        8,
+        4,
+        12,
+        12,
+        8
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 3,
+          "trajectory_nodes": [
+            0,
+            1,
+            4
+          ],
+          "attn_ratio": 0.5625,
+          "layer_entropy": 0.5994,
+          "mean_coherence": 0.5366,
+          "exit_reason": "EXPLICIT_EXIT_NODE"
+        },
+        {
+          "batch_idx": 1,
+          "hops": 4,
+          "trajectory_nodes": [
+            0,
+            6,
+            0,
+            4
+          ],
+          "attn_ratio": 0.3,
+          "layer_entropy": 0.7972,
+          "mean_coherence": 0.5373,
+          "exit_reason": "EXPLICIT_EXIT_NODE"
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            6,
+            2,
+            3,
+            0,
+            1
+          ],
+          "attn_ratio": 0.3333,
+          "layer_entropy": 0.8543,
+          "mean_coherence": 0.5377,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            0,
+            0,
+            5,
+            2,
+            5
+          ],
+          "attn_ratio": 0.5417,
+          "layer_entropy": 0.8305,
+          "mean_coherence": 0.5366,
+          "exit_reason": "MAX_HOPS"
+        },
+        {
+          "batch_idx": 4,
+          "hops": 4,
+          "trajectory_nodes": [
+            4,
+            1,
+            5,
+            1
+          ],
+          "attn_ratio": 0.35,
+          "layer_entropy": 0.8485,
+          "mean_coherence": 0.5395,
+          "exit_reason": "EXPLICIT_EXIT_NODE"
+        }
+      ],
+      "evaluated_tokens": 640,
+      "evaluated_batches": 5
+    }
+  },
+  "findings": {
+    "navitrit_minus_monotonic_val_loss": -0.018,
+    "navitrit_minus_random_val_loss": -0.0594,
+    "navitrit_beats_random_control": true,
+    "navitrit_beats_monotonic_baseline": true,
+    "avg_hops_per_sequence": 6.0,
+    "attention_module_ratio": 0.0,
+    "has_attention_diversity": false,
+    "has_backward_hops": false,
+    "has_self_loops": true,
+    "has_early_exits": false
+  }
+}

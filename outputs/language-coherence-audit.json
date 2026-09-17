@@ -1,18 +1,18 @@
 {
   "fp32_baseline": {
-    "mean_distinct_1": 0.8,
-    "mean_distinct_2": 0.9808,
+    "mean_distinct_1": 0.8063,
+    "mean_distinct_2": 0.9679,
     "mean_repetition_3gram": 0.0,
     "prompts": [
       {
         "prompt": "Once upon a time, there was a little dog named Spot.",
-        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to eat dinner. He would jump, and run in the sun. One day, Spot saw a big box of toys. He was very happy and wanted to play with it.\nSpot",
-        "continuation_text": " Spot loved to eat dinner. He would jump, and run in the sun. One day, Spot saw a big box of toys. He was very happy and wanted to play with it.\nSpot",
+        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his best friend, a little girl named Lily. They would run and have fun together.\nOne day, Lily and Spot found a big, long stick. It was red",
+        "continuation_text": " Spot loved to play with his best friend, a little girl named Lily. They would run and have fun together.\nOne day, Lily and Spot found a big, long stick. It was red",
         "new_tokens_count": 40,
-        "tokens_per_sec": 55.53,
+        "tokens_per_sec": 61.53,
         "diversity": {
           "distinct_1": 0.8,
-          "distinct_2": 0.9744,
+          "distinct_2": 1.0,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -58,7 +58,7 @@
           },
           {
             "step": 3,
-            "token": " eat",
+            "token": " play",
             "executed_layers": [
               0,
               1,
@@ -72,34 +72,35 @@
           },
           {
             "step": 4,
-            "token": " dinner",
+            "token": " with",
             "executed_layers": [
               0,
               1,
               2,
               3,
-              4,
               5
             ],
-            "bypassed_layers": []
+            "bypassed_layers": [
+              4
+            ]
           }
         ]
       },
       {
         "prompt": "One sunny day, Lily and her brother found a",
-        "full_text": "One sunny day, Lily and her brother found a pretty flower. They were both very happy and played together all day. The moral of the story is to always be kind and help others when they need it.\n<|endoftext|>\n\n\nLily liked to",
-        "continuation_text": " pretty flower. They were both very happy and played together all day. The moral of the story is to always be kind and help others when they need it.\n<|endoftext|>\n\n\nLily liked to",
+        "full_text": "One sunny day, Lily and her brother found a small box. They tried to open the box, but it was too heavy. Lily was sad and asked her mom if she could not find it. Her mom said yes and they went inside the box",
+        "continuation_text": " small box. They tried to open the box, but it was too heavy. Lily was sad and asked her mom if she could not find it. Her mom said yes and they went inside the box",
         "new_tokens_count": 40,
-        "tokens_per_sec": 88.72,
+        "tokens_per_sec": 94.34,
         "diversity": {
-          "distinct_1": 0.875,
-          "distinct_2": 1.0,
+          "distinct_1": 0.775,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
             "step": 0,
-            "token": " pretty",
+            "token": " small",
             "executed_layers": [
               0,
               1,
@@ -112,7 +113,7 @@
           },
           {
             "step": 1,
-            "token": " flower",
+            "token": " box",
             "executed_layers": [
               0,
               1,
@@ -151,7 +152,7 @@
           },
           {
             "step": 4,
-            "token": " were",
+            "token": " tried",
             "executed_layers": [
               0,
               1,
@@ -166,13 +167,13 @@
       },
       {
         "prompt": "Tim wanted to build a big tower with his",
-        "full_text": "Tim wanted to build a big tower with his blocks. He ran into the room and jumped on the floor. But he forgot to his mom was not safe. Tim felt sad.\nLater, a big wind came and blew all the blocks away",
-        "continuation_text": " blocks. He ran into the room and jumped on the floor. But he forgot to his mom was not safe. Tim felt sad.\nLater, a big wind came and blew all the blocks away",
+        "full_text": "Tim wanted to build a big tower with his blocks. He tried to make a tower with his blocks. But he did not want to be careful. It made Tim too hard work, and it didn't have any blocks.\nTim's mom",
+        "continuation_text": " blocks. He tried to make a tower with his blocks. But he did not want to be careful. It made Tim too hard work, and it didn't have any blocks.\nTim's mom",
         "new_tokens_count": 40,
-        "tokens_per_sec": 97.7,
+        "tokens_per_sec": 94.56,
         "diversity": {
-          "distinct_1": 0.825,
-          "distinct_2": 1.0,
+          "distinct_1": 0.85,
+          "distinct_2": 0.9487,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -217,7 +218,7 @@
           },
           {
             "step": 3,
-            "token": " ran",
+            "token": " tried",
             "executed_layers": [
               0,
               1,
@@ -230,7 +231,7 @@
           },
           {
             "step": 4,
-            "token": " into",
+            "token": " to",
             "executed_layers": [
               0,
               1,
@@ -245,19 +246,19 @@
       },
       {
         "prompt": "The little bird looked out of the nest and saw",
-        "full_text": "The little bird looked out of the nest and saw it was a big, shiny thing. The little bird had a stick and turned into a stick. The bird wanted to help the bird.\nThe bird told the wise old bird, \"You are",
-        "continuation_text": " it was a big, shiny thing. The little bird had a stick and turned into a stick. The bird wanted to help the bird.\nThe bird told the wise old bird, \"You are",
+        "full_text": "The little bird looked out of the nest and saw the little bird, a beautiful bird. The little bird was very happy and thanked the little boy for helping him. From that day on, he learned to be good and help others when they can make",
+        "continuation_text": " the little bird, a beautiful bird. The little bird was very happy and thanked the little boy for helping him. From that day on, he learned to be good and help others when they can make",
         "new_tokens_count": 40,
-        "tokens_per_sec": 94.51,
+        "tokens_per_sec": 99.74,
         "diversity": {
-          "distinct_1": 0.7,
+          "distinct_1": 0.8,
           "distinct_2": 0.9487,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
             "step": 0,
-            "token": " it",
+            "token": " the",
             "executed_layers": [
               0,
               1,
@@ -268,7 +269,7 @@
           },
           {
             "step": 1,
-            "token": " was",
+            "token": " little",
             "executed_layers": [
               0,
               1,
@@ -282,6 +283,34 @@
           },
           {
             "step": 2,
+            "token": " bird",
+            "executed_layers": [
+              0,
+              1,
+              2,
+              3,
+              5
+            ],
+            "bypassed_layers": [
+              4
+            ]
+          },
+          {
+            "step": 3,
+            "token": ",",
+            "executed_layers": [
+              0,
+              1,
+              2,
+              3,
+              5
+            ],
+            "bypassed_layers": [
+              4
+            ]
+          },
+          {
+            "step": 4,
             "token": " a",
             "executed_layers": [
               0,
@@ -292,51 +321,26 @@
               5
             ],
             "bypassed_layers": []
-          },
-          {
-            "step": 3,
-            "token": " big",
-            "executed_layers": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "bypassed_layers": []
-          },
-          {
-            "step": 4,
-            "token": ",",
-            "executed_layers": [
-              0,
-              1,
-              2,
-              3,
-              4
-            ],
-            "bypassed_layers": []
           }
         ]
       }
     ]
   },
   "native_ternary_baseline": {
-    "mean_distinct_1": 0.7375,
-    "mean_distinct_2": 0.9295,
-    "mean_repetition_3gram": 0.0263,
+    "mean_distinct_1": 0.8313,
+    "mean_distinct_2": 0.9808,
+    "mean_repetition_3gram": 0.0,
     "prompts": [
       {
         "prompt": "Once upon a time, there was a little dog named Spot.",
-        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his friends. One day, he went to the park with his friends.\nAt the park, Spot saw a big, scary dog in the park. The big red ball",
-        "continuation_text": " Spot loved to play with his friends. One day, he went to the park with his friends.\nAt the park, Spot saw a big, scary dog in the park. The big red ball",
+        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his friends. One day, Spot found a big box in the yard. He wanted to be home with it.\nSpot's mom said, \"Mom, can I find",
+        "continuation_text": " Spot loved to play with his friends. One day, Spot found a big box in the yard. He wanted to be home with it.\nSpot's mom said, \"Mom, can I find",
         "new_tokens_count": 40,
-        "tokens_per_sec": 65.62,
+        "tokens_per_sec": 73.46,
         "diversity": {
-          "distinct_1": 0.65,
-          "distinct_2": 0.8718,
-          "repetition_3gram": 0.0526
+          "distinct_1": 0.825,
+          "distinct_2": 1.0,
+          "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
@@ -408,19 +412,19 @@
       },
       {
         "prompt": "One sunny day, Lily and her brother found a",
-        "full_text": "One sunny day, Lily and her brother found a big, colorful ball. He didn't know what to do.\nLily went to the park and told her that there was no one who could go. She made many colors and shapes. Lily",
-        "continuation_text": " big, colorful ball. He didn't know what to do.\nLily went to the park and told her that there was no one who could go. She made many colors and shapes. Lily",
+        "full_text": "One sunny day, Lily and her brother found a tiny, soft, and a big hole in the ground. They looked all around the yard, but they couldn't find it.\nThey found a little cat. The cat said, \"Let's",
+        "continuation_text": " tiny, soft, and a big hole in the ground. They looked all around the yard, but they couldn't find it.\nThey found a little cat. The cat said, \"Let's",
         "new_tokens_count": 40,
-        "tokens_per_sec": 65.35,
+        "tokens_per_sec": 69.79,
         "diversity": {
-          "distinct_1": 0.875,
+          "distinct_1": 0.8,
           "distinct_2": 1.0,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
             "step": 0,
-            "token": " big",
+            "token": " tiny",
             "executed_layers": [
               0,
               1,
@@ -446,7 +450,7 @@
           },
           {
             "step": 2,
-            "token": " colorful",
+            "token": " soft",
             "executed_layers": [
               0,
               1,
@@ -459,7 +463,7 @@
           },
           {
             "step": 3,
-            "token": " ball",
+            "token": ",",
             "executed_layers": [
               0,
               1,
@@ -472,7 +476,7 @@
           },
           {
             "step": 4,
-            "token": ".",
+            "token": " and",
             "executed_layers": [
               0,
               1,
@@ -487,14 +491,14 @@
       },
       {
         "prompt": "Tim wanted to build a big tower with his",
-        "full_text": "Tim wanted to build a big tower with his blocks. But he did not want to fight. He wanted to have a toy gun, but he did not want.\nTim tried the blocks from his toy box. He pulled and opened it.",
-        "continuation_text": " blocks. But he did not want to fight. He wanted to have a toy gun, but he did not want.\nTim tried the blocks from his toy box. He pulled and opened it.",
+        "full_text": "Tim wanted to build a big tower with his blocks, but he did not know what to do. He thought for a moment and asked his mom, \"Can I help you get the water?\" His mom said, \"Okay, but be careful",
+        "continuation_text": " blocks, but he did not know what to do. He thought for a moment and asked his mom, \"Can I help you get the water?\" His mom said, \"Okay, but be careful",
         "new_tokens_count": 40,
-        "tokens_per_sec": 69.21,
+        "tokens_per_sec": 57.64,
         "diversity": {
-          "distinct_1": 0.7,
-          "distinct_2": 0.8974,
-          "repetition_3gram": 0.0526
+          "distinct_1": 0.85,
+          "distinct_2": 0.9487,
+          "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
@@ -512,7 +516,7 @@
           },
           {
             "step": 1,
-            "token": ".",
+            "token": ",",
             "executed_layers": [
               0,
               1,
@@ -525,7 +529,7 @@
           },
           {
             "step": 2,
-            "token": " But",
+            "token": " but",
             "executed_layers": [
               0,
               1,
@@ -566,13 +570,13 @@
       },
       {
         "prompt": "The little bird looked out of the nest and saw",
-        "full_text": "The little bird looked out of the nest and saw the bird. The big bird said, \"Hello, bird! I was surprised to fly!\"\nThe little bird saw a little bird fly high tree and thought for a moment. The small bird flew",
-        "continuation_text": " the bird. The big bird said, \"Hello, bird! I was surprised to fly!\"\nThe little bird saw a little bird fly high tree and thought for a moment. The small bird flew",
+        "full_text": "The little bird looked out of the nest and saw the bird's wing. It flew to a bird and said \"Hi, I am here!\" The little bird looked at Tom and smiled at Tom.\nTom was so happy that he put his be",
+        "continuation_text": " the bird's wing. It flew to a bird and said \"Hi, I am here!\" The little bird looked at Tom and smiled at Tom.\nTom was so happy that he put his be",
         "new_tokens_count": 40,
-        "tokens_per_sec": 64.73,
+        "tokens_per_sec": 57.19,
         "diversity": {
-          "distinct_1": 0.725,
-          "distinct_2": 0.9487,
+          "distinct_1": 0.85,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -604,7 +608,7 @@
           },
           {
             "step": 2,
-            "token": ".",
+            "token": "'s",
             "executed_layers": [
               0,
               1,
@@ -617,7 +621,7 @@
           },
           {
             "step": 3,
-            "token": " The",
+            "token": " wing",
             "executed_layers": [
               0,
               1,
@@ -630,7 +634,7 @@
           },
           {
             "step": 4,
-            "token": " big",
+            "token": ".",
             "executed_layers": [
               0,
               1,
@@ -646,19 +650,19 @@
     ]
   },
   "ternary_greedy_router": {
-    "mean_distinct_1": 0.8375,
-    "mean_distinct_2": 0.9808,
+    "mean_distinct_1": 0.8125,
+    "mean_distinct_2": 0.9744,
     "mean_repetition_3gram": 0.0,
     "prompts": [
       {
         "prompt": "Once upon a time, there was a little dog named Spot.",
-        "full_text": "Once upon a time, there was a little dog named Spot. Spot lived in a big house with his family. He loved to play and have fun. One day, Spot found a small ball near the park. The ball was very high.\nSpot's friend",
-        "continuation_text": " Spot lived in a big house with his family. He loved to play and have fun. One day, Spot found a small ball near the park. The ball was very high.\nSpot's friend",
+        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play all day long. He would play in the yard every day, and jump, but he was always playing with his best friend.\nOne day, Spot found a small, shiny",
+        "continuation_text": " Spot loved to play all day long. He would play in the yard every day, and jump, but he was always playing with his best friend.\nOne day, Spot found a small, shiny",
         "new_tokens_count": 40,
-        "tokens_per_sec": 58.67,
+        "tokens_per_sec": 70.3,
         "diversity": {
-          "distinct_1": 0.85,
-          "distinct_2": 1.0,
+          "distinct_1": 0.8,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -678,7 +682,7 @@
           },
           {
             "step": 1,
-            "token": " lived",
+            "token": " loved",
             "executed_layers": [
               0,
               1,
@@ -692,20 +696,7 @@
           },
           {
             "step": 2,
-            "token": " in",
-            "executed_layers": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "bypassed_layers": []
-          },
-          {
-            "step": 3,
-            "token": " a",
+            "token": " to",
             "executed_layers": [
               0,
               1,
@@ -715,8 +706,22 @@
             "bypassed_layers": []
           },
           {
+            "step": 3,
+            "token": " play",
+            "executed_layers": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ],
+            "bypassed_layers": [
+              5
+            ]
+          },
+          {
             "step": 4,
-            "token": " big",
+            "token": " all",
             "executed_layers": [
               0,
               1,
@@ -731,13 +736,13 @@
       },
       {
         "prompt": "One sunny day, Lily and her brother found a",
-        "full_text": "One sunny day, Lily and her brother found a big box. Lily wanted to see very much better. She looked around the yard, but she was too small for her.\nLily started to set out the box. She saw a little bird",
-        "continuation_text": " big box. Lily wanted to see very much better. She looked around the yard, but she was too small for her.\nLily started to set out the box. She saw a little bird",
+        "full_text": "One sunny day, Lily and her brother found a big, a small cat named Tom. Lily liked to play with her toys and make things around the kitchen.\nLily said, \"Thank you, Tom! I want to play too!\" Tom",
+        "continuation_text": " big, a small cat named Tom. Lily liked to play with her toys and make things around the kitchen.\nLily said, \"Thank you, Tom! I want to play too!\" Tom",
         "new_tokens_count": 40,
-        "tokens_per_sec": 58.66,
+        "tokens_per_sec": 71.09,
         "diversity": {
           "distinct_1": 0.825,
-          "distinct_2": 0.9487,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -755,7 +760,7 @@
           },
           {
             "step": 1,
-            "token": " box",
+            "token": ",",
             "executed_layers": [
               0,
               1,
@@ -767,21 +772,20 @@
           },
           {
             "step": 2,
-            "token": ".",
+            "token": " a",
             "executed_layers": [
               0,
               1,
               2,
               3,
+              4,
               5
             ],
-            "bypassed_layers": [
-              4
-            ]
+            "bypassed_layers": []
           },
           {
             "step": 3,
-            "token": " Lily",
+            "token": " small",
             "executed_layers": [
               0,
               1,
@@ -794,7 +798,7 @@
           },
           {
             "step": 4,
-            "token": " wanted",
+            "token": " cat",
             "executed_layers": [
               0,
               1,
@@ -809,19 +813,19 @@
       },
       {
         "prompt": "Tim wanted to build a big tower with his",
-        "full_text": "Tim wanted to build a big tower with his toy cars. He would throw it and jump all day, but he was very happy.\nOne sunny day, Tim saw a big truck coming from the park. It was shiny and bright. The",
-        "continuation_text": " toy cars. He would throw it and jump all day, but he was very happy.\nOne sunny day, Tim saw a big truck coming from the park. It was shiny and bright. The",
+        "full_text": "Tim wanted to build a big tower with his toys. He had a shiny ball that he loved to wear his friends in the dirt and play with it.\nOne day, Tim found a big cup of yummy cake. He took it up",
+        "continuation_text": " toys. He had a shiny ball that he loved to wear his friends in the dirt and play with it.\nOne day, Tim found a big cup of yummy cake. He took it up",
         "new_tokens_count": 40,
-        "tokens_per_sec": 67.28,
+        "tokens_per_sec": 72.58,
         "diversity": {
-          "distinct_1": 0.825,
+          "distinct_1": 0.875,
           "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
           {
             "step": 0,
-            "token": " toy",
+            "token": " toys",
             "executed_layers": [
               0,
               1,
@@ -833,47 +837,33 @@
           },
           {
             "step": 1,
-            "token": " cars",
-            "executed_layers": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "bypassed_layers": []
-          },
-          {
-            "step": 2,
             "token": ".",
             "executed_layers": [
               0,
               1,
               2,
               3,
-              4,
-              5
+              4
             ],
             "bypassed_layers": []
           },
           {
-            "step": 3,
+            "step": 2,
             "token": " He",
             "executed_layers": [
               0,
               1,
               2,
               3,
-              5
+              4
             ],
             "bypassed_layers": [
-              4
+              5
             ]
           },
           {
-            "step": 4,
-            "token": " would",
+            "step": 3,
+            "token": " had",
             "executed_layers": [
               0,
               1,
@@ -884,18 +874,31 @@
             "bypassed_layers": [
               5
             ]
+          },
+          {
+            "step": 4,
+            "token": " a",
+            "executed_layers": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "bypassed_layers": []
           }
         ]
       },
       {
         "prompt": "The little bird looked out of the nest and saw",
-        "full_text": "The little bird looked out of the nest and saw the bird \"I'm lost. I wanted to help me.\" The bird said, \"Yes, I can help you!\" They all worked together and had found a big red ball.\nThe little",
-        "continuation_text": " the bird \"I'm lost. I wanted to help me.\" The bird said, \"Yes, I can help you!\" They all worked together and had found a big red ball.\nThe little",
+        "full_text": "The little bird looked out of the nest and saw the bird and wanted to help. The little bird was scared because it could not reach the nest.\nThe big bird saw a big fish in the lake. The big, red apple said, \"",
+        "continuation_text": " the bird and wanted to help. The little bird was scared because it could not reach the nest.\nThe big bird saw a big fish in the lake. The big, red apple said, \"",
         "new_tokens_count": 40,
-        "tokens_per_sec": 73.56,
+        "tokens_per_sec": 68.19,
         "diversity": {
-          "distinct_1": 0.85,
-          "distinct_2": 1.0,
+          "distinct_1": 0.75,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_telemetry": [
@@ -925,7 +928,7 @@
           },
           {
             "step": 2,
-            "token": " \"",
+            "token": " and",
             "executed_layers": [
               0,
               1,
@@ -936,100 +939,152 @@
           },
           {
             "step": 3,
-            "token": "I",
+            "token": " wanted",
             "executed_layers": [
               0,
               1,
               2,
               3,
-              4
+              4,
+              5
             ],
             "bypassed_layers": []
           },
           {
             "step": 4,
-            "token": "'m",
+            "token": " to",
             "executed_layers": [
               0,
               1,
               2,
-              3,
-              4
+              3
             ],
-            "bypassed_layers": [
-              5
-            ]
+            "bypassed_layers": []
           }
         ]
       }
     ]
   },
   "flow_multihop_router": {
-    "mean_distinct_1": 0.8,
-    "mean_distinct_2": 0.9808,
-    "mean_repetition_3gram": 0.0,
+    "mean_distinct_1": 0.7563,
+    "mean_distinct_2": 0.9487,
+    "mean_repetition_3gram": 0.0197,
     "prompts": [
       {
         "prompt": "Once upon a time, there was a little dog named Spot.",
-        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his ball. One day, Spot saw a big box on the ground. He wanted to know what was inside.\nSpot picked up the table and said, \"Oh no",
-        "continuation_text": " Spot loved to play with his ball. One day, Spot saw a big box on the ground. He wanted to know what was inside.\nSpot picked up the table and said, \"Oh no",
+        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his toys. One day, Spot wanted to go outside and play outside. He looked in a tree, and had an idea. Tim started to play with his friends.\n",
+        "continuation_text": " Spot loved to play with his toys. One day, Spot wanted to go outside and play outside. He looked in a tree, and had an idea. Tim started to play with his friends.\n",
         "new_tokens_count": 40,
-        "tokens_per_sec": 90.24,
+        "tokens_per_sec": 80.94,
         "diversity": {
-          "distinct_1": 0.85,
-          "distinct_2": 1.0,
-          "repetition_3gram": 0.0
+          "distinct_1": 0.675,
+          "distinct_2": 0.9231,
+          "repetition_3gram": 0.0526
         }
       },
       {
         "prompt": "One sunny day, Lily and her brother found a",
-        "full_text": "One sunny day, Lily and her brother found a big, feeling very sad.\nLily was scared and asked her if she needed help her mom and said she would make her how to be. She felt happy when she felt good at the best",
-        "continuation_text": " big, feeling very sad.\nLily was scared and asked her if she needed help her mom and said she would make her how to be. She felt happy when she felt good at the best",
+        "full_text": "One sunny day, Lily and her brother found a small, and a big stick to eat the toy. She wanted to do that is her to climb it.\nLily tried to put the toy near the rock and started to eat her. She",
+        "continuation_text": " small, and a big stick to eat the toy. She wanted to do that is her to climb it.\nLily tried to put the toy near the rock and started to eat her. She",
         "new_tokens_count": 40,
-        "tokens_per_sec": 85.43,
+        "tokens_per_sec": 88.94,
         "diversity": {
-          "distinct_1": 0.825,
-          "distinct_2": 1.0,
+          "distinct_1": 0.675,
+          "distinct_2": 0.9231,
           "repetition_3gram": 0.0
         }
       },
       {
         "prompt": "Tim wanted to build a big tower with his",
-        "full_text": "Tim wanted to build a big tower with his toy. Tim was very hard and thought it would be fun to eat the toy.\nTim's mom saw a big red car on the room with the floor. He wanted to help the toy cars",
-        "continuation_text": " toy. Tim was very hard and thought it would be fun to eat the toy.\nTim's mom saw a big red car on the room with the floor. He wanted to help the toy cars",
+        "full_text": "Tim wanted to build a big tower with his mommy. He said, \"Mom, can't find it.\" Tim smiled and said, \"Thank you for helping me, Tim!\" They all played with the toys all day.\n<|endoftext|>\n",
+        "continuation_text": " mommy. He said, \"Mom, can't find it.\" Tim smiled and said, \"Thank you for helping me, Tim!\" They all played with the toys all day.\n<|endoftext|>\n",
         "new_tokens_count": 40,
-        "tokens_per_sec": 85.78,
+        "tokens_per_sec": 82.57,
         "diversity": {
-          "distinct_1": 0.8,
+          "distinct_1": 0.775,
           "distinct_2": 0.9487,
-          "repetition_3gram": 0.0
+          "repetition_3gram": 0.0263
         }
       },
       {
         "prompt": "The little bird looked out of the nest and saw",
-        "full_text": "The little bird looked out of the nest and saw the bird. The cat was big and the big, red ball. The bird was shining, but it would not play with its nest, so he knew he could not find more games.\nThe",
-        "continuation_text": " the bird. The cat was big and the big, red ball. The bird was shining, but it would not play with its nest, so he knew he could not find more games.\nThe",
+        "full_text": "The little bird looked out of the nest and saw the bird said, \"I can I am very smart dog! Can I have a big tree?\" The wise old owl gave the tree and he had an idea. They both laughed together all played together",
+        "continuation_text": " the bird said, \"I can I am very smart dog! Can I have a big tree?\" The wise old owl gave the tree and he had an idea. They both laughed together all played together",
         "new_tokens_count": 40,
-        "tokens_per_sec": 85.96,
+        "tokens_per_sec": 88.38,
         "diversity": {
-          "distinct_1": 0.725,
-          "distinct_2": 0.9744,
+          "distinct_1": 0.9,
+          "distinct_2": 1.0,
           "repetition_3gram": 0.0
         }
       }
     ]
   },
   "navitrit_graph": {
-    "mean_distinct_1": 0.8438,
+    "mean_distinct_1": 0.7812,
     "mean_distinct_2": 0.9744,
-    "mean_repetition_3gram": 0.0132,
+    "mean_repetition_3gram": 0.0,
     "prompts": [
       {
         "prompt": "Once upon a time, there was a little dog named Spot.",
-        "full_text": "Once upon a time, there was a little dog named Spot. One day.\nOnce upon a time, there was always loved to play with its room. The girl named Sam wanted the park, \"I'm a time for a good idea. He was scared",
-        "continuation_text": " One day.\nOnce upon a time, there was always loved to play with its room. The girl named Sam wanted the park, \"I'm a time for a good idea. He was scared",
+        "full_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his friends in the water. One day, Spot went to the park to play. He saw a long time. It was big tree and wanted to eat it.\nSpot",
+        "continuation_text": " Spot loved to play with his friends in the water. One day, Spot went to the park to play. He saw a long time. It was big tree and wanted to eat it.\nSpot",
         "new_tokens_count": 40,
-        "tokens_per_sec": 64.84,
+        "tokens_per_sec": 44.06,
+        "diversity": {
+          "distinct_1": 0.775,
+          "distinct_2": 0.9744,
+          "repetition_3gram": 0.0
+        },
+        "sample_trajectories": [
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ]
+        ]
+      },
+      {
+        "prompt": "One sunny day, Lily and her brother found a",
+        "full_text": "One sunny day, Lily and her brother found a big, red ball. It was a very special stick and wanted to play with it.\nLily thought of the ball, \"I want the ball,\" said Tom. She looked around for a",
+        "continuation_text": " big, red ball. It was a very special stick and wanted to play with it.\nLily thought of the ball, \"I want the ball,\" said Tom. She looked around for a",
+        "new_tokens_count": 40,
+        "tokens_per_sec": 45.27,
         "diversity": {
           "distinct_1": 0.825,
           "distinct_2": 0.9744,
@@ -1038,205 +1093,151 @@
         "sample_trajectories": [
           [
             1,
-            1,
-            1,
-            0,
-            1,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            0,
-            1,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            0,
-            1,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
-          ]
-        ]
-      },
-      {
-        "prompt": "One sunny day, Lily and her brother found a",
-        "full_text": "One sunny day, Lily and her brother found a big dog named Tim went for the man.\nOne day, \"That was very big box with my toys to play at it's friend, something unexpected happened?\" asked his friends were happy and Tom",
-        "continuation_text": " big dog named Tim went for the man.\nOne day, \"That was very big box with my toys to play at it's friend, something unexpected happened?\" asked his friends were happy and Tom",
-        "new_tokens_count": 40,
-        "tokens_per_sec": 69.27,
-        "diversity": {
-          "distinct_1": 0.95,
-          "distinct_2": 1.0,
-          "repetition_3gram": 0.0
-        },
-        "sample_trajectories": [
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            1
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ]
         ]
       },
       {
         "prompt": "Tim wanted to build a big tower with his",
-        "full_text": "Tim wanted to build a big tower with his friends, but the dog.\n<|endoftext|>\n\n\nOnce upon a time there was a little girl named Tom. She saw a little girl named Tim loved to move. The bunny had an old man loved",
-        "continuation_text": " friends, but the dog.\n<|endoftext|>\n\n\nOnce upon a time there was a little girl named Tom. She saw a little girl named Tim loved to move. The bunny had an old man loved",
+        "full_text": "Tim wanted to build a big tower with his friend, a big red ball. He said, \"I am Tim. I can both.\" Timmy was very excited and called his mom.\nTim's mommy. Timmy looked at the",
+        "continuation_text": " friend, a big red ball. He said, \"I am Tim. I can both.\" Timmy was very excited and called his mom.\nTim's mommy. Timmy looked at the",
         "new_tokens_count": 40,
-        "tokens_per_sec": 63.86,
+        "tokens_per_sec": 49.94,
         "diversity": {
           "distinct_1": 0.775,
-          "distinct_2": 0.9231,
-          "repetition_3gram": 0.0526
-        },
-        "sample_trajectories": [
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            1
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            1
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            1
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            1
-          ],
-          [
-            1,
-            1,
-            1,
-            1,
-            0,
-            0
-          ]
-        ]
-      },
-      {
-        "prompt": "The little bird looked out of the nest and saw",
-        "full_text": "The little bird looked out of the nest and saw a little girl. They all day, and the man looked up the yard.\n<|endoftext|>\n\"I'm sorry. I don't want to be nice.\"\nOnce upon a time, there was",
-        "continuation_text": " a little girl. They all day, and the man looked up the yard.\n<|endoftext|>\n\"I'm sorry. I don't want to be nice.\"\nOnce upon a time, there was",
-        "new_tokens_count": 40,
-        "tokens_per_sec": 65.7,
-        "diversity": {
-          "distinct_1": 0.825,
-          "distinct_2": 1.0,
+          "distinct_2": 0.9744,
           "repetition_3gram": 0.0
         },
         "sample_trajectories": [
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
           ],
           [
             1,
-            1,
-            1,
-            1,
-            0,
-            0
+            4,
+            4,
+            4,
+            2,
+            5
           ],
           [
             1,
+            4,
+            4,
+            4,
+            2,
+            5
+          ]
+        ]
+      },
+      {
+        "prompt": "The little bird looked out of the nest and saw",
+        "full_text": "The little bird looked out of the nest and saw a tree. Tim wanted to help the little bird. But then, something unexpected happened. The bird ran away, and the cat was sad. Tim's mom tried to hurt them.\nThe little",
+        "continuation_text": " a tree. Tim wanted to help the little bird. But then, something unexpected happened. The bird ran away, and the cat was sad. Tim's mom tried to hurt them.\nThe little",
+        "new_tokens_count": 40,
+        "tokens_per_sec": 49.17,
+        "diversity": {
+          "distinct_1": 0.75,
+          "distinct_2": 0.9744,
+          "repetition_3gram": 0.0
+        },
+        "sample_trajectories": [
+          [
             1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
             1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
             1,
-            0,
-            0
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
+          ],
+          [
+            1,
+            4,
+            4,
+            2,
+            2,
+            5
           ]
         ]
       }

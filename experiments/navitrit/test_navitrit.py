@@ -75,12 +75,21 @@ def run_navitrit_tests():
     # -------------------------------------------------------------
     # 2. Test Autograd Gradient Flow (Training mode)
     # -------------------------------------------------------------
-    print("[3/5] Testing differentiable multi-hop autograd...")
+    print("[3/5] Testing differentiable multi-hop autograd & loss heads...")
     model.train()
     input_ids_train = torch.randint(0, config.vocab_size, (2, 8), device=device)
     out_train = model(input_ids_train)
 
-    loss = out_train.logits.sum() * 1e-4 + out_train.nav_budget_loss + out_train.fpf_loss
+    assert out_train.diversity_loss is not None, "diversity_loss is None!"
+    assert out_train.coherence_loss is not None, "coherence_loss is None!"
+
+    loss = (
+        out_train.logits.sum() * 1e-4
+        + out_train.nav_budget_loss
+        + out_train.fpf_loss
+        + out_train.diversity_loss
+        + out_train.coherence_loss
+    )
     loss.backward()
 
     # Check gradients on stationary tiles
@@ -88,13 +97,16 @@ def run_navitrit_tests():
     ffn_grad = model.graph.ffn_tiles[0].gate_proj.weight.grad
     vel_grad = model.controller.velocity_net[1].weight.grad
     dest_grad = model.controller.dest_head[1].weight.grad
+    cohere_grad = model.controller.coherence_head[1].weight.grad
 
     assert attn_grad is not None and torch.norm(attn_grad) > 0, "No grad on stationary Attention tile!"
     assert ffn_grad is not None and torch.norm(ffn_grad) > 0, "No grad on stationary FFN tile!"
     assert vel_grad is not None and torch.norm(vel_grad) > 0, "No grad on controller velocity net!"
     assert dest_grad is not None and torch.norm(dest_grad) > 0, "No grad on destination head!"
-    print(f"      Autograd PASS: All stationary modules and controller received active gradients.")
+    assert cohere_grad is not None and torch.norm(cohere_grad) > 0, "No grad on coherence head!"
+    print(f"      Autograd PASS: Stationary modules, velocity net, destination head, and coherence head received active gradients.")
     print(f"      Attn Tile 0 Grad Norm: {torch.norm(attn_grad).item():.4e}, Velocity Net Grad Norm: {torch.norm(vel_grad).item():.4e}")
+    print(f"      Coherence Head Grad Norm: {torch.norm(cohere_grad).item():.4e}, Diversity Loss: {out_train.diversity_loss.item():.4e}")
 
     # -------------------------------------------------------------
     # 3. Test Navigation Primitives (Manual Injection & Verification)
