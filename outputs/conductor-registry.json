@@ -95,6 +95,26 @@
           "outputs/language-coherence-audit.json"
         ]
       },
+      "track_d3_navitrit_nm": {
+        "paper_title": "Hop Modulation and Latent Attractor Workspaces: Non-Monotonic Routing Dynamics in Stationary Ternary Transformers",
+        "model_name": "NaviTrit-NM",
+        "target_venues": ["ICLR", "NeurIPS"],
+        "mechanism": "Stationary ternary module graph with Hop-Conditioned Tile Modulation (FiLM), Dedicated Recurrent Reasoning Core (weight-tied flow denoiser), and Hidden-State Contraction Regularization",
+        "val_loss": "3.1623 (NaviTrit-NM) vs 4.7900 (Monotonic Feedforward Baseline)",
+        "val_perplexity": "23.63 vs 120.30 (-1.6277 val loss advantage)",
+        "active_reasoning_hops": "2.14 hops per sequence",
+        "discovered_trajectory": "FFN 0 -> Attn 0 -> Attn 0 -> REASONING_CORE -> REASONING_CORE -> Attn 0 (46.94% Attention ratio)",
+        "entity_persistence": "Preserved target red ball toy with judge loss 2.34 vs 2.59 base model",
+        "status": "VALIDATED_ON_RTX_4060",
+        "records": [
+          "experiments/navitrit_reasoning/navitrit_nm_model.py",
+          "experiments/navitrit_reasoning/test_navitrit_nm.py",
+          "experiments/navitrit_reasoning/train_navitrit_nm.py",
+          "experiments/navitrit_reasoning/audit_navitrit_nm_coherence.py",
+          "outputs/navitrit-nm-results.json",
+          "outputs/navitrit-nm-coherence-audit.json"
+        ]
+      },
       "track_e_liquid_mamba": {
         "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
         "model_name": "Liquid-Mamba-Trit",
@@ -214,6 +234,19 @@
         "experiments/navitrit/audit_judge_coherence.py",
         "outputs/navitrit-judge-rl-results.json",
         "outputs/judge-alignment-audit.json"
+      ]
+    },
+    {
+      "gate": "Gate 14",
+      "track": "Phase II Track D-3: NaviTrit-NM Non-Monotonic Training & Reasoning Track",
+      "status": "PASSED",
+      "records": [
+        "experiments/navitrit_reasoning/navitrit_nm_model.py",
+        "experiments/navitrit_reasoning/test_navitrit_nm.py",
+        "experiments/navitrit_reasoning/train_navitrit_nm.py",
+        "experiments/navitrit_reasoning/audit_navitrit_nm_coherence.py",
+        "outputs/navitrit-nm-results.json",
+        "outputs/navitrit-nm-coherence-audit.json"
       ]
     }
   ]

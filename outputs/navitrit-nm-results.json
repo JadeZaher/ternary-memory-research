@@ -1,0 +1,314 @@
+{
+  "status": "COMPLETED",
+  "model_architecture": "NaviTrit-NM (Non-Monotonic Graph + Hop Modulation + Recurrent Reasoning Core)",
+  "track": "Gate 14 (Track D-3)",
+  "torch_version": "2.5.1+cu121",
+  "device": "cuda:0",
+  "seed": 20260916,
+  "cli": {
+    "train_steps": 2500,
+    "stage1_steps": 800,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0006,
+    "num_layers": 3,
+    "max_hops": 6,
+    "reasoning_sub_steps": 3,
+    "d_nav_route": 128,
+    "flow_dt": 0.5,
+    "lambda_hop": 0.02,
+    "lambda_fpf": 0.01,
+    "lambda_state_fpf": 0.05,
+    "lambda_attn_div": 0.5,
+    "lambda_layer_entropy": 0.2,
+    "lambda_cohere": 0.1,
+    "min_attn_ratio": 0.4,
+    "tau_cohere": 0.85,
+    "seed": 20260916,
+    "eval_batches": 0
+  },
+  "total_parameters": 45613577,
+  "train_time_s": 740.3,
+  "checkpoint_path": "C:\\Users\\atooz\\Programming\\ternary-memory-research\\experiments\\navitrit_reasoning\\../../outputs/checkpoints\\navitrit-nm-trained.pt",
+  "arms": {
+    "navitrit_nm_learned": {
+      "val_loss": 3.1623,
+      "val_perplexity": 23.63,
+      "avg_hops_per_sequence": 6.0,
+      "avg_forward_hops": 0.99,
+      "avg_backward_hops": 1.23,
+      "avg_self_loops": 1.63,
+      "avg_reasoning_hops": 2.14,
+      "early_exits_count": 0,
+      "attention_module_ratio": 0.4694,
+      "node_visitation_distribution": [
+        276,
+        97,
+        0,
+        5,
+        0,
+        0,
+        210,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            0,
+            0,
+            0,
+            6,
+            6
+          ],
+          "trajectory_names": [
+            "FFN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "REASONING_CORE",
+            "REASONING_CORE"
+          ],
+          "mean_coherence": 0.4933,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            0,
+            0,
+            6,
+            6,
+            0
+          ],
+          "trajectory_names": [
+            "FFN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "REASONING_CORE",
+            "REASONING_CORE",
+            "ATTN_0"
+          ],
+          "mean_coherence": 0.4774,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            0,
+            0,
+            0,
+            6,
+            6
+          ],
+          "trajectory_names": [
+            "FFN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "REASONING_CORE",
+            "REASONING_CORE"
+          ],
+          "mean_coherence": 0.5021,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            6,
+            0,
+            0,
+            6,
+            6
+          ],
+          "trajectory_names": [
+            "FFN_0",
+            "REASONING_CORE",
+            "ATTN_0",
+            "ATTN_0",
+            "REASONING_CORE",
+            "REASONING_CORE"
+          ],
+          "mean_coherence": 0.485,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            1,
+            0,
+            0,
+            0,
+            6,
+            6
+          ],
+          "trajectory_names": [
+            "FFN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "ATTN_0",
+            "REASONING_CORE",
+            "REASONING_CORE"
+          ],
+          "mean_coherence": 0.4943,
+          "early_exit": false
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    },
+    "monotonic_baseline": {
+      "val_loss": 4.79,
+      "val_perplexity": 120.3,
+      "avg_hops_per_sequence": 6.0,
+      "avg_forward_hops": 5.0,
+      "avg_backward_hops": 0.0,
+      "avg_self_loops": 1.0,
+      "avg_reasoning_hops": 0.0,
+      "early_exits_count": 0,
+      "attention_module_ratio": 0.5,
+      "node_visitation_distribution": [
+        98,
+        98,
+        98,
+        98,
+        98,
+        98,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        {
+          "batch_idx": 0,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "trajectory_names": [
+            "ATTN_0",
+            "FFN_0",
+            "ATTN_1",
+            "FFN_1",
+            "ATTN_2",
+            "FFN_2"
+          ],
+          "mean_coherence": 0.5013,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 1,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "trajectory_names": [
+            "ATTN_0",
+            "FFN_0",
+            "ATTN_1",
+            "FFN_1",
+            "ATTN_2",
+            "FFN_2"
+          ],
+          "mean_coherence": 0.5035,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 2,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "trajectory_names": [
+            "ATTN_0",
+            "FFN_0",
+            "ATTN_1",
+            "FFN_1",
+            "ATTN_2",
+            "FFN_2"
+          ],
+          "mean_coherence": 0.5159,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 3,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "trajectory_names": [
+            "ATTN_0",
+            "FFN_0",
+            "ATTN_1",
+            "FFN_1",
+            "ATTN_2",
+            "FFN_2"
+          ],
+          "mean_coherence": 0.5345,
+          "early_exit": false
+        },
+        {
+          "batch_idx": 4,
+          "hops": 6,
+          "trajectory_nodes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "trajectory_names": [
+            "ATTN_0",
+            "FFN_0",
+            "ATTN_1",
+            "FFN_1",
+            "ATTN_2",
+            "FFN_2"
+          ],
+          "mean_coherence": 0.505,
+          "early_exit": false
+        }
+      ],
+      "evaluated_tokens": 199936,
+      "evaluated_batches": 98
+    }
+  },
+  "findings": {
+    "navitrit_nm_minus_monotonic_val_loss": -1.6277,
+    "navitrit_nm_beats_monotonic": true,
+    "attention_ratio": 0.4694,
+    "reasoning_hops_per_sequence": 2.14,
+    "has_backward_hops": true,
+    "has_self_loops": true,
+    "has_reasoning_hops": true
+  }
+}

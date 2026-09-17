@@ -57,6 +57,8 @@ stateDiagram-v2
     Gate11B_FlowRoute : Gate 11-B - Flow-Reasoned Multi-Hop (PASSED)
     Gate12_Papers: Gate 12 - Multi-Paper Drafting (PASSED)
     Gate13_NaviTrit: Gate 13 - Track D NaviTrit Graph Routing (PASSED)
+    Gate13B_Judge: Gate 13-B - LLM Judge Alignment (PASSED)
+    Gate14_NaviTritNM: Gate 14 - Track D-3 NaviTrit-NM Reasoning (PASSED)
     PhaseII_TrackE : Phase II - Liquid & Mamba Flow (FUTURE)
     PhaseIII_TrackF : Phase III - Ternary on Metal (FUTURE)
 
@@ -73,7 +75,9 @@ stateDiagram-v2
     Gate10_Sud9 --> Gate11_Route
     Gate11_Route --> Gate11B_FlowRoute
     Gate11B_FlowRoute --> Gate13_NaviTrit
-    Gate13_NaviTrit --> Gate12_Papers
+    Gate13_NaviTrit --> Gate13B_Judge
+    Gate13B_Judge --> Gate14_NaviTritNM
+    Gate14_NaviTritNM --> Gate12_Papers
     Gate12_Papers --> PhaseII_TrackE
     PhaseII_TrackE --> PhaseIII_TrackF
 ```
@@ -94,6 +98,7 @@ stateDiagram-v2
 | **Gate 12** | Multi-Paper Drafting & Artifact Release | Compiled 4 full research papers and Executive Synthesis: Paper 1 (Systems/BitRoute), Paper 2 (Reasoning/FlowTrit), Paper 3 (Architecture/FlowRoute), Paper 4 (Graph/NaviTrit), Synthesis (`research/paper-*.md`, `research/synthesis-executive-summary.md`). Automated corpus audit passed (`experiments/verify_gate12_corpus.py`). | **PASSED** |
 | **Gate 13** | Track D: Non-Monotonic Token Navigation (NaviTrit) | Hardened stationary module graph $G$ with Attention Diversity ($\ge 40\%$) and Coherence Certification. **Val loss 3.0166 vs 3.6302 monotonic baseline (PPL 20.42 vs 37.72, -17.30 PPL recovery; crushes random walk 79.04 PPL)**. Trajectory: FFN 0 $\to$ Attn 2 $\to$ Attn 2 $\to$ Attn 2 $\to$ Attn 1 (backward hop) $\to$ FFN 2 (66.7% Attention ratio, 0.90 layer entropy). **Linguistic audit: Distinct-1: 0.781, Distinct-2: 0.974, Repetition-3: 0.000**, producing fluent English narrative children's stories without premature resets. Ledgers: `outputs/navitrit-hardened-results.json`, `outputs/language-coherence-audit.json`. | **PASSED** |
 | **Gate 13-B**| Track D-2: LLM-as-a-Judge Router Alignment (GRPO) | Local TinyLlama-1.1B-Chat judge on CUDA (zero external API). Group Relative Policy Optimization (GRPO, $K=4$) aligns router navigation weights on narrative coherence. Achieves lower judge conditional cross-entropy (3.496 vs 3.545) and wins commonsense physical grounding tests (e.g. kites flying into *the sky* vs *the house*). Ledgers: `outputs/navitrit-judge-rl-results.json`, `outputs/judge-alignment-audit.json`. | **PASSED** |
+| **Gate 14** | Track D-3: NaviTrit-NM Training & Reasoning Track | 45.61M params. Hop-Conditioned Tile Modulation (FiLM $\gamma_t, \beta_t$), Dedicated Recurrent Reasoning Core ($v_{\text{reason}}$), and Hidden-State Contraction Regularization ($\mathcal{L}_{\text{state\_fpf}} < 0.004$). **Val loss 3.1623 vs 4.7900 monotonic baseline (PPL 23.63 vs 120.30, -1.6277 loss win)**. Active reasoning core usage: **2.14 reasoning hops/seq** (trajectory: FFN 0 $\to$ Attn 0 $\to$ Attn 0 $\to$ Reasoning $\to$ Reasoning $\to$ Attn 0, 46.94% Attention ratio). Entity persistence audit: preserved target red ball toy with lower judge loss (2.34 vs 2.59 base model). Ledgers: `outputs/navitrit-nm-results.json`, `outputs/navitrit-nm-coherence-audit.json`. | **PASSED** |
 | **Phase II** | Liquid & Mamba Ternary Flow | Track E: Zero-KV scaling and continuous-time ODE dynamics. | Queued |
 | **Phase III**| Ternary on Metal Neuromorphic | Track F: Physical memristive crossbar mapping and zero-energy skipping. | Queued |
 

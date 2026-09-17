@@ -1,0 +1,199 @@
+{
+  "status": "COMPLETED",
+  "benchmark": "Comparative Entity Persistence & Linguistic Coherence Audit",
+  "models": {
+    "base_navitrit": {
+      "mean_entity_persistence": 0.4,
+      "mean_distinct_1": 0.73
+    },
+    "navitrit_nm": {
+      "mean_entity_persistence": 0.2,
+      "mean_distinct_1": 0.745
+    }
+  },
+  "persistence_improvement_pct": -20.0,
+  "detailed_prompts": [
+    {
+      "prompt_id": "entity_ball",
+      "prompt": "One sunny day, Lily and her brother found a big, red ball.",
+      "target_entity": "ball",
+      "base_navitrit": {
+        "continuation": " It was a toy. Lily was very good and wanted to play with it.\nLily did not know what happened. She took out of the ball with the ball and opened it. She saw",
+        "diversity": {
+          "distinct_1": 0.75,
+          "distinct_2": 0.9231,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": true,
+          "found_contradictions": [],
+          "persistence_score": 1.0
+        },
+        "judge_score": 1,
+        "judge_loss": 2.5859
+      },
+      "navitrit_nm": {
+        "continuation": " She saw a big red ball in the yard. She was sad because she had lost her toy. The ball was very pretty.\nLily wanted to help the toy. She said, \"I",
+        "diversity": {
+          "distinct_1": 0.775,
+          "distinct_2": 0.9487,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": true,
+          "found_contradictions": [],
+          "persistence_score": 1.0
+        },
+        "judge_score": 1,
+        "judge_loss": 2.3359
+      },
+      "winner_persistence": "TIE"
+    },
+    {
+      "prompt_id": "spatial_kite",
+      "prompt": "The boy flew his kite high up in the",
+      "target_entity": "sky",
+      "base_navitrit": {
+        "continuation": " air and made a lotion. He was very happy and thanked his friends, \"Thank you for helping me.\"\nThe little boy came to the boy and said, \"You're welcome, Tim",
+        "diversity": {
+          "distinct_1": 0.85,
+          "distinct_2": 0.9744,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 10,
+        "judge_loss": 2.8477
+      },
+      "navitrit_nm": {
+        "continuation": " river.\nThe next day, the little girl said, \"Hi, let's look for helping the bird!\" The bird and the rabbit tried to see it. So, it was the bird again",
+        "diversity": {
+          "distinct_1": 0.75,
+          "distinct_2": 0.9744,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 1,
+        "judge_loss": 3.7051
+      },
+      "winner_persistence": "TIE"
+    },
+    {
+      "prompt_id": "character_spot",
+      "prompt": "Once upon a time, there was a little dog named Spot.",
+      "target_entity": "dog",
+      "base_navitrit": {
+        "continuation": " Spot loved to play together every day. One day, Spot found a big, red ball in the woods. He was very happy to play with his ball.\nSpot went to the park with his",
+        "diversity": {
+          "distinct_1": 0.7,
+          "distinct_2": 0.9487,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 5,
+        "judge_loss": 1.9756
+      },
+      "navitrit_nm": {
+        "continuation": " He lived in the park with his new park.\nOne day, Spot went to play with his friends. The other kids had a special day. Spot was very excited to talk. Spot ran to",
+        "diversity": {
+          "distinct_1": 0.725,
+          "distinct_2": 0.9487,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 5,
+        "judge_loss": 2.8496
+      },
+      "winner_persistence": "TIE"
+    },
+    {
+      "prompt_id": "intent_tower",
+      "prompt": "Tim wanted to build a big tower with his",
+      "target_entity": "blocks",
+      "base_navitrit": {
+        "continuation": " friend, Sam. Sam did not want to play with the blocks.\nSam came to Sam. They made a big, and they were happy. When Sam was so happy. They played with the",
+        "diversity": {
+          "distinct_1": 0.675,
+          "distinct_2": 0.8974,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": true,
+          "found_contradictions": [],
+          "persistence_score": 1.0
+        },
+        "judge_score": 5,
+        "judge_loss": 3.3477
+      },
+      "navitrit_nm": {
+        "continuation": " new friend. He called a secret. \"Hi, Sam! I was a magic bird.\"\nTim saw Tom and Sue wanted to catch the bird, so he ran up at the bird. The",
+        "diversity": {
+          "distinct_1": 0.825,
+          "distinct_2": 0.9744,
+          "repetition_3": 0.0
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 1,
+        "judge_loss": 4.5156
+      },
+      "winner_persistence": "BASE"
+    },
+    {
+      "prompt_id": "biological_bird",
+      "prompt": "The little bird looked out of the nest and saw",
+      "target_entity": "tree",
+      "base_navitrit": {
+        "continuation": " that the bird was scared of the bird. The bird said, \"I am sorry. I will help you.\" The bird said, \"The moral of things can make you can fix it.\"\n",
+        "diversity": {
+          "distinct_1": 0.675,
+          "distinct_2": 0.8718,
+          "repetition_3": 0.0789
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [
+            "car"
+          ],
+          "persistence_score": 0.0
+        },
+        "judge_score": 10,
+        "judge_loss": 3.1816
+      },
+      "navitrit_nm": {
+        "continuation": " a big fish in the sky. The bird, and said, \"I can't find it.\" The bird's friend, and the bird flew up a bird. The cat was happy and said,",
+        "diversity": {
+          "distinct_1": 0.65,
+          "distinct_2": 0.8718,
+          "repetition_3": 0.0263
+        },
+        "persistence": {
+          "preserved_target": false,
+          "found_contradictions": [],
+          "persistence_score": 0.0
+        },
+        "judge_score": 1,
+        "judge_loss": 3.2422
+      },
+      "winner_persistence": "TIE"
+    }
+  ]
+}
