@@ -9,15 +9,15 @@
   "note": "measured, batch 1, no KV cache, full recompute per generated token",
   "overall_bypass_fraction": 0.0292,
   "overall_exit_fraction": 0.0528,
-  "overall_tokens_per_second": 67.92,
+  "overall_tokens_per_second": 83.57,
   "prompts": [
     {
       "prompt": "Once upon a time, there was a little dog named Spot.",
       "generated_text": "Once upon a time, there was a little dog named Spot. Spot loved to play with his friends. One day, Spot saw a big, red ball. He wanted to play with it, but it was too big.\nSpot's friend, a little girl",
       "prompt_tokens": 13,
       "new_tokens": 40,
-      "generation_time_s": 0.9,
-      "tokens_per_second": 44.45,
+      "generation_time_s": 0.6606,
+      "tokens_per_second": 60.55,
       "bypass_fraction": 0.0167,
       "exit_fraction": 0.0167,
       "token_logs": [
@@ -628,8 +628,8 @@
       "generated_text": "The sun was bright and the sun and the sun was shining, and the sun was shining, and the sun.\nOne day, while they were playing, the sun was shining, the sky was a big, and a",
       "prompt_tokens": 5,
       "new_tokens": 40,
-      "generation_time_s": 0.4352,
-      "tokens_per_second": 91.92,
+      "generation_time_s": 0.4473,
+      "tokens_per_second": 89.43,
       "bypass_fraction": 0.0125,
       "exit_fraction": 0.0292,
       "token_logs": [
@@ -1236,8 +1236,8 @@
       "generated_text": "Lily wanted to help her mom. She said \"Mom, \"Mom, \"Mommy, I'm sorry, but I'm sorry, I'm sorry. I'm sorry, I'm sorry. I'm sorry",
       "prompt_tokens": 4,
       "new_tokens": 40,
-      "generation_time_s": 0.4315,
-      "tokens_per_second": 92.7,
+      "generation_time_s": 0.3281,
+      "tokens_per_second": 121.91,
       "bypass_fraction": 0.0583,
       "exit_fraction": 0.1125,
       "token_logs": [
