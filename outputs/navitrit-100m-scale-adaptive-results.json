@@ -1,0 +1,187 @@
+{
+  "status": "COMPLETED",
+  "gate": "Gate 15 (Track D-4)",
+  "model_size": "100m",
+  "total_parameters": 129700571,
+  "train_time_s": 431.04,
+  "cli": {
+    "model_size": "100m",
+    "data_path": "data/multicorpus_10m.pt",
+    "train_steps": 2500,
+    "stage1_steps": 800,
+    "batch_size": 16,
+    "seq_len": 128,
+    "lr": 0.0004,
+    "max_hops": 6,
+    "seed": 20260917,
+    "json": "outputs/navitrit-100m-scale-adaptive-results.json",
+    "save_checkpoint": true,
+    "disable_scale_adaptive": false
+  },
+  "arms": {
+    "navitrit_learned": {
+      "val_loss": 0.7199,
+      "val_perplexity": 2.05,
+      "avg_hops": 6,
+      "attention_ratio": 0.55,
+      "node_visitations": [
+        2,
+        37,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        80,
+        0,
+        2,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        115,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          1,
+          22,
+          11,
+          22,
+          11,
+          22
+        ],
+        [
+          1,
+          22,
+          11,
+          22,
+          11,
+          22
+        ],
+        [
+          1,
+          22,
+          11,
+          22,
+          11,
+          22
+        ],
+        [
+          1,
+          22,
+          11,
+          22,
+          11,
+          22
+        ],
+        [
+          1,
+          22,
+          11,
+          22,
+          11,
+          22
+        ]
+      ]
+    },
+    "monotonic_baseline": {
+      "val_loss": 0.3329,
+      "val_perplexity": 1.4,
+      "avg_hops": 6,
+      "attention_ratio": 0.5,
+      "node_visitations": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_trajectories": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ]
+    }
+  },
+  "findings": {
+    "val_loss_delta": 0.387,
+    "navitrit_beats_monotonic": false,
+    "attention_ratio": 0.55,
+    "reasoning_core_visitations": 0,
+    "scale_adaptive": {
+      "enabled": true,
+      "lambda_attn_div": 1.7321,
+      "lambda_entropy": 0.3464,
+      "ffn_damping": 1.6094
+    }
+  }
+}

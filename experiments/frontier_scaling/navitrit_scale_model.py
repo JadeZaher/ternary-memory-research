@@ -81,16 +81,52 @@ class NaviTritScaleConfig:
     
     # Regularization
     min_attn_ratio: float = 0.40       # Minimum total Attention visitation budget
-    lambda_attn_div: float = 0.50      # Penalty for starving Attention tiles
-    lambda_layer_entropy: float = 0.20 # Penalty for layer collapse
+    lambda_attn_div: float = 0.50      # Base penalty for starving Attention tiles (at 10M reference)
+    lambda_layer_entropy: float = 0.20 # Base penalty for layer collapse (at 10M reference)
     lambda_cohere: float = 0.10        # Supervised coherence loss weight
     lambda_hop: float = 0.02           # Step budget penalty
     lambda_fpf: float = 0.01           # Internal reasoning core contraction loss
     lambda_state_fpf: float = 0.05     # Hidden-state contraction penalty on self-loops
     tau_cohere: float = 0.85           # Exit coherence threshold
 
+    # Scale-Adaptive Generalization Framework
+    use_scale_adaptive: bool = True    # Enable scale-adaptive regularization and anti-gravity shield
+    d_ref: int = 192                   # Reference hidden dimension (NaviTrit-10M baseline)
+    l_ref: int = 4                     # Reference layer count (NaviTrit-10M baseline)
 
-def get_scale_config(model_size: str = "10m", max_hops: int = 6) -> NaviTritScaleConfig:
+    @property
+    def scale_dim_ratio(self) -> float:
+        """Ratio of hidden dimension to reference 10M baseline: R_dim = d / d_0."""
+        return self.hidden_size / float(self.d_ref)
+
+    @property
+    def scale_depth_ratio(self) -> float:
+        """Ratio of depth (layers) to reference 10M baseline: R_depth = L / L_0."""
+        return self.num_layers / float(self.l_ref)
+
+    @property
+    def scale_adaptive_lambda_attn_div(self) -> float:
+        """Dimension & depth scaled attention diversity weight:
+        lambda_attn(d, L) = lambda_0 * sqrt(R_dim) * sqrt(R_depth)
+        Balances the O(sqrt(d)) growth of ||nabla_h L_CE|| against the dimensionless diversity penalty.
+        """
+        return self.lambda_attn_div * math.sqrt(self.scale_dim_ratio) * math.sqrt(self.scale_depth_ratio)
+
+    @property
+    def scale_adaptive_lambda_entropy(self) -> float:
+        """Depth scaled layer entropy weight."""
+        return self.lambda_layer_entropy * math.sqrt(self.scale_depth_ratio)
+
+    @property
+    def scale_adaptive_ffn_damping(self) -> float:
+        """Topological Anti-Gravity Shield:
+        Logit bias damping consecutive FFN transitions to counteract the steep FFN representational basin:
+        alpha_damp(d) = ln(1 + R_dim)
+        """
+        return math.log(1.0 + self.scale_dim_ratio)
+
+
+def get_scale_config(model_size: str = "10m", max_hops: int = 6, use_scale_adaptive: bool = True) -> NaviTritScaleConfig:
     """Factory helper to return verified configurations for 10M or 100M scale."""
     if model_size == "10m":
         return NaviTritScaleConfig(
@@ -103,6 +139,7 @@ def get_scale_config(model_size: str = "10m", max_hops: int = 6) -> NaviTritScal
             max_hops=max_hops,
             d_nav_route=64,
             d_hop_embed=32,
+            use_scale_adaptive=use_scale_adaptive,
         )
     elif model_size == "100m":
         return NaviTritScaleConfig(
@@ -115,6 +152,7 @@ def get_scale_config(model_size: str = "10m", max_hops: int = 6) -> NaviTritScal
             max_hops=max_hops,
             d_nav_route=128,
             d_hop_embed=64,
+            use_scale_adaptive=use_scale_adaptive,
         )
     else:
         raise ValueError(f"Unknown model_size: {model_size}. Choose '10m' or '100m'.")
@@ -258,6 +296,17 @@ class EnhancedFlowNavigationController(nn.Module):
         r_next = self.ln_route(r + self.config.flow_dt * dr)
 
         logits = self.node_head(r_next)  # (B, num_nodes)
+
+        # Topological Anti-Gravity Shield:
+        # If previous node was an FFN tile (odd index < 2*num_layers),
+        # apply scale-adaptive logit damping alpha_damp to candidate FFN tiles
+        if self.config.use_scale_adaptive and prev_node < 2 * self.config.num_layers:
+            is_prev_ffn = (prev_node % 2 == 1)
+            if is_prev_ffn:
+                alpha = self.config.scale_adaptive_ffn_damping
+                ffn_indices = [2 * l + 1 for l in range(self.config.num_layers)]
+                logits = logits.clone()
+                logits[:, ffn_indices] = logits[:, ffn_indices] - alpha
 
         if self.training:
             action_soft = F.gumbel_softmax(logits, tau=temperature, hard=hard)
@@ -468,18 +517,30 @@ class NaviTritScaleForCausalLM(nn.Module):
         # Compute trajectory regularization losses
         actions_cat = torch.stack(history_actions, dim=1) if len(history_actions) > 0 else torch.zeros(B, 1, self.num_nodes, device=device)
         
-        # Attention diversity
+        # Attention diversity with scale-adaptive weighting
+        eff_lambda_attn = (
+            self.config.scale_adaptive_lambda_attn_div
+            if self.config.use_scale_adaptive
+            else self.config.lambda_attn_div
+        )
         attn_indices = [2 * l for l in range(self.num_layers)]
         attn_visitation = actions_cat[..., attn_indices].sum(dim=-1).mean()
-        loss_attn_div = self.config.lambda_attn_div * F.relu(self.config.min_attn_ratio - attn_visitation) ** 2
+        loss_attn_div = eff_lambda_attn * F.relu(self.config.min_attn_ratio - attn_visitation) ** 2
 
-        # Layer entropy
+        # Scale-invariant Normalized Graph Entropy
+        eff_lambda_entropy = (
+            self.config.scale_adaptive_lambda_entropy
+            if self.config.use_scale_adaptive
+            else self.config.lambda_layer_entropy
+        )
         layer_prob = []
         for l in range(self.num_layers):
             p_l = actions_cat[..., [2 * l, 2 * l + 1]].sum(dim=-1).mean()
             layer_prob.append(p_l + 1e-6)
         layer_prob_tensor = torch.stack(layer_prob)
-        loss_entropy = self.config.lambda_layer_entropy * (layer_prob_tensor * torch.log(layer_prob_tensor)).sum()
+        norm_factor = math.log(max(2, self.num_layers))
+        norm_entropy = (layer_prob_tensor * torch.log(layer_prob_tensor)).sum() / norm_factor
+        loss_entropy = eff_lambda_entropy * norm_entropy
 
         loss_hop_budget = self.config.lambda_hop * float(len(history_nodes))
 

@@ -2,40 +2,40 @@
   {
     "type": "story",
     "prompt": "One sunny day, Lily and her brother found a big, red ball.",
-    "continuation": " She was very happy. She was very happy. She was very happy and happy. She was very happy and happy and happy and happy and said, \"Thank you, but",
+    "continuation": " The big tree and said, \"I can make a big tree. The dog. The dog. The dog's mom. The dog. The dog. The dog. The",
     "trajectory": [
+      17,
       2,
-      15,
-      15,
-      15,
-      15,
-      15
+      13,
+      22,
+      11,
+      22
     ]
   },
   {
     "type": "story",
     "prompt": "Once upon a time, there was a little dog named Spot.",
-    "continuation": " One day, she loved to see a little girl named Mia. One day, she found a big dog named Mia loved to play with her mom. She had a big dog",
+    "continuation": "\nThe cat saw a big tree. The little girl named Tim and the little girl named Tim and the count by step.\nStep\nStep 2 to Tom and the count",
     "trajectory": [
+      17,
       2,
-      15,
-      15,
-      15,
-      15,
-      15
+      13,
+      0,
+      11,
+      22
     ]
   },
   {
     "type": "math",
     "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many apples remain?\nReasoning:",
-    "continuation": " Let's track the count step by step.\nStep 1: Mia begins with 38 apples.\nStep 2: After gave 7 to Emma, 38 - 7 = 45 apples",
+    "continuation": " After gave 2 to Tom, 43 - 4 to Tom, so 17 = 20 stickers remain.\nStep 4: Then Lily, so 17 + 20 stickers.\nStep 4",
     "trajectory": [
+      17,
       2,
+      13,
       0,
-      15,
-      15,
-      15,
-      15
+      11,
+      22
     ]
   },
   {
@@ -44,11 +44,11 @@
     "continuation": "                                   ",
     "trajectory": [
       2,
-      1,
-      15,
-      15,
-      15,
-      15
+      13,
+      0,
+      11,
+      22,
+      11
     ]
   }
 ]

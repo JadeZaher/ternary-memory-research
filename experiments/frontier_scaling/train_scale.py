@@ -164,6 +164,7 @@ def main():
     parser.add_argument("--seed", type=int, default=20260917)
     parser.add_argument("--json", type=str, default="outputs/navitrit-10m-results.json")
     parser.add_argument("--save_checkpoint", action="store_true", default=True)
+    parser.add_argument("--disable_scale_adaptive", action="store_true", default=False)
     args = parser.parse_args()
 
     # Set seed
@@ -183,10 +184,15 @@ def main():
     print(f"Dataset loaded: {len(train_tokens):,} train tokens, {len(val_tokens):,} val tokens.")
 
     # Instantiate model
-    cfg = get_scale_config(args.model_size, max_hops=args.max_hops)
+    use_adaptive = not args.disable_scale_adaptive
+    cfg = get_scale_config(args.model_size, max_hops=args.max_hops, use_scale_adaptive=use_adaptive)
     model = NaviTritScaleForCausalLM(cfg).to(device)
     total_params = model.count_parameters()
     print(f"NaviTrit-{args.model_size.upper()} initialized: {total_params:,} parameters ({total_params/1e6:.2f}M)")
+    if use_adaptive:
+        print(f"  Scale-Adaptive Active: lambda_attn={cfg.scale_adaptive_lambda_attn_div:.4f}, lambda_entropy={cfg.scale_adaptive_lambda_entropy:.4f}, ffn_damping={cfg.scale_adaptive_ffn_damping:.4f}")
+    else:
+        print("  Scale-Adaptive Disabled (Fixed Base Weights)")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
     train_iter = iter(train_loader)
@@ -305,6 +311,12 @@ def main():
             "navitrit_beats_monotonic": res_learned["val_loss"] < res_monotonic["val_loss"],
             "attention_ratio": res_learned["attention_ratio"],
             "reasoning_core_visitations": res_learned["node_visitations"][model.node_reasoning],
+            "scale_adaptive": {
+                "enabled": use_adaptive,
+                "lambda_attn_div": round(cfg.scale_adaptive_lambda_attn_div, 4) if use_adaptive else cfg.lambda_attn_div,
+                "lambda_entropy": round(cfg.scale_adaptive_lambda_entropy, 4) if use_adaptive else cfg.lambda_layer_entropy,
+                "ffn_damping": round(cfg.scale_adaptive_ffn_damping, 4) if use_adaptive else 0.0,
+            }
         },
     }
 
