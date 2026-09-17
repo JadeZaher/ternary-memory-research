@@ -76,7 +76,15 @@
       }
     },
     "phase_2_dynamical_scaling": {
-      "track_d": {
+      "track_d_navitrit": {
+        "paper_title": "Beyond the Pipeline: Non-Monotonic Token Navigation and Stationary Attractor Routing in Low-Bit Neural Architectures",
+        "model_name": "NaviTrit",
+        "target_venues": ["ICLR", "NeurIPS"],
+        "mechanism": "Bidirectional layer hopping (forward/backward/self-loop), repeated activations of high-capacity layers, and certified attractor early exits via Global Flow-Reasoned Navigation Controller",
+        "status": "SPECIFIED_IN_RESEARCH_DOCS",
+        "records": ["research/layer-navigation-flow-theory.md"]
+      },
+      "track_e_liquid_mamba": {
         "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
         "model_name": "Liquid-Mamba-Trit",
         "target_venues": ["ICLR", "NeurIPS"],
@@ -164,6 +172,12 @@
       "track": "Phase I/I-B Comprehensive Paper Drafting & Artifact Compilation",
       "status": "IN_PROGRESS",
       "records": []
+    },
+    {
+      "gate": "Gate 13",
+      "track": "Phase II Track D: Non-Monotonic Token Navigation & Graph Routing (NaviTrit)",
+      "status": "SPECIFIED_IN_RESEARCH_DOCS",
+      "records": ["research/layer-navigation-flow-theory.md"]
     }
   ]
 }

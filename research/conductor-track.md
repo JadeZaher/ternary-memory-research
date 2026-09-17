@@ -56,8 +56,9 @@ stateDiagram-v2
     Gate11_Route : Gate 11 - Track C FlowRoute Combined (PASSED)
     Gate11B_FlowRoute : Gate 11-B - Flow-Reasoned Multi-Hop (PASSED)
     Gate12_Papers: Gate 12 - Multi-Paper Drafting (ACTIVE)
-    PhaseII_TrackD : Phase II - Liquid & Mamba Flow (FUTURE)
-    PhaseIII_TrackE : Phase III - Ternary on Metal (FUTURE)
+    Gate13_NaviTrit: Gate 13 - Track D NaviTrit Graph Routing (PLANNED)
+    PhaseII_TrackE : Phase II - Liquid & Mamba Flow (FUTURE)
+    PhaseIII_TrackF : Phase III - Ternary on Metal (FUTURE)
 
     [*] --> Gate1_Math
     Gate1_Math --> Gate2_Simulation
@@ -72,8 +73,9 @@ stateDiagram-v2
     Gate10_Sud9 --> Gate11_Route
     Gate11_Route --> Gate11B_FlowRoute
     Gate11B_FlowRoute --> Gate12_Papers
-    Gate12_Papers --> PhaseII_TrackD
-    PhaseII_TrackD --> PhaseIII_TrackE
+    Gate12_Papers --> Gate13_NaviTrit
+    Gate13_NaviTrit --> PhaseII_TrackE
+    PhaseII_TrackE --> PhaseIII_TrackF
 ```
 
 | Gate | Stage | Deliverables & Verified Metrics | Status |
@@ -90,5 +92,6 @@ stateDiagram-v2
 | **Gate 11** | Track C: FlowRoute Combined Dual-Axis | Merged recurrent denoiser with TwoStateLayerRouter; **39.6% - 52.7% multiplicative compute savings** (fewer steps $\times$ fewer layers). | **PASSED** |
 | **Gate 11-B** | Flow-Reasoned Dynamic Routing & Multi-Hop | Continuous attractor routing $dr/dt = v_\phi$; decoupled Attention/FFN execution. **Val loss 2.98 vs 3.02 full baseline (-0.04 loss / -0.81 PPL advantage with 16.7% compute saved); crushes random coin (3.36 loss / 28.78 PPL)**. Uncovers early attention redundancy (Layers 0, 1, 3). | **PASSED** |
 | **Gate 12** | Multi-Paper Drafting & Artifact Release | Compile 3 paper packages: Paper 1 (Systems/BitRoute), Paper 2 (Reasoning/FlowTrit), Paper 3 (Dual-Axis/FlowRoute). | **ACTIVE** |
-| **Phase II** | Liquid & Mamba Ternary Flow | Track D: Zero-KV scaling and continuous-time ODE dynamics (includes deferred multi-hop routing). | Queued |
-| **Phase III**| Ternary on Metal Neuromorphic | Track E: Physical memristive crossbar mapping and zero-energy skipping. | Queued |
+| **Gate 13** | Track D: Non-Monotonic Token Navigation (NaviTrit) | Bidirectional layer hopping ($l \to l-k, l \to l, l \to l+k$), repeated layer activations, stationary crossbar execution. Spec: `research/layer-navigation-flow-theory.md`. | **PLANNED** |
+| **Phase II** | Liquid & Mamba Ternary Flow | Track E: Zero-KV scaling and continuous-time ODE dynamics. | Queued |
+| **Phase III**| Ternary on Metal Neuromorphic | Track F: Physical memristive crossbar mapping and zero-energy skipping. | Queued |
