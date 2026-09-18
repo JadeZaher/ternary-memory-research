@@ -229,6 +229,23 @@
       "math_loss": 4.373,
       "math_ppl": 79.28,
       "mean_loss": 3.2208
+    },
+    {
+      "step": 2500,
+      "train_loss": 2.3976,
+      "train_ce": 2.3974,
+      "lr": 5.0692233104181636e-05,
+      "grad_norm": 0.928,
+      "elapsed_s": 1872.4,
+      "tokens_seen": 20480000,
+      "peak_vram_gb": 3.91,
+      "tinystories_loss": 2.1883,
+      "tinystories_ppl": 8.92,
+      "code_loss": 3.0258,
+      "code_ppl": 20.61,
+      "math_loss": 4.3228,
+      "math_ppl": 75.4,
+      "mean_loss": 3.179
     }
   ]
 }

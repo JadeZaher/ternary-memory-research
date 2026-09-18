@@ -4,7 +4,7 @@ Non-monotonic, history-conditioned traversal of a stationary ternary weight bloc
 {−1, 0, +1} weights that never leave on-chip memory yield more function per stored bit, and less compute
 per token, when each token chooses its own path through the block and reinterprets the weights along the way?
 
-**Author:** Jade Zaher · **Status:** active research, single-GPU (RTX 4060, 8 GB) · **License:** MIT (code), CC BY 4.0 (research documents)
+**Author:** Ahmed Zaher · **Status:** active research, single-GPU (RTX 4060, 8 GB) · **License:** MIT (code), CC BY 4.0 (research documents)
 
 ---
 
