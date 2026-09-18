@@ -4,7 +4,7 @@ Prepared 2026-09-15. Status: Multi-phase roadmap spanning foundational transform
 
 ---
 
-> **Status correction (2026-09-18).** Gates 15-23 accuracy metrics are contaminated (see [`research/hardening-2026-09-18-heldout.md`](hardening-2026-09-18-heldout.md)); Gate 23 had zero training steps. The gate table below is retained as history. New evidence must come from `experiments/unified_scaling/train_navitrit_unified.py` on `data/clean`.
+> **Status correction (2026-09-18).** Gates 15-23 accuracy metrics were internal working results on a contaminated corpus (see [`research/hardening-2026-09-18-heldout.md`](hardening-2026-09-18-heldout.md)); Gate 23 had zero training steps. The gate table below is the project's chronological record. New evidence must come from `experiments/unified_scaling/train_navitrit_unified.py` on `data/clean`.
 
 ## 1. Master Phase & Track Architecture
 

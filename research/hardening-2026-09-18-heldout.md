@@ -9,7 +9,7 @@ status: findings verified; clean protocol + rebuilt model in place; pilot ablati
 
 **Verdict in one line.** The architecture direction (weight-tied looped ternary block + per-loop low-rank
 weight modulation + per-token depth routing) is sound and has independent support in the literature, but
-**none of the accuracy evidence in Gates 15-23 survives a held-out test**: every reported perplexity is a
+**none of the internal accuracy evidence from Gates 15-23 (working results, never published) survives a held-out test**: every reported perplexity is a
 memorisation score on a templated corpus, the Gemini benchmark prompts are training templates, and the
 Gate 23 model had never been trained (its training script stopped at "Training Engine Ready"). The
 efficiency claims are partly real (looping, packed footprint, Mamba O(S)) and partly not implemented

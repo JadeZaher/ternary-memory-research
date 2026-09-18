@@ -1,6 +1,6 @@
 # Deep Dive 20: Looped Dynamic Weight Parameterization (Looped-DWP)
 
-> **Status correction (2026-09-18).** The accuracy metrics in this document (perplexities, Gemini judge scores, and any comparison built on them) were measured on a templated corpus whose validation split is 93-99% verbatim in training, and the Gate 23 model was never trained. They are retained as a record of the work, not as results. See [`research/hardening-2026-09-18-heldout.md`](../hardening-2026-09-18-heldout.md) for the held-out re-evaluation and the clean protocol that replaces this evidence.
+> **Status correction (2026-09-18).** The accuracy metrics in this document (perplexities, Gemini judge scores, and any comparison built on them) were measured on a templated corpus whose validation split is 93-99% verbatim in training, and the Gate 23 model was never trained. This was internal working output that was never published; it is kept unchanged as part of the research record, and the ideas in it are what the current experiments test. See [`research/hardening-2026-09-18-heldout.md`](../hardening-2026-09-18-heldout.md) for the held-out re-evaluation and the clean protocol that replaces this evidence.
 
 
 **Gate**: Gate 19-D2 (Phase II Track W+G: Looped Dynamic Weight Parameterization)  

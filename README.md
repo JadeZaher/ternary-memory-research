@@ -19,14 +19,18 @@ per token, when each token chooses its own path through the block and reinterpre
 | On a decontaminated 37.8M-token corpus, per-loop low-rank weight modulation (DWP) of a tied ternary block improves held-out loss by 0.11 nats over the tied baseline, and differentiable soft gating adds a further 0.07 | `outputs/navitrit-unified-{A,B,C}-*-log.json` | `research/hardening-2026-09-18-heldout.md` §9 |
 | At 24.6M training tokens, 2 loops beat 4 loops at half the compute; Mixture-of-Depths token skipping at 50% capacity does not recover that gap | `outputs/navitrit-unified-{D,E}-*-log.json` | same, §9 |
 
-## What was retracted (2026-09-18)
+## The research journey
 
-Every perplexity and LLM-judge score reported for Gates 15–23 (`research/deep-dives/10-*` through `23-*`)
-was measured on a templated synthetic corpus whose "validation" split is 93–99% verbatim in training, and
-the judge prompts were training templates. Re-scored on unseen text, those checkpoints reach perplexity
-730–2156 on Python and 4000+ on arithmetic (`outputs/heldout-clean-eval.json`). The documents are kept,
-each with a status banner, as a record of the work and of the failure mode. The full audit, the
-decontaminated protocol, and the replacement experiments are in
+This repository is the working record of the project, not a curated paper. The deep dives in
+`research/deep-dives/` are numbered in the order the work happened and none of them was published before
+this release. Dives 01–09 (ternary arithmetic, bypass routing, recurrent solvers, hardware synthesis) hold
+up. Dives 10–23 explored scaling, graph routing, looped blocks and dynamic weight parameterization on a
+synthetic multi-domain corpus; a self-audit on 2026-09-18 found that the corpus was templated, its
+validation split was 93–99% verbatim in training, and the judge prompts were training templates, so the
+perplexities and scores in those documents measure memorisation rather than language ability
+(`outputs/heldout-clean-eval.json`). Those dives are kept intact, each with a status banner, because the
+architectural ideas in them are what the current experiment tests, and because the failure mode is itself
+a finding worth recording. The audit, the decontaminated protocol, and the replacement experiments are in
 **[`research/hardening-2026-09-18-heldout.md`](research/hardening-2026-09-18-heldout.md)**.
 
 ## The current experiment
@@ -68,7 +72,7 @@ evidence and every number in the documents is traceable to one of them.
 experiments/            models, trainers, tests (bitlinear.py is the ternary STE primitive)
 experiments/unified_scaling/   current experiment (see above)
 experiments/data/       corpus builders; prepare_clean_corpus.py is the only one to use
-research/               reports; deep-dives/01-09 established, 10-23 retracted with banners
+research/               reports; deep-dives/ in chronological order (10-23 carry status banners)
 research/hardening-2026-09-18-heldout.md   audit, protocol, live results
 outputs/                JSON ledgers (evidence); checkpoints/ ignored
 ```
@@ -84,4 +88,4 @@ result here.
 ## Citation
 
 See `CITATION.cff`. If you use the decontamination protocol or the traversal model, please cite the
-repository and the hardening report rather than the retracted deep dives.
+repository and the hardening report; the earlier deep dives are working notes, not results.

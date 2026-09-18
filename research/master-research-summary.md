@@ -8,7 +8,7 @@
 
 ---
 
-> **Status correction (2026-09-18).** The held-out re-evaluation in [`research/hardening-2026-09-18-heldout.md`](hardening-2026-09-18-heldout.md) shows that every perplexity and Gemini score reported for Gates 15-23 was measured on a templated corpus whose validation split is 96-99% verbatim in training (`outputs/heldout-clean-eval.json`). Treat the numbers below as memorisation scores, not results, until the arms in that document's ablation matrix have been run on `data/clean`.
+> **Status correction (2026-09-18).** The held-out re-evaluation in [`research/hardening-2026-09-18-heldout.md`](hardening-2026-09-18-heldout.md) shows that every perplexity and Gemini score reported for Gates 15-23 was measured on a templated corpus whose validation split is 96-99% verbatim in training (`outputs/heldout-clean-eval.json`). The numbers below are internal working results (never published) that measure memorisation; they stand as the project's record until the arms in that document's ablation matrix have been run on `data/clean`.
 
 ## 1. Executive Summary & Core Research Thesis
 
