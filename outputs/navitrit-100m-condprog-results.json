@@ -1,0 +1,93 @@
+{
+  "gate": "Gate 19-D",
+  "track": "Phase II Track W: Dynamic Weight Parameterization & Weights as Conditional Programs",
+  "timestamp": "2026-09-17T22:39:05-0600",
+  "hardware": {
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4060",
+    "trainable_params": 5047504,
+    "frozen_params": 84675072,
+    "packed_trainable_mb": 1.2034187316894531,
+    "l2_cache_occupancy_pct": 5.014244715372721,
+    "functional_roles": [
+      "BIND (0)",
+      "REFINE (1)",
+      "VERIFY (2)",
+      "EMIT (3)"
+    ]
+  },
+  "training_params": {
+    "max_steps": 400,
+    "batch_size": 8,
+    "seq_len": 256,
+    "learning_rate": 0.0003,
+    "use_pcgrad": false,
+    "total_training_time_s": 97.94183778762817
+  },
+  "initial_metrics": {
+    "M_2": {
+      "loss": 6.5816082000732425,
+      "ppl": 721.6990329190503,
+      "budget": 2
+    },
+    "M_4": {
+      "loss": 6.452428150177002,
+      "ppl": 634.2404556860225,
+      "budget": 4
+    }
+  },
+  "final_metrics": {
+    "M_1": {
+      "loss": 3.780184777577718,
+      "ppl": 43.824138705677285,
+      "budget": 1
+    },
+    "M_2": {
+      "loss": 0.8811441381772359,
+      "ppl": 2.4136596874115406,
+      "budget": 2
+    },
+    "M_4": {
+      "loss": 0.7629512886206309,
+      "ppl": 2.144596212246688,
+      "budget": 4
+    },
+    "M_6": {
+      "loss": 0.858790131409963,
+      "ppl": 2.3603033086880107,
+      "budget": 6
+    }
+  },
+  "history": [
+    {
+      "step": 250,
+      "val_metrics": {
+        "M_2": {
+          "loss": 1.0106765031814575,
+          "ppl": 2.7474590512514383,
+          "budget": 2
+        },
+        "M_4": {
+          "loss": 0.8662426769733429,
+          "ppl": 2.377959285908442,
+          "budget": 4
+        }
+      }
+    },
+    {
+      "step": 400,
+      "val_metrics": {
+        "M_2": {
+          "loss": 0.8784868240356445,
+          "ppl": 2.4072543496576673,
+          "budget": 2
+        },
+        "M_4": {
+          "loss": 0.7608711928129196,
+          "ppl": 2.1401398830589944,
+          "budget": 4
+        }
+      }
+    }
+  ]
+}

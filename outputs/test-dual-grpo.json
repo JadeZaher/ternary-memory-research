@@ -2,12 +2,12 @@
   "status": "COMPLETED",
   "gate": "Gate 16-B (Dual-Controller GRPO Alignment)",
   "model_size": "100m",
-  "total_parameters": 133441302,
-  "total_steps": 600,
+  "total_parameters": 133474070,
+  "total_steps": 5,
   "rollouts_k": 4,
-  "wall_time_s": 815.32,
-  "mean_final_reward": -0.311,
-  "node_24_visitation_rate": 0.55,
+  "wall_time_s": 6.11,
+  "mean_final_reward": -0.01,
+  "node_24_visitation_rate": 0.01,
   "checkpoints": {
     "init_checkpoint": "outputs/checkpoints/navitrit-100m-trained.pt",
     "output_checkpoint": "outputs/checkpoints/navitrit-100m-dual-grpo.pt"

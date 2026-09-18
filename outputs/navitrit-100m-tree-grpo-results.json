@@ -1,0 +1,14 @@
+{
+  "model_size": "100m",
+  "steps": 600,
+  "rollouts_k": 4,
+  "tree_depth": 3,
+  "elapsed_seconds": 866.7936038970947,
+  "mean_final_reward": -0.13875,
+  "task_rewards": {
+    "math": -0.5075,
+    "code": 0.33,
+    "story": -0.0025
+  },
+  "reasoning_core_final_rate": 0.68
+}

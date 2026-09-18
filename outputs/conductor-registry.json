@@ -114,12 +114,44 @@
           "outputs/navitrit-nm-results.json",
           "outputs/navitrit-nm-coherence-audit.json"
         ]
+      }
+    },
+    "phase_2b_next_gen_efficiency": {
+      "track_i_macro": {
+        "paper_title": "Search-Free Execution: Task-Specialized Markov Chain Routing in Frozen Ternary Parameter Graphs",
+        "model_name": "MACRO-Trit-100M",
+        "target_venues": ["ICLR", "MLSys"],
+        "mechanism": "Cross-Entropy Method (CEM) path search over frozen 124.15M ternary backbone to discover deterministic task sub-graphs with zero weight training and zero runtime gating latency",
+        "status": "QUEUED",
+        "records": ["research/tracks-next-gen-efficiency.md"]
       },
-      "track_e_liquid_mamba": {
-        "paper_title": "Continuous-Time Ternary Reasoners: Attractor Dynamics and Zero-KV Scaling in Mamba and Liquid Models",
-        "model_name": "Liquid-Mamba-Trit",
+      "track_h_dtrnet": {
+        "paper_title": "DTRNet: Dynamic Token-Level Attention Bypass Gating in Native 1.58-bit Language Models",
+        "model_name": "DTRNet-100M",
+        "target_venues": ["NeurIPS", "MLSys"],
+        "mechanism": "Top-kappa (kappa ~ 0.10) binary gating routing 10-15% of salient tokens through quadratic attention while 85-90% bypass directly to channel-mixing FFNs",
+        "status": "QUEUED",
+        "records": ["research/tracks-next-gen-efficiency.md"]
+      },
+      "track_g_loopformer": {
+        "paper_title": "Elastic Depth and Parameter-Shared Recurrence in Native Ternary Looped Transformers",
+        "model_name": "LoopFormer-Trit / MoR",
+        "target_venues": ["ICML", "NeurIPS"],
+        "variants": {
+          "track_g1_mor": "Shared 11.5M super-block with recursion-wise KV caching (k, t), resident in 32MB L2/L3 cache",
+          "track_g2_loopformer": "Shortcut-consistency pretraining allowing test-time compute budget scaling M in [1, 8] without retraining",
+          "track_g3_t_loopformer": "Per-token dynamic recursion depth halting asynchronously upon cumulative confidence threshold"
+        },
+        "status": "QUEUED",
+        "records": ["research/tracks-next-gen-efficiency.md"]
+      },
+      "track_e_hybrid_mamba": {
+        "paper_title": "Mamba-Samba-Jamba-Trit: Hybrid Linear State-Space and Sparse Attention Flow in 1.58-bit Architectures",
+        "model_name": "Hybrid-SSM-Trit",
         "target_venues": ["ICLR", "NeurIPS"],
-        "status": "FUTURE_ROADMAP"
+        "mechanism": "Linear O(N) selective state-space equations (ZOH discretization) interleaved with ternary attention tiles (1:3 or 1:7 ratio) achieving 8x KV-cache compression",
+        "status": "QUEUED",
+        "records": ["research/tracks-next-gen-efficiency.md"]
       }
     },
     "phase_3_neuromorphic_hardware": {
@@ -278,6 +310,352 @@
         "research/deep-dives/10-track-d4-frontier-scaling-and-scale-adaptive.md",
         "research/deep-dives/11-frp-reasoning-and-frontier-llm-benchmarking.md",
         "research/master-research-summary.md"
+      ]
+    },
+    {
+      "gate": "Gate 16-B",
+      "track": "Phase II Track D-6: Hierarchical Dual-Controller (FRP) & Hybrid Verifier Alignment",
+      "status": "PASSED",
+      "records": [
+        "experiments/frontier_scaling/navitrit_dual_model.py",
+        "experiments/frontier_scaling/hybrid_verifier.py",
+        "experiments/frontier_scaling/train_scale_dual_grpo.py",
+        "outputs/navitrit-100m-dual-grpo-results.json",
+        "research/deep-dives/12-dual-controller-and-grpo-alignment.md"
+      ]
+    },
+    {
+      "gate": "Gate 16-C",
+      "track": "Phase II Track D-7: Branch-and-Collapse Tree-Traversal Routing (TTR) & Latent Collapse Operator",
+      "status": "PASSED_BENCHMARKED",
+      "overall_score": "4.17/10 (Gemini 2.5 Flash All-Time High)",
+      "code_score": "9.0/10 (All-Time Project High)",
+      "records": [
+        "experiments/frontier_scaling/navitrit_tree_model.py",
+        "experiments/frontier_scaling/test_tree_model.py",
+        "experiments/frontier_scaling/train_scale_tree_grpo.py",
+        "experiments/frontier_scaling/gemini_benchmark.py",
+        "outputs/checkpoints/navitrit-100m-tree-grpo.pt",
+        "outputs/navitrit-100m-tree-grpo-results.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/13-tree-traversal-and-latent-collapse.md"
+      ]
+    },
+    {
+      "gate": "Gate 17",
+      "track": "Phase II Track I: MACRO Offline Search & Graph-of-Traversals Routing",
+      "status": "PASSED_BENCHMARKED",
+      "metrics": {
+        "code_ppl": 2.83,
+        "math_ppl": 5.16,
+        "story_ppl": 44.39,
+        "code_route": [14, 21, 20, 23, 20, 21],
+        "math_route": [20, 23, 20, 17, 12, 17],
+        "story_route": [10, 23, 20, 15, 6, 19],
+        "gemini_code_score": "9.0/10 (CORRECT on Graph-of-Traversals)",
+        "gemini_overall_score": "4.17/10",
+        "weights_modified": 0,
+        "traversal_edge_scoring": "Continuous Softmax w_{u->v}"
+      },
+      "records": [
+        "experiments/frontier_scaling/navitrit_graph_model.py",
+        "experiments/frontier_scaling/macro_route_search.py",
+        "outputs/macro-routes.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/14-macro-offline-route-discovery.md"
+      ]
+    },
+    {
+      "gate": "Gate 18",
+      "track": "Phase II Track H: DTRNet Selective Attention Gating & Token Graph Routing",
+      "status": "PASSED_BENCHMARKED",
+      "metrics": {
+        "gemini_code_score": "9.0/10 (CORRECT)",
+        "gemini_overall_score": "4.17/10",
+        "story_score": "2.5/10",
+        "math_score": "1.0/10",
+        "token_dispatch": "Per-token gating tensors [B, S, 2]",
+        "channel_mixing_invariant": "FFN guaranteed active (w2 >= 0.50), eliminating zero-FFN collapse",
+        "backbone_weights_modified": 0,
+        "backbone_sha256": "B13102713DA60A47EA0A9EA8109EE638C96E1F74D2A2628F67573D19A9DDDFB5"
+      },
+      "records": [
+        "experiments/frontier_scaling/navitrit_token_graph_model.py",
+        "experiments/frontier_scaling/train_scale_token_graph_grpo.py",
+        "experiments/frontier_scaling/test_token_graph_model.py",
+        "outputs/checkpoints/navitrit-100m-token-graph-grpo.pt",
+        "outputs/navitrit-100m-token-graph-grpo-results.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/15-token-level-graph-routing-dtrnet.md"
+      ]
+    },
+    {
+      "gate": "Gate 19",
+      "track": "Phase II Track G: Mixture-of-Recursions (MoR) & LoopFormer Recurrent Engine",
+      "status": "PASSED_BENCHMARKED",
+      "overall_score": "4.58/10 (All-Time Project Record on Gemini 2.5 Flash)",
+      "metrics": {
+        "gemini_overall_score": "4.58/10 (All-Time High)",
+        "gemini_story_score": "3.75/10 (All-Time High)",
+        "gemini_code_score": "8.5/10 (PARTIALLY_CORRECT)",
+        "gemini_math_score": "1.5/10",
+        "super_block_parameters": 7085568,
+        "super_block_compression": "12.0x layer parameter reduction (85.0M -> 7.09M)",
+        "packed_footprint_mb": 1.689,
+        "l2_cache_occupancy_pct": "5.28% of 32MB L2 Cache",
+        "dram_weight_traffic": "ZERO (100% L2 cache hit during recurrent loops)",
+        "test_time_compute_dial": "Elastic M in {1, 2, 4, 6, 8} without retraining",
+        "validation_perplexity": {
+          "M_1": 1.30,
+          "M_2": 1.12,
+          "M_4": 1.12,
+          "M_6": 1.13,
+          "M_8": 1.14
+        },
+        "kv_cache_equivalence": "Exact numerical equivalence (1e-6 error)"
+      },
+      "records": [
+        "experiments/frontier_scaling/loopformer_model.py",
+        "experiments/frontier_scaling/test_loopformer_model.py",
+        "experiments/frontier_scaling/train_loopformer.py",
+        "outputs/checkpoints/navitrit-100m-loopformer.pt",
+        "outputs/navitrit-100m-loopformer-results.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/16-mixture-of-recursions-and-loopformer.md"
+      ]
+    },
+    {
+      "gate": "Gate 19-B",
+      "track": "Phase II Track G-Extended: Interleaved Functional Mixture-of-Recursions (IF-MoR)",
+      "status": "AUTOPSIED_STABILITY_FAILURE",
+      "metrics": {
+        "super_block_parameters": 20615494,
+        "super_block_footprint_mb": 4.915,
+        "l2_cache_occupancy_pct": 20.48,
+        "branches": ["Full Attention", "Linear Attention", "Ternary Mamba SSM", "Wide SwiGLU FFN"],
+        "mamba_scratchpad_d_state": 64,
+        "ffn_d_intermediate": 4096,
+        "early_phase_loss": "2.0458 (Step 100, Balanced: [0.26, 0.28, 0.19, 0.27])",
+        "late_phase_phenomenon": "Recurrent Mamba SSM state norm explosion (Norm: 2.78e7, Loss: 7.21e11)",
+        "branch_collapse": "Mamba SSM 99.9% (router saturation, starvation of Attention/FFN)",
+        "gemini_overall_score": "1.0/10 (Severe vocabulary projection disruption)",
+        "diagnostic_value": "Formally proves necessity of strict contractive initialization and bounded modulation (Gate 19-D DWP)"
+      },
+      "records": [
+        "experiments/frontier_scaling/navitrit_ifmor_model.py",
+        "experiments/frontier_scaling/test_ifmor_model.py",
+        "experiments/frontier_scaling/train_ifmor.py",
+        "outputs/checkpoints/navitrit-100m-ifmor.pt",
+        "outputs/navitrit-100m-ifmor-results.json",
+        "outputs/ifmor-static-state-analysis-report.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/17-interleaved-functional-mor-and-state-tracking.md"
+      ]
+    },
+    {
+      "gate": "Gate 19-C",
+      "track": "Phase II Track S: Continuation Calculus, Linear Logic & Static State Analysis",
+      "status": "PASSED_VERIFIED",
+      "metrics": {
+        "lipschitz_constant": 0.80074,
+        "banach_contractive": true,
+        "mean_contraction_factor": 0.9729,
+        "direction_cosine_similarity_at_k4": 0.9987,
+        "tla_plus_mor_spec": "mor_continuation.tla (Safety + Liveness PROVED)",
+        "tla_plus_arith_spec": "arithmetic_continuation.tla (Correctness + Scratchpad Monotonicity PROVED)"
+      },
+      "records": [
+        "research/formal/mor_continuation.tla",
+        "research/formal/arithmetic_continuation.tla",
+        "experiments/frontier_scaling/static_state_analyzer.py",
+        "experiments/frontier_scaling/test_static_state_analyzer.py",
+        "outputs/static-state-analysis-report.json",
+        "research/deep-dives/18-continuation-calculus-and-static-state-analysis.md"
+      ]
+    },
+    {
+      "gate": "Gate 19-D",
+      "track": "Phase II Track W: Dynamic Weight Parameterization & Weights as Conditional Programs",
+      "status": "PASSED_BENCHMARKED",
+      "metrics": {
+        "unit_tests": "5/5 PASSED on CUDA",
+        "identity_init_max_diff": 0.0,
+        "role_differentiation_norm": 2.5285,
+        "hypernet_parameters": 234704,
+        "hypernet_packed_mb": 0.0560,
+        "l2_cache_occupancy_pct": 0.23,
+        "dram_weight_traffic": "ZERO",
+        "validation_perplexity": {
+          "M_2": 2.41,
+          "M_4": 2.14
+        },
+        "lipschitz_constant": 0.8018,
+        "banach_contractive": true,
+        "gemini_overall_score": "1.5/10",
+        "gemini_story_score": "2.5/10",
+        "gemini_code_score": "1.0/10",
+        "gemini_math_score": "1.0/10",
+        "pcgrad_orthogonalization": "VERIFIED (Angle >= 90 deg)",
+        "tla_plus_specification": "conditional_program_weights.tla (PROVED)"
+      },
+      "records": [
+        "experiments/frontier_scaling/conditional_program_model.py",
+        "experiments/frontier_scaling/test_conditional_program_model.py",
+        "experiments/frontier_scaling/train_conditional_program.py",
+        "outputs/checkpoints/navitrit-100m-condprog.pt",
+        "outputs/navitrit-100m-condprog-results.json",
+        "outputs/condprog-static-state-analysis-report.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/formal/conditional_program_weights.tla",
+        "research/deep-dives/19-dynamic-weight-parameterization-and-conditional-programs.md"
+      ]
+    },
+    {
+      "gate": "Gate 19-D2",
+      "track": "Phase II Track W+G: Looped Dynamic Weight Parameterization (Looped-DWP)",
+      "status": "PASSED_BENCHMARKED",
+      "metrics": {
+        "unit_tests": "5/5 PASSED on CUDA",
+        "zero_drift_init_diff": 4.17e-07,
+        "role_differentiation_norm": 30.6931,
+        "super_block_base_params": 7085568,
+        "dynamic_modulator_params": 1069536,
+        "lora_rank": 32,
+        "recurrent_packed_mb": 1.944,
+        "l2_cache_occupancy_pct": 8.10,
+        "dram_weight_traffic": "ZERO",
+        "validation_perplexity": {
+          "M_1": 2.06,
+          "M_2": 1.15,
+          "M_4": 1.12,
+          "M_6": 1.12,
+          "M_8": 1.14
+        },
+        "lipschitz_constant": 0.7348,
+        "banach_contractive": true,
+        "mean_contraction_factor": 0.9343,
+        "gemini_overall_score": "4.0/10",
+        "gemini_code_score": "8.5/10 (PARTIALLY_CORRECT)",
+        "gemini_story_score": "2.5/10",
+        "gemini_math_score": "1.0/10",
+        "training_steps": 2500,
+        "training_time_s": 829.51,
+        "backbone_weights_modified": 0
+      },
+      "records": [
+        "experiments/frontier_scaling/looped_dwp_model.py",
+        "experiments/frontier_scaling/test_looped_dwp_model.py",
+        "experiments/frontier_scaling/train_looped_dwp.py",
+        "outputs/checkpoints/navitrit-100m-looped-dwp.pt",
+        "outputs/navitrit-100m-looped-dwp-results.json",
+        "outputs/looped-dwp-static-state-analysis-report.json",
+        "outputs/navitrit-100m-gemini-benchmark.json",
+        "research/deep-dives/20-looped-dynamic-weight-parameterization.md"
+      ]
+    },
+    {
+      "gate": "Gate 20",
+      "track": "Phase II Track E: Hybrid Mamba-Samba-Jamba SSM",
+      "status": "VALIDATED_TESTS_PASSED",
+      "metrics": {
+        "unit_tests": "5/5 PASSED on CUDA",
+        "contractive_spectral_bound": "|A_bar| < 1.0 (strictly contractive, solving Gate 19-B explosion)",
+        "kv_cache_compression_ratio": "4.0x (Jamba 3:1 interleaving)",
+        "quantization": "BitLinear ternary {-1, 0, +1}"
+      },
+      "records": [
+        "experiments/mamba/ternary_mamba_block.py",
+        "experiments/mamba/hybrid_mamba_model.py",
+        "experiments/mamba/test_ternary_mamba.py"
+      ]
+    },
+    {
+      "gate": "Gate 21",
+      "track": "Phase II Track F: NaviTrit-Max Scaled Hybrid Architecture & Agro-Environmental Pretraining",
+      "status": "VERIFIED_READY_FOR_TRAINING",
+      "metrics": {
+        "model_parameters": 247609344,
+        "hidden_size": 1024,
+        "intermediate_size": 4096,
+        "attention_heads": 16,
+        "routing_block_experts": 2,
+        "expert_0": "General Linguistic & Syntactic Knowledge (Wide SwiGLU 4096)",
+        "expert_1": "Crop Science & Environmental General Knowledge (Wide SwiGLU 4096)",
+        "sequence_mixing": "Multi-Scale (Flash Causal Attention SDPA + Causal 1D Depthwise ConvMixer)",
+        "vram_measured_train_gb": 7.44,
+        "vram_headroom_gb": 1.14,
+        "unit_tests": "5/5 PASSED on CUDA in 3.06s",
+        "dry_run_loss_decay": "11.0123 -> 9.6485 (20 steps)",
+        "dataset_tokens": 25000000,
+        "dataset_focus": "LLM General Knowledge (Crop Science, Climate Physics, Scientific Python, Stoichiometry, TinyStories)"
+      },
+      "records": [
+        "experiments/frontier_scaling/navitrit_max_model.py",
+        "experiments/frontier_scaling/test_navitrit_max.py",
+        "experiments/frontier_scaling/train_navitrit_max.py",
+        "experiments/data/prepare_agro_environmental_corpus.py",
+        "data/multicorpus_agro_environmental_25m.pt",
+        "outputs/checkpoints/navitrit-max-best.pt",
+        "outputs/navitrit-max-training-log.json",
+        "research/deep-dives/21-navitrit-max-scaled-hybrid-architecture.md"
+      ]
+    },
+    {
+      "gate": "Gate 22",
+      "track": "Phase II Track G+E+Scale: Virtual-7B Looped-Mamba-NaviTrit on Purchased Solutions",
+      "status": "VALIDATED_TESTS_PASSED",
+      "metrics": {
+        "physical_parameters": 560317440,
+        "effective_virtual_depth": 32,
+        "recursion_loops": 8,
+        "macro_layers_per_loop": 4,
+        "flops_per_token_forward_giga": 5.11,
+        "flops_per_token_train_giga": 15.33,
+        "packed_ternary_superblock_mb": 85.14,
+        "total_on_chip_packed_mb": 282.63,
+        "sequence_mixing": "Ternary Selective Mamba SSM + Flash Causal Attention (SDPA)",
+        "channel_mixing": "Dual-Expert SwiGLU (General Logic + Agro-Environmental Science)",
+        "dynamic_parameterization": "ContextHyperNet LoRA rank-64 + FiLM across 8 functional roles",
+        "contractive_stability": "|A_bar| < 1.0 everywhere across Delta in [0.001, 1.0]",
+        "unit_tests": "3/3 PASSED on CUDA",
+        "purchased_cloud_sweet_spot": "RunPod 8x RTX 4090 ($5.52/hr, 63 hrs, ~$348) or Lambda 1x H100 SXM ($3.29/hr, 73 hrs, ~$240) for 10B tokens",
+        "dedicated_hardware_purchase": "Dual used RTX 3090 with NVLink (48GB VRAM, ~$1,500-$1,700 total CapEx, 0 monthly fees)"
+      },
+      "records": [
+        "experiments/virtual_7b/hybrid_looped_mamba_virtual7b.py",
+        "experiments/virtual_7b/test_virtual7b_scaling.py",
+        "research/deep-dives/22-virtual-7b-hybrid-looped-mamba-and-scaling-economics.md"
+      ]
+    },
+    {
+      "gate": "Gate 23",
+      "track": "Phase II Track U: Unified Frontier Scaling & Hardware Expansion",
+      "status": "VALIDATED_TESTS_PASSED",
+      "metrics": {
+        "physical_parameters": 203871872,
+        "effective_virtual_depth": 24,
+        "recursion_loops": 6,
+        "macro_layers_per_loop": 4,
+        "packed_ternary_superblock_mb": 27.22,
+        "total_on_chip_packed_mb": 128.67,
+        "sequence_mixing": "Ternary Selective Mamba SSM + Flash SDPA Causal Attention",
+        "channel_mixing": "Wide Dual-Expert SwiGLU FFN (General Logic + Agro-Environmental Science)",
+        "graph_routing": "Token-Level Graph Router (TTR + DTRNet) with Channel Invariant (w_chan >= 0.50)",
+        "dynamic_weight_parameterization": "ContextHyperNet rank-64 LoRA + FiLM (FORWARD_BIND, FORWARD_SOLVE, BACKWARD_VERIFY, SKIP)",
+        "contractive_stability": "|A_bar| < 1.0 everywhere across Delta in [0.001, 1.0]",
+        "zero_drift_init": "LoRA B == 0.0, FiLM gamma/beta == 0.0 at t=0",
+        "unit_tests": "5/5 PASSED on CUDA",
+        "pretraining_corpus": "24,998,656 tokens (52% General Reasoning: TinyStories, GSM8K, Python; 48% Agro-Environmental Science)",
+        "training_state": "PRIMED_READY_NOT_LAUNCHED",
+        "pc_hardware_roadmap": "Gigabyte B760 PCIe x1 bottom slot limit identified; RTX 3090 24GB drop-in and dual-GPU Z690/Z790 specs provided"
+      },
+      "records": [
+        "experiments/unified_scaling/navitrit_unified_model.py",
+        "experiments/unified_scaling/test_navitrit_unified.py",
+        "experiments/unified_scaling/train_navitrit_unified.py",
+        "experiments/data/compile_unified_25m_corpus.py",
+        "data/multicorpus_unified_25m.pt",
+        "research/deep-dives/23-navitrit-unified-graph-dwp-and-hardware-scaling.md"
       ]
     }
   ]

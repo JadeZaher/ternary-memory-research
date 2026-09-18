@@ -8,6 +8,8 @@
 
 ---
 
+> **Status correction (2026-09-18).** The held-out re-evaluation in [`research/hardening-2026-09-18-heldout.md`](hardening-2026-09-18-heldout.md) shows that every perplexity and Gemini score reported for Gates 15-23 was measured on a templated corpus whose validation split is 96-99% verbatim in training (`outputs/heldout-clean-eval.json`). Treat the numbers below as memorisation scores, not results, until the arms in that document's ablation matrix have been run on `data/clean`.
+
 ## 1. Executive Summary & Core Research Thesis
 
 Modern Large Language Models (LLMs) are severely constrained by the **memory bandwidth wall**: during token generation, every weight parameter must be continuously transferred from off-chip DRAM to high-speed on-chip cache across an electrical bus. Simultaneously, standard transformers enforce a **rigid, monotonic pipeline**—forcing every token, regardless of its difficulty, to execute all layers sequentially from Layer 0 to Layer $L-1$.
@@ -49,8 +51,9 @@ This research program establishes a unified alternative paradigm bridging three 
 | **NaviTrit (Graph)** | Track D (Gate 13) | Non-monotonic token navigation on stationary graph with Attention Diversity | 43.90M | 9.20 MB | Non-monotonic trajectory | **Val loss 3.0166 vs 3.6302 monotonic** (-17.30 PPL recovery; 0.000 rep-3) | **PASSED** |
 | **NaviTrit (Judge-Aligned)** | Track D-2 (Gate 13-B) | Local TinyLlama-1.1B GRPO router alignment on narrative coherence | 43.90M | 9.20 MB | Policy fine-tuning | **Judge loss 3.496 vs 3.545**; wins commonsense physical grounding | **PASSED** |
 | **NaviTrit-NM** | Track D-3 (Gate 14) | Hop-Conditioned Tile Modulation (FiLM) + Dedicated Recurrent Reasoning Core | 45.61M | 9.40 MB | Autonomous latent reasoning (2.14 hops/seq) | **Val loss 3.1623 vs 4.7900 monotonic** (**-1.6277 win**); resolves ball-to-stick drift | **PASSED** |
-| **NaviTrit-100M** | Track D-4 (Gate 15) | Scale-Adaptive Generalization Framework ($\lambda_{\text{attn}}(d,L)$, Anti-Gravity Shield) | **129.70M** | 25.94 MB packed | 24 stationary tiles, 6 hops | **Val loss 0.1355 (PPL 1.15)**; 28.77 min train time on RTX 4060 (2.82 GB VRAM) | **PASSED** |
 | **NaviTrit-FRP** | Track D-5 (Gate 16) | Gemini 2.5 Flash Benchmark + Flow-Reasoned-Planner (FRP) Routing | 134.13M | 26.83 MB packed | Variable test-time compute | **Code 8.5/10 (Gemini)**; identifies arithmetic reasoning core bypass | **PASSED** |
+| **NaviTrit-Dual** | Track D-6 (Gate 16-B) | Hierarchical Dual-Controller + Hybrid Verifier Alignment (600 steps GRPO) | 133.44M | 26.69 MB packed | 124.15M frozen backbone | Diagnosed Markovian early exit collapse (0 FFNs) | **PASSED** |
+| **NaviTrit-Tree** | Track D-7 (Gate 16-C) | Branch-and-Collapse Tree-Traversal Routing (TTR) + Latent Collapse Operator | **133.44M** | 26.69 MB packed | **2x latency reduction** (3 parallel levels = 6 tiles) | **Code 9.0/10 (Gemini)**; **Overall 4.17/10 (All-Time High)** | **PASSED_BENCHMARKED** |
 
 ---
 
@@ -168,6 +171,11 @@ All technical explorations are fully expounded with theoretical rationale, mathe
 9. [`09: Memory Hierarchy, Bit-Packing & Neuromorphic Hardware Synthesis`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/deep-dives/09-memory-hierarchy-and-hardware-synthesis.md)
 10. [`10: Track D-4 — Frontier Scaling & Scale-Adaptive Generalization (10M to 100M)`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/deep-dives/10-track-d4-frontier-scaling-and-scale-adaptive.md)
 11. [`11: Track D-5 — Frontier LLM Benchmarking & FRP Reasoning Architecture`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/deep-dives/11-frp-reasoning-and-frontier-llm-benchmarking.md)
+12. [`12: Track D-6 — Hierarchical Dual-Controller Architecture & GRPO Alignment`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/deep-dives/12-dual-controller-and-grpo-alignment.md)
+13. [`13: Track D-7 — Branch-and-Collapse Tree-Traversal Routing (TTR) & Benchmark Scorecard`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/deep-dives/13-tree-traversal-and-latent-collapse.md)
+
+### Architectural Specifications & Handoffs:
+- **[`NaviTrit-100M Architecture Handoff Document`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/navitrit-tree-architecture-handoff.md)** *(Authoritative specification of the final validated TTR model)*
 
 ### Core Publication Manuscripts:
 - [`Paper 1: BitRoute Systems & Kernels`](file:///c:/Users/atooz/Programming/ternary-memory-research/research/paper-1-bitroute-systems.md)

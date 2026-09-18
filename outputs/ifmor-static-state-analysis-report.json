@@ -1,0 +1,114 @@
+{
+  "gate": "Gate 19-C",
+  "track": "Track S: Continuation Calculus & Static State Analysis",
+  "checkpoint": "outputs/checkpoints/navitrit-100m-ifmor.pt",
+  "timestamp": "navitrit-100m-ifmor.pt",
+  "formal_properties": {
+    "cps_interpreter_correspondence": "Reynolds Defunctionalized Continuation Store (KV-Cache)",
+    "continuation_selector": "Per-Token call/cc Exit Router",
+    "frame_marker": "Delimited Continuation Prompt (Loop Embedding)",
+    "halting_decidability": "Banach Fixed-Point Theorem Guarantee (L < 1)"
+  },
+  "lipschitz_analysis": {
+    "max_spectral_norm": 11.366523742675781,
+    "mean_spectral_norm": 2.4146637699820777,
+    "estimated_lipschitz_constant": 0.7071453978014214,
+    "is_contractive_guaranteed": true,
+    "banach_fixed_point_decidable": true,
+    "layer_spectral_norms": {
+      "super_block.full_attn.q_proj.weight": 1.3544456958770752,
+      "super_block.full_attn.k_proj.weight": 1.284801959991455,
+      "super_block.full_attn.v_proj.weight": 1.1761207580566406,
+      "super_block.full_attn.o_proj.weight": 1.1905381679534912,
+      "super_block.lin_attn.q_proj.weight": 1.197163462638855,
+      "super_block.lin_attn.k_proj.weight": 1.3638479709625244,
+      "super_block.lin_attn.v_proj.weight": 1.1837997436523438,
+      "super_block.lin_attn.o_proj.weight": 1.1946308612823486,
+      "super_block.mamba.in_proj.weight": 5.408037185668945,
+      "super_block.mamba.conv1d.weight": 11.366523742675781,
+      "super_block.mamba.x_proj.weight": 8.200414657592773,
+      "super_block.mamba.dt_proj.weight": 5.133889198303223,
+      "super_block.mamba.out_proj.weight": 1.9292079210281372,
+      "super_block.mamba.num_head.weight": 0.17205917835235596,
+      "super_block.ffn.gate_proj.weight": 2.3981008529663086,
+      "super_block.ffn.up_proj.weight": 2.412140369415283,
+      "super_block.ffn.down_proj.weight": 1.5280958414077759,
+      "super_block.loop_embeddings.weight": 0.6919735670089722,
+      "super_block.branch_router.0.weight": 1.9318008422851562,
+      "super_block.branch_router.2.weight": 0.6629060506820679,
+      "super_block.exit_router.0.weight": 0.7203345894813538,
+      "super_block.exit_router.2.weight": 0.6217703223228455
+    }
+  },
+  "loop_invariants": {
+    "recursion_depth_tested": 4,
+    "total_hidden_dims": 768,
+    "invariant_channels_count": 0,
+    "invariant_channel_ratio": 0.0,
+    "mean_variance_across_loops": 68336132096.0,
+    "hoisting_opportunity_detected": false,
+    "sample_invariant_channels": []
+  },
+  "reachability_and_contraction": {
+    "trajectory_steps": 6,
+    "state_norms_per_loop": [
+      2113559.0,
+      8590169.0,
+      13546675.0,
+      18385636.0,
+      23129450.0,
+      27832894.0
+    ],
+    "state_displacements": [
+      6485114.5,
+      4957623.0,
+      4839476.0,
+      4744116.5,
+      4703644.0
+    ],
+    "contraction_factors_rho": [
+      0.7644619073418056,
+      0.9761686195178617,
+      0.9802954906688245,
+      0.9914689068027736
+    ],
+    "mean_contraction_factor": 0.9280987310828164,
+    "is_empirically_contractive": true,
+    "consecutive_cosine_similarities": [
+      0.9967160224914551,
+      0.9999527931213379,
+      0.9999901056289673,
+      0.9999967217445374,
+      0.9999985694885254
+    ],
+    "out_of_vocabulary_explosion_detected": true,
+    "zero_representation_collapse_detected": false
+  },
+  "scratchpad_audit": {
+    "samples_evaluated": 2,
+    "scratchpad_records": [
+      {
+        "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many remain?\nReasoning:",
+        "expected_numeric": 11.0,
+        "decoded_scratchpad_per_loop": [
+          36.78532028198242,
+          64.88549041748047,
+          54.834571838378906,
+          54.030731201171875
+        ],
+        "final_loop_value": 54.030731201171875
+      },
+      {
+        "prompt": "Problem: A bakery bakes 24 cookies. They sell 10 in the morning and 6 in the afternoon. How many cookies are left?\nReasoning:",
+        "expected_numeric": 8.0,
+        "decoded_scratchpad_per_loop": [
+          35.92287063598633,
+          63.66206359863281,
+          54.58396530151367,
+          53.86601257324219
+        ],
+        "final_loop_value": 53.86601257324219
+      }
+    ]
+  }
+}

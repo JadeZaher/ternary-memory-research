@@ -1,5 +1,8 @@
 # Deep Dive 11: Frontier LLM Benchmarking & Flow-Reasoned-Planner (FRP) Architecture for NaviTrit
 
+> **Status correction (2026-09-18).** The accuracy metrics in this document (perplexities, Gemini judge scores, and any comparison built on them) were measured on a templated corpus whose validation split is 93-99% verbatim in training, and the Gate 23 model was never trained. They are retained as a record of the work, not as results. See [`research/hardening-2026-09-18-heldout.md`](../hardening-2026-09-18-heldout.md) for the held-out re-evaluation and the clean protocol that replaces this evidence.
+
+
 **Date:** 2026-09-17  
 **Stage:** Phase II / Gate 16  
 **Status:** VALIDATED VIA GEMINI 2.5 FLASH JUDGE ENGINE  

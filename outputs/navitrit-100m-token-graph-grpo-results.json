@@ -1,0 +1,18 @@
+{
+  "model_size": "100m",
+  "steps": 300,
+  "rollouts_k": 4,
+  "traversal_depth": 3,
+  "elapsed_seconds": 395.66005420684814,
+  "mean_final_reward": -0.2648777315020561,
+  "task_rewards": {
+    "math": -0.7673695653676986,
+    "code": 0.27130128145217897,
+    "story": 0.16881282091140748
+  },
+  "reasoning_core_visitation_rate": 0.5,
+  "mean_attention_bypass_rate": 0.020290412486064658,
+  "frozen_backbone_parameters": 124151360,
+  "trainable_router_parameters": 9405783,
+  "output_checkpoint": "outputs/checkpoints/navitrit-100m-token-graph-grpo.pt"
+}

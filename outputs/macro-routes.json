@@ -1,0 +1,386 @@
+{
+  "gate": "Gate 17",
+  "track": "Phase II Track I: MACRO Offline Search & Graph of Traversals",
+  "date": "2026-09-17",
+  "backbone_checkpoint": "outputs/checkpoints/navitrit-100m-trained.pt",
+  "tree_backbone_checkpoint": "outputs/checkpoints/navitrit-100m-tree-grpo.pt",
+  "model_size": "100m",
+  "max_hops": 6,
+  "population_size": 4,
+  "elite_size": 2,
+  "iterations": 1,
+  "monotonic_baseline": {
+    "code": {
+      "loss": 1.7869,
+      "ppl": 5.97
+    },
+    "math": {
+      "loss": 2.3854,
+      "ppl": 10.86
+    },
+    "story": {
+      "loss": 3.9257,
+      "ppl": 50.69
+    }
+  },
+  "base_dynamic_baseline": {
+    "code": {
+      "loss": 1.7134,
+      "ppl": 5.55,
+      "sample_trajectory": [
+        0,
+        13,
+        10,
+        9,
+        6,
+        15
+      ]
+    },
+    "math": {
+      "loss": 2.2311,
+      "ppl": 9.31,
+      "sample_trajectory": [
+        0,
+        13,
+        2,
+        9,
+        0,
+        19
+      ]
+    },
+    "story": {
+      "loss": 3.9071,
+      "ppl": 49.75,
+      "sample_trajectory": [
+        2,
+        9,
+        0,
+        19,
+        16,
+        19
+      ]
+    }
+  },
+  "discovered_routes": {
+    "code": [
+      12,
+      11,
+      16,
+      9,
+      12,
+      9
+    ],
+    "math": [
+      14,
+      23,
+      20,
+      17,
+      18,
+      1
+    ],
+    "story": [
+      2,
+      1,
+      20,
+      3,
+      0,
+      21
+    ]
+  },
+  "task_searches": {
+    "code": {
+      "task": "code",
+      "optimal_route": [
+        12,
+        11,
+        16,
+        9,
+        12,
+        9
+      ],
+      "optimal_loss": 1.3101,
+      "optimal_ppl": 3.71,
+      "search_time_sec": 1.0,
+      "iterations": [
+        {
+          "iteration": 1,
+          "best_loss": 1.5644,
+          "best_ppl": 4.78,
+          "elite_mean_loss": 1.5712,
+          "distribution_entropy": 2.4518,
+          "best_route": [
+            12,
+            11,
+            16,
+            9,
+            12,
+            9
+          ]
+        }
+      ]
+    },
+    "math": {
+      "task": "math",
+      "optimal_route": [
+        14,
+        23,
+        20,
+        17,
+        18,
+        1
+      ],
+      "optimal_loss": 1.8156,
+      "optimal_ppl": 6.14,
+      "search_time_sec": 0.94,
+      "iterations": [
+        {
+          "iteration": 1,
+          "best_loss": 1.8807,
+          "best_ppl": 6.56,
+          "elite_mean_loss": 1.9637,
+          "distribution_entropy": 2.455,
+          "best_route": [
+            14,
+            23,
+            20,
+            17,
+            18,
+            1
+          ]
+        }
+      ]
+    },
+    "story": {
+      "task": "story",
+      "optimal_route": [
+        2,
+        1,
+        20,
+        3,
+        0,
+        21
+      ],
+      "optimal_loss": 3.8839,
+      "optimal_ppl": 48.61,
+      "search_time_sec": 0.9,
+      "iterations": [
+        {
+          "iteration": 1,
+          "best_loss": 3.9798,
+          "best_ppl": 53.51,
+          "elite_mean_loss": 3.9832,
+          "distribution_entropy": 2.4219,
+          "best_route": [
+            2,
+            1,
+            20,
+            3,
+            0,
+            21
+          ]
+        }
+      ]
+    }
+  },
+  "task_traversal_graphs": {
+    "code": {
+      "loss": 1.4168,
+      "ppl": 4.12,
+      "traversal_pairs": [
+        [
+          2,
+          21
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          6,
+          9
+        ]
+      ],
+      "directed_edges": [
+        {
+          "src": 26,
+          "dst": 2,
+          "weight": 0.4857,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 26,
+          "dst": 21,
+          "weight": 0.5143,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 10,
+          "weight": 0.4964,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 11,
+          "weight": 0.5036,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 11,
+          "dst": 6,
+          "weight": 0.4701,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 11,
+          "dst": 9,
+          "weight": 0.5299,
+          "type": "CHAN_MIXING"
+        }
+      ],
+      "node_weight_scores": {
+        "2": 0.1622,
+        "6": 0.0104,
+        "8": 0.0922,
+        "9": 0.0118,
+        "10": 0.1628,
+        "11": 0.1929,
+        "17": 0.1593,
+        "21": 0.1712,
+        "22": 0.0373
+      }
+    },
+    "math": {
+      "loss": 1.8365,
+      "ppl": 6.27,
+      "traversal_pairs": [
+        [
+          2,
+          21
+        ],
+        [
+          0,
+          17
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "directed_edges": [
+        {
+          "src": 26,
+          "dst": 2,
+          "weight": 0.512,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 26,
+          "dst": 21,
+          "weight": 0.488,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 0,
+          "weight": 0.4894,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 17,
+          "weight": 0.5106,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 17,
+          "dst": 10,
+          "weight": 0.446,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 17,
+          "dst": 11,
+          "weight": 0.554,
+          "type": "CHAN_MIXING"
+        }
+      ],
+      "node_weight_scores": {
+        "0": 0.1624,
+        "2": 0.1701,
+        "10": 0.1377,
+        "11": 0.099,
+        "12": 0.0096,
+        "15": 0.087,
+        "17": 0.171,
+        "21": 0.1632
+      }
+    },
+    "story": {
+      "loss": 4.0581,
+      "ppl": 57.86,
+      "traversal_pairs": [
+        [
+          2,
+          21
+        ],
+        [
+          0,
+          17
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "directed_edges": [
+        {
+          "src": 26,
+          "dst": 2,
+          "weight": 0.538,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 26,
+          "dst": 21,
+          "weight": 0.462,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 0,
+          "weight": 0.4848,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 21,
+          "dst": 17,
+          "weight": 0.5152,
+          "type": "CHAN_MIXING"
+        },
+        {
+          "src": 17,
+          "dst": 10,
+          "weight": 0.4255,
+          "type": "SEQ_MIXING"
+        },
+        {
+          "src": 17,
+          "dst": 11,
+          "weight": 0.5745,
+          "type": "CHAN_MIXING"
+        }
+      ],
+      "node_weight_scores": {
+        "0": 0.161,
+        "2": 0.1797,
+        "10": 0.0712,
+        "11": 0.0955,
+        "12": 0.071,
+        "15": 0.0957,
+        "17": 0.1723,
+        "21": 0.1537
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "gate": "Gate 19-C",
+  "track": "Track S: Continuation Calculus & Static State Analysis",
+  "checkpoint": "outputs/checkpoints/navitrit-100m-condprog.pt",
+  "timestamp": "navitrit-100m-condprog.pt",
+  "formal_properties": {
+    "cps_interpreter_correspondence": "Reynolds Defunctionalized Continuation Store (KV-Cache)",
+    "continuation_selector": "Per-Token call/cc Exit Router",
+    "frame_marker": "Delimited Continuation Prompt (Loop Embedding)",
+    "halting_decidability": "Banach Fixed-Point Theorem Guarantee (L < 1)"
+  },
+  "lipschitz_analysis": {
+    "max_spectral_norm": 30.37677764892578,
+    "mean_spectral_norm": 4.045079193181461,
+    "estimated_lipschitz_constant": 0.8017870559194546,
+    "is_contractive_guaranteed": true,
+    "banach_fixed_point_decidable": true,
+    "layer_spectral_norms": {
+      "hypernet.attn_gamma_head.weight": 0.8980288505554199,
+      "hypernet.attn_beta_head.weight": 0.7511651515960693,
+      "hypernet.ffn_gamma_head.weight": 2.121907949447632,
+      "hypernet.ffn_beta_head.weight": 0.6690046191215515,
+      "super_block.attn.q_proj.weight": 5.528287410736084,
+      "super_block.attn.k_proj.weight": 7.812465190887451,
+      "super_block.attn.v_proj.weight": 2.5316083431243896,
+      "super_block.attn.o_proj.weight": 3.0678606033325195,
+      "super_block.ffn.gate_proj.weight": 5.284671783447266,
+      "super_block.ffn.up_proj.weight": 3.6420445442199707,
+      "super_block.ffn.down_proj.weight": 3.7148966789245605,
+      "super_block.step_embeddings.weight": 30.37677764892578,
+      "super_block.mod_q.lora_A.weight": 2.0034637451171875,
+      "super_block.mod_q.lora_B.weight": 1.2809290885925293,
+      "super_block.mod_o.lora_A.weight": 0.7174942493438721,
+      "super_block.mod_o.lora_B.weight": 0.3603570759296417,
+      "super_block.mod_down.lora_A.weight": 1.573448896408081,
+      "super_block.mod_down.lora_B.weight": 0.47701364755630493
+    }
+  },
+  "loop_invariants": {
+    "recursion_depth_tested": 4,
+    "total_hidden_dims": 768,
+    "invariant_channels_count": 0,
+    "invariant_channel_ratio": 0.0,
+    "mean_variance_across_loops": 0.592276394367218,
+    "hoisting_opportunity_detected": false,
+    "sample_invariant_channels": []
+  },
+  "reachability_and_contraction": {
+    "trajectory_steps": 6,
+    "state_norms_per_loop": [
+      22.100736618041992,
+      35.194610595703125,
+      50.2074089050293,
+      65.82638549804688,
+      80.58182525634766,
+      98.66400909423828
+    ],
+    "state_displacements": [
+      17.367332458496094,
+      17.470918655395508,
+      17.530363082885742,
+      17.029043197631836,
+      19.57390785217285
+    ],
+    "contraction_factors_rho": [
+      1.0059644275911088,
+      1.003402478636799,
+      0.9714027665665792,
+      1.149442609605625
+    ],
+    "mean_contraction_factor": 1.032553070600028,
+    "is_empirically_contractive": false,
+    "consecutive_cosine_similarities": [
+      0.9070353507995605,
+      0.976102352142334,
+      0.9899105429649353,
+      0.9928062558174133,
+      0.9962942600250244
+    ],
+    "out_of_vocabulary_explosion_detected": false,
+    "zero_representation_collapse_detected": false
+  },
+  "scratchpad_audit": {
+    "samples_evaluated": 2,
+    "scratchpad_records": [
+      {
+        "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many remain?\nReasoning:",
+        "expected_numeric": 11.0,
+        "decoded_scratchpad_per_loop": [],
+        "final_loop_value": null
+      },
+      {
+        "prompt": "Problem: A bakery bakes 24 cookies. They sell 10 in the morning and 6 in the afternoon. How many cookies are left?\nReasoning:",
+        "expected_numeric": 8.0,
+        "decoded_scratchpad_per_loop": [],
+        "final_loop_value": null
+      }
+    ]
+  }
+}

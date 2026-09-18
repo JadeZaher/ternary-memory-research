@@ -90,7 +90,9 @@ def generate_completions(
     prompts: List[Dict[str, str]],
     device: torch.device,
     max_tokens: int = 40,
+    static_routes: Optional[Dict[str, List[int]]] = None,
 ) -> List[Dict[str, Any]]:
+    from experiments.frontier_scaling.macro_route_search import forward_static_route
     model.eval()
     completions = []
     with torch.no_grad():
@@ -101,12 +103,34 @@ def generate_completions(
             curr_ids = input_ids.clone()
             trajectories = []
 
+            is_math = (p_type == "math")
+            route_for_task = static_routes.get(p_type) if static_routes else None
+
             for _ in range(max_tokens):
-                out = model(curr_ids, temperature=0.7)
-                logits = out["logits"][:, -1, :]
+                if route_for_task is not None:
+                    logits = forward_static_route(model, curr_ids, route_for_task)[:, -1, :]
+                    trajectories.append(route_for_task)
+                elif hasattr(model, "super_block"):
+                    out = model(curr_ids, recursion_budget=4)
+                    logits = out["logits"][:, -1, :]
+                    hops = out.get("recursion_budget", out.get("hop_budget", 4))
+                    trajectories.append([f"recursion_{k}" for k in range(hops)])
+                elif hasattr(model, "global_planner"):
+                    out = model(curr_ids, temperature=0.7, is_math=is_math)
+                    logits = out["logits"][:, -1, :]
+                    if "traversal_graph" in out:
+                        trajectories.append(out["traversal_graph"]["directed_edges"])
+                    elif "tree_pairs" in out:
+                        trajectories.append(out["tree_pairs"])
+                    else:
+                        trajectories.append(out.get("trajectory", []))
+                else:
+                    out = model(curr_ids, temperature=0.7)
+                    logits = out["logits"][:, -1, :]
+                    trajectories.append(out.get("trajectory", []))
+
                 next_token = torch.argmax(logits, dim=-1, keepdim=True)
                 curr_ids = torch.cat([curr_ids, next_token], dim=-1)
-                trajectories.append(out["trajectory"])
 
             gen_text = tokenizer.decode(curr_ids[0][input_ids.size(1):])
             completions.append({
@@ -158,11 +182,22 @@ def run_benchmark(
         },
     ]
 
-    benchmark_results = {
-        "judge_model": MODEL_ID,
-        "date": "2026-09-17",
-        "checkpoints_evaluated": {},
-    }
+    if os.path.exists(output_json):
+        try:
+            with open(output_json, "r", encoding="utf-8") as f:
+                benchmark_results = json.load(f)
+        except Exception:
+            benchmark_results = {
+                "judge_model": MODEL_ID,
+                "date": "2026-09-17",
+                "checkpoints_evaluated": {},
+            }
+    else:
+        benchmark_results = {
+            "judge_model": MODEL_ID,
+            "date": "2026-09-17",
+            "checkpoints_evaluated": {},
+        }
 
     judge_system_instruction = (
         "You are an expert AI evaluator judging the output quality of small-to-medium language models.\n"
@@ -191,15 +226,109 @@ def run_benchmark(
             continue
 
         print(f"\n--- Loading and Evaluating Checkpoint: {ckpt_name} ({model_size}) ---")
-        cfg = get_scale_config(model_size)
-        if "dual" in ckpt_name:
+        if "ifmor" in ckpt_name:
+            from experiments.frontier_scaling.navitrit_ifmor_model import (
+                IFMoRConfig,
+                NaviTritIFMoRForCausalLM,
+            )
+            if_cfg = IFMoRConfig(
+                vocab_size=50257,
+                hidden_size=768,
+                intermediate_size=4096,
+                num_attention_heads=12,
+                d_state=64,
+                max_position_embeddings=512,
+                max_loops=6,
+                default_loops=4,
+            )
+            model = NaviTritIFMoRForCausalLM(if_cfg).to(device)
+        elif "looped-dwp" in ckpt_name:
+            from experiments.frontier_scaling.looped_dwp_model import (
+                LoopedDWPConfig,
+                LoopedDWPForCausalLM,
+            )
+            dwp_cfg = LoopedDWPConfig(
+                vocab_size=50257,
+                hidden_size=768,
+                intermediate_size=2048,
+                num_attention_heads=12,
+                max_position_embeddings=512,
+                max_recursions=8,
+                default_recursions=4,
+                d_context=64,
+                lora_rank=32,
+                lora_alpha=32.0,
+            )
+            model = LoopedDWPForCausalLM(dwp_cfg).to(device)
+            raw_ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+            model.load_state_dict(raw_ckpt.get("model_state_dict", raw_ckpt))
+        elif "condprog" in ckpt_name:
+            from experiments.frontier_scaling.conditional_program_model import (
+                ConditionalProgramConfig,
+                NaviTritConditionalProgramForCausalLM,
+            )
+            cp_cfg = ConditionalProgramConfig(
+                vocab_size=50257,
+                hidden_size=768,
+                intermediate_size=2048,
+                num_attention_heads=12,
+                max_position_embeddings=512,
+                max_hops=8,
+                default_hops=4,
+                d_context=64,
+                lora_rank=16,
+                lora_alpha=16.0,
+            )
+            model = NaviTritConditionalProgramForCausalLM(cp_cfg).to(device)
+            raw_ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+            model.load_state_dict(raw_ckpt.get("model_state_dict", raw_ckpt))
+        elif "loopformer" in ckpt_name:
+            from experiments.frontier_scaling.loopformer_model import (
+                LoopFormerConfig,
+                LoopFormerForCausalLM,
+            )
+            lf_cfg = LoopFormerConfig(
+                vocab_size=50257,
+                hidden_size=768,
+                intermediate_size=2048,
+                num_attention_heads=12,
+                max_position_embeddings=512,
+                max_recursions=8,
+                default_recursions=4,
+            )
+            model = LoopFormerForCausalLM(lf_cfg).to(device)
+            raw_ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+            model.load_state_dict(raw_ckpt.get("model_state_dict", raw_ckpt))
+        elif "token-graph" in ckpt_name:
+            from experiments.frontier_scaling.navitrit_token_graph_model import NaviTritTokenGraphForCausalLM
+            model = NaviTritTokenGraphForCausalLM(cfg).to(device)
+            model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
+        elif "graph" in ckpt_name:
+            from experiments.frontier_scaling.navitrit_graph_model import NaviTritGraphForCausalLM
+            model = NaviTritGraphForCausalLM(cfg).to(device)
+            model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
+        elif "tree" in ckpt_name:
+            from experiments.frontier_scaling.navitrit_tree_model import NaviTritTreeForCausalLM
+            model = NaviTritTreeForCausalLM(cfg).to(device)
+            model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
+        elif "dual" in ckpt_name:
             from experiments.frontier_scaling.navitrit_dual_model import NaviTritDualForCausalLM
             model = NaviTritDualForCausalLM(cfg).to(device)
+            model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
         else:
             model = NaviTritScaleForCausalLM(cfg).to(device)
-        model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
+            model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
 
-        completions = generate_completions(model, tokenizer, test_prompts, device, max_tokens=45)
+        static_routes = ckpt_info.get("static_routes")
+        if static_routes is None and "macro-static" in ckpt_name:
+            macro_json = "outputs/macro-routes.json"
+            if os.path.exists(macro_json):
+                with open(macro_json, "r", encoding="utf-8") as f:
+                    m_data = json.load(f)
+                    static_routes = m_data.get("discovered_routes", {})
+                print(f"  Loaded MACRO Static Routes: {static_routes}")
+
+        completions = generate_completions(model, tokenizer, test_prompts, device, max_tokens=45, static_routes=static_routes)
 
         eval_records = []
         domain_scores = {"math": [], "story": [], "code": []}
@@ -268,21 +397,53 @@ def run_benchmark(
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, default=None, help="Filter specific checkpoint by name")
+    args = parser.parse_args()
+
     checkpoints_to_eval = [
-        {
-            "name": "navitrit-100m-step2500",
-            "path": "outputs/checkpoints/navitrit-100m-step2500.pt",
-            "model_size": "100m",
-        },
         {
             "name": "navitrit-100m-step10000",
             "path": "outputs/checkpoints/navitrit-100m-step10000.pt",
             "model_size": "100m",
         },
         {
-            "name": "navitrit-100m-dual-grpo",
-            "path": "outputs/checkpoints/navitrit-100m-dual-grpo.pt",
+            "name": "navitrit-100m-tree-grpo",
+            "path": "outputs/checkpoints/navitrit-100m-tree-grpo.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-graph-traversal",
+            "path": "outputs/checkpoints/navitrit-100m-tree-grpo.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-token-graph-grpo",
+            "path": "outputs/checkpoints/navitrit-100m-token-graph-grpo.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-loopformer",
+            "path": "outputs/checkpoints/navitrit-100m-loopformer.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-ifmor",
+            "path": "outputs/checkpoints/navitrit-100m-ifmor.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-condprog",
+            "path": "outputs/checkpoints/navitrit-100m-condprog.pt",
+            "model_size": "100m",
+        },
+        {
+            "name": "navitrit-100m-looped-dwp",
+            "path": "outputs/checkpoints/navitrit-100m-looped-dwp.pt",
             "model_size": "100m",
         },
     ]
+    if args.model:
+        checkpoints_to_eval = [c for c in checkpoints_to_eval if args.model in c["name"]]
     run_benchmark(checkpoints_to_eval)

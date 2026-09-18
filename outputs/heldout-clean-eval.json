@@ -1,0 +1,48 @@
+{
+  "leakage": {
+    "corpus_tail_16gram_in_train": 0.994,
+    "tinystories_valid_16gram_in_train": 0.9976,
+    "clean_python_16gram_in_train": 0.0073,
+    "clean_math_16gram_in_train": 0.0
+  },
+  "checkpoints": {
+    "math": {
+      "claimed_ppl": 1.12,
+      "A_corpus_tail": {
+        "loss": 0.1178,
+        "ppl": 1.125,
+        "tokens": 81920
+      },
+      "B_tinystories_valid": {
+        "loss": 3.1339,
+        "ppl": 22.964,
+        "tokens": 81920
+      },
+      "C_clean_python": {
+        "loss": 6.5935,
+        "ppl": 730.35,
+        "tokens": 1024
+      },
+      "D_clean_math": {
+        "loss": 8.371,
+        "ppl": 4319.877,
+        "tokens": 256
+      },
+      "E_dataclean_tinystories": {
+        "loss": 3.2795,
+        "ppl": 26.563,
+        "tokens": 81920
+      },
+      "E_dataclean_code": {
+        "loss": 7.6759,
+        "ppl": 2155.684,
+        "tokens": 81920
+      },
+      "E_dataclean_math": {
+        "loss": 8.3343,
+        "ppl": 4164.377,
+        "tokens": 81920
+      }
+    }
+  }
+}

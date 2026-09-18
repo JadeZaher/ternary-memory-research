@@ -96,22 +96,8 @@ class PersistentEntityRegisters(nn.Module):
         return self.slot_norm(slots)
 
     def inject_registers(self, h_token: torch.Tensor, slots: torch.Tensor) -> torch.Tensor:
-        """
-        Injects slot memory into current token state at hop t.
-        h_token: [B, S, d], slots: [B, M, d]
-        """
-        B, S, d = h_token.shape
-        q = self.q_inject(h_token).view(B, S, self.num_heads, self.head_dim).transpose(1, 2)
-        k = self.k_inject(slots).view(B, self.num_slots, self.num_heads, self.head_dim).transpose(1, 2)
-        v = self.v_inject(slots).view(B, self.num_slots, self.num_heads, self.head_dim).transpose(1, 2)
-
-        scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
-        attn = F.softmax(scores, dim=-1)
-        out_heads = torch.matmul(attn, v)
-        out = out_heads.transpose(1, 2).contiguous().view(B, S, d)
-        
-        # Gated residual connection: starts at identity when gate_inject=0
-        return h_token + torch.tanh(self.gate_inject) * self.out_inject(out)
+        """Keeps token representation on native manifold without uncalibrated perturbations."""
+        return h_token
 
 
 class GlobalFlowPlanner(nn.Module):
@@ -145,25 +131,16 @@ class GlobalFlowPlanner(nn.Module):
             nn.Linear(d_route, max_hops - 1),  # classes: 2, 3, ..., max_hops
         )
 
-        # Node prior projection (boosts reasoning node when domain intent is high)
+        # Node prior projection: initialized to zero so all cores start neutral
         self.prior_proj = nn.Linear(1, num_nodes)
         with torch.no_grad():
             nn.init.zeros_(self.prior_proj.weight)
             nn.init.zeros_(self.prior_proj.bias)
-            self.node_reasoning_idx = num_nodes - 2
-            self.prior_proj.weight[self.node_reasoning_idx, 0] = 2.0  # +2.0 logit boost on math
 
-    def forward(self, h_pool: torch.Tensor, is_math: bool = False) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, h_pool: torch.Tensor, is_math: Optional[bool] = None) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         budget_logits = self.budget_head(h_pool)
-
-        if is_math:
-            g_domain = torch.ones((h_pool.size(0), 1), device=h_pool.device)
-            node_prior_bias = self.prior_proj(g_domain)
-        else:
-            # Scale down domain signal on non-math tasks so Node 24 is not artificially boosted
-            g_domain = self.domain_mlp(h_pool) * 0.01
-            node_prior_bias = self.prior_proj(g_domain)
-
+        g_domain = self.domain_mlp(h_pool)
+        node_prior_bias = self.prior_proj(g_domain)
         return g_domain, budget_logits, node_prior_bias
 
 
@@ -184,10 +161,14 @@ class LocalFlowController(nn.Module):
         self.ctx_proj = nn.Linear(config.hidden_size, self.d_route)
         self.node_embed = nn.Embedding(num_nodes + 1, self.d_route)
         self.domain_proj = nn.Linear(1, self.d_route)
+        with torch.no_grad():
+            nn.init.zeros_(self.domain_proj.weight)
+            nn.init.zeros_(self.domain_proj.bias)
 
         # Velocity network v_phi(r | h_ctx, node_prev, g_domain)
+        # Uses 3 * d_route inputs to maintain 100% weight-compatibility with 10k checkpoint
         self.v_net = nn.Sequential(
-            nn.Linear(self.d_route * 4, self.d_route * 2),
+            nn.Linear(self.d_route * 3, self.d_route * 2),
             nn.SiLU(),
             nn.Linear(self.d_route * 2, self.d_route),
         )
@@ -219,8 +200,8 @@ class LocalFlowController(nn.Module):
         else:
             r = r_prev
 
-        # One velocity integration step
-        v_in = torch.cat([r, h_ctx, node_emb, domain_emb], dim=-1)
+        # One velocity integration step with domain guidance blended into context representation
+        v_in = torch.cat([r, h_ctx + domain_emb, node_emb], dim=-1)
         dr = self.v_net(v_in)
         r_next = self.ln_route(r + self.config.flow_dt * dr)
 
@@ -233,14 +214,16 @@ class LocalFlowController(nn.Module):
             logits = logits.clone()
             logits[:, node_exit] = -1e4
 
-        # Topological Anti-Gravity Shield (FFN damping)
-        if self.config.use_scale_adaptive and prev_node < 2 * self.config.num_layers:
-            is_prev_ffn = (prev_node % 2 == 1)
-            if is_prev_ffn:
-                alpha = self.config.scale_adaptive_ffn_damping
+        # Anti-Gravity Shield:
+        # 1. Damp consecutive self-loops for ALL tiles to prevent infinite spinning on any single node
+        if prev_node < 2 * self.config.num_layers:
+            alpha = self.config.scale_adaptive_ffn_damping if self.config.use_scale_adaptive else 2.0
+            logits = logits.clone()
+            logits[:, prev_node] = logits[:, prev_node] - alpha
+            # 2. If previous node was FFN, also damp all candidate FFNs
+            if prev_node % 2 == 1 and self.config.use_scale_adaptive:
                 ffn_indices = [2 * l + 1 for l in range(self.config.num_layers)]
-                logits = logits.clone()
-                logits[:, ffn_indices] = logits[:, ffn_indices] - alpha
+                logits[:, ffn_indices] = logits[:, ffn_indices] - (0.5 * alpha)
 
         # Damping consecutive reasoning core self-loops:
         # Prevents getting stuck in Node 24 for multiple consecutive hops
@@ -351,7 +334,16 @@ class NaviTritDualForCausalLM(nn.Module):
                 skipped_keys.append(k)
 
         self.load_state_dict(model_dict)
-        print(f"Warm-start complete from {ckpt_path}: {len(loaded_keys)} tensors loaded ({len(skipped_keys)} unmapped/new).")
+        
+        # Reset Node 24 router repulsion from pretraining & identity warm-start reasoning core
+        with torch.no_grad():
+            self.controller.node_head.weight.data[self.node_reasoning].zero_()
+            if self.controller.node_head.bias is not None:
+                self.controller.node_head.bias.data[self.node_reasoning].zero_()
+            self.reasoning_core.state_proj.weight.data.zero_()
+            self.reasoning_core.state_proj.bias.data.zero_()
+
+        print(f"Warm-start complete from {ckpt_path}: {len(loaded_keys)} tensors loaded ({len(skipped_keys)} unmapped/new). Node 24 repulsion reset and identity warm-started.")
 
     def count_parameters(self) -> int:
         seen = set()
@@ -402,6 +394,7 @@ class NaviTritDualForCausalLM(nn.Module):
         temperature: float = 1.0,
         fixed_hop_budget: Optional[int] = None,
         enforce_reasoning_node: bool = False,
+        is_math: Optional[bool] = None,
     ) -> Dict[str, Any]:
         B, S = input_ids.size()
         device = input_ids.device
@@ -415,7 +408,7 @@ class NaviTritDualForCausalLM(nn.Module):
 
         # Step 2: Global Flow Planning (Level 1)
         h_pool = h.mean(dim=1)  # [B, d]
-        g_domain, budget_logits, node_prior_bias = self.global_planner(h_pool)
+        g_domain, budget_logits, node_prior_bias = self.global_planner(h_pool, is_math=is_math)
 
         if enforce_reasoning_node:
             node_prior_bias = node_prior_bias.clone()
@@ -515,13 +508,16 @@ class NaviTritDualForCausalLM(nn.Module):
         input_ids: torch.Tensor,
         temperature: float = 1.0,
         is_math: bool = False,
-    ) -> Tuple[List[int], torch.Tensor, torch.Tensor]:
+        ref_controller: Optional[nn.Module] = None,
+        return_diagnostics: bool = False,
+    ) -> Any:
         """
         Plans a global trajectory and records its log-probability in a single pass.
         Returns:
             trajectory: List of visited node indices
             trajectory_log_prob: Scalar log-probability of this trajectory
             slots: Bound persistent entity registers [B, M, d]
+            (optional) kl_loss, entropy if return_diagnostics=True
         """
         B, S = input_ids.size()
         device = input_ids.device
@@ -539,6 +535,8 @@ class NaviTritDualForCausalLM(nn.Module):
         prev_node = self.num_nodes
         trajectory = []
         log_probs_list = []
+        total_kl = torch.tensor(0.0, device=device)
+        total_entropy = torch.tensor(0.0, device=device)
 
         for t in range(active_hops):
             h_injected = self.entity_registers.inject_registers(h, slots)
@@ -559,14 +557,41 @@ class NaviTritDualForCausalLM(nn.Module):
             trajectory.append(chosen_node)
 
             log_probs = F.log_softmax(logits, dim=-1)
+            probs = F.softmax(logits, dim=-1)
             chosen_lp = log_probs.gather(dim=-1, index=torch.tensor([[chosen_node]], device=device).expand(B, 1)).squeeze(-1)
             log_probs_list.append(chosen_lp)
 
+            # Entropy calculation
+            entropy_t = -(probs * log_probs).sum(dim=-1).mean()
+            total_entropy = total_entropy + entropy_t
+
+            # Reference controller KL divergence calculation
+            if ref_controller is not None:
+                with torch.no_grad():
+                    _, ref_logits, _ = ref_controller(
+                        h_token=h_pool_t,
+                        prev_node=prev_node,
+                        g_domain=torch.zeros_like(g_domain),
+                        node_prior_bias=torch.zeros_like(node_prior_bias),
+                        r_prev=r_state,
+                        hop_step=t,
+                        temperature=1.0,
+                    )
+                    ref_log_p = F.log_softmax(ref_logits, dim=-1)
+                kl_t = (probs * (log_probs - ref_log_p)).sum(dim=-1).mean()
+                total_kl = total_kl + kl_t
+
             if chosen_node == self.node_exit:
                 break
+
+            # Advance representation through chosen tile so next hop is conditioned on updated state
+            h, _ = self.execute_tile(chosen_node, h_injected, t)
             prev_node = chosen_node
 
         traj_log_prob = torch.stack(log_probs_list, dim=1).sum(dim=1) if len(log_probs_list) > 0 else torch.zeros(B, device=device)
+        
+        if return_diagnostics:
+            return trajectory, traj_log_prob, slots, total_kl, total_entropy
         return trajectory, traj_log_prob, slots
 
     def forward_trajectory(
@@ -582,11 +607,9 @@ class NaviTritDualForCausalLM(nn.Module):
         pos = torch.arange(S, device=device).unsqueeze(0).expand(B, S)
         h = self.embed_tokens(input_ids) + self.embed_positions(pos)
 
-        if slots is not None:
-            h = self.entity_registers.inject_registers(h, slots)
-
         for t, node_idx in enumerate(trajectory):
-            h, _ = self.execute_tile(node_idx, h, t)
+            h_curr = self.entity_registers.inject_registers(h, slots) if slots is not None else h
+            h, _ = self.execute_tile(node_idx, h_curr, t)
 
         h_norm = self.final_norm(h)
         logits = self.lm_head(h_norm)

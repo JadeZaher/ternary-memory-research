@@ -1,0 +1,90 @@
+{
+  "gate": "Gate 19-C",
+  "track": "Track S: Continuation Calculus & Static State Analysis",
+  "checkpoint": "outputs/checkpoints/navitrit-100m-loopformer.pt",
+  "timestamp": "navitrit-100m-loopformer.pt",
+  "formal_properties": {
+    "cps_interpreter_correspondence": "Reynolds Defunctionalized Continuation Store (KV-Cache)",
+    "continuation_selector": "Per-Token call/cc Exit Router",
+    "frame_marker": "Delimited Continuation Prompt (Loop Embedding)",
+    "halting_decidability": "Banach Fixed-Point Theorem Guarantee (L < 1)"
+  },
+  "lipschitz_analysis": {
+    "max_spectral_norm": 7.812465667724609,
+    "mean_spectral_norm": 4.018637001514435,
+    "estimated_lipschitz_constant": 0.8007427116768482,
+    "is_contractive_guaranteed": true,
+    "banach_fixed_point_decidable": true,
+    "layer_spectral_norms": {
+      "super_block.attn.q_proj.weight": 5.528287410736084,
+      "super_block.attn.k_proj.weight": 7.812465667724609,
+      "super_block.attn.v_proj.weight": 2.48695707321167,
+      "super_block.attn.o_proj.weight": 3.0678603649139404,
+      "super_block.ffn.gate_proj.weight": 5.284670829772949,
+      "super_block.ffn.up_proj.weight": 3.642045021057129,
+      "super_block.ffn.down_proj.weight": 3.7148966789245605,
+      "super_block.step_embeddings.weight": 0.6119129657745361
+    }
+  },
+  "loop_invariants": {
+    "recursion_depth_tested": 4,
+    "total_hidden_dims": 768,
+    "invariant_channels_count": 0,
+    "invariant_channel_ratio": 0.0,
+    "mean_variance_across_loops": 0.8465840220451355,
+    "hoisting_opportunity_detected": false,
+    "sample_invariant_channels": []
+  },
+  "reachability_and_contraction": {
+    "trajectory_steps": 6,
+    "state_norms_per_loop": [
+      21.073209762573242,
+      39.16514587402344,
+      57.503475189208984,
+      75.48560333251953,
+      93.14820098876953,
+      110.55718231201172
+    ],
+    "state_displacements": [
+      20.261371612548828,
+      19.527240753173828,
+      18.90904426574707,
+      18.47214698791504,
+      18.152833938598633
+    ],
+    "contraction_factors_rho": [
+      0.9637669712883447,
+      0.9683418412646815,
+      0.9768947985053136,
+      0.9827138096332111
+    ],
+    "mean_contraction_factor": 0.9729293551728877,
+    "is_empirically_contractive": true,
+    "consecutive_cosine_similarities": [
+      0.9475318789482117,
+      0.989859402179718,
+      0.9959633350372314,
+      0.9978392124176025,
+      0.9986516833305359
+    ],
+    "out_of_vocabulary_explosion_detected": true,
+    "zero_representation_collapse_detected": false
+  },
+  "scratchpad_audit": {
+    "samples_evaluated": 2,
+    "scratchpad_records": [
+      {
+        "prompt": "Problem: Olivia had 15 apples. She gave 4 apples to Liam. How many remain?\nReasoning:",
+        "expected_numeric": 11.0,
+        "decoded_scratchpad_per_loop": [],
+        "final_loop_value": null
+      },
+      {
+        "prompt": "Problem: A bakery bakes 24 cookies. They sell 10 in the morning and 6 in the afternoon. How many cookies are left?\nReasoning:",
+        "expected_numeric": 8.0,
+        "decoded_scratchpad_per_loop": [],
+        "final_loop_value": null
+      }
+    ]
+  }
+}

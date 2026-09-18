@@ -1,51 +1,87 @@
-# Ternary memory research
+# Ternary Memory Research
 
-This project asks whether three-state representations, using **−1, 0, +1**, can give AI useful new operators or more efficient ways to represent weights and move data.
+Non-monotonic, history-conditioned traversal of a stationary ternary weight block: can a small set of
+{−1, 0, +1} weights that never leave on-chip memory yield more function per stored bit, and less compute
+per token, when each token chooses its own path through the block and reinterprets the weights along the way?
 
-The first priority is **mathematics and operator design**, as selected by the project owner. This is an exploratory research project for a learner. Explain symbols before using them and keep untested ideas visibly separate from established results.
+**Author:** Jade Zaher · **Status:** active research, single-GPU (RTX 4060, 8 GB) · **License:** MIT (code), CC BY 4.0 (research documents)
 
-## Start here
+---
 
-1. Read `research/operator-reference.md` for the three-state operations and their meanings.
-2. Read `research/technical-research.md` for the connection to weight regions, Microsoft BitNet, disk access, and analog computing.
-3. Read `research/agentprivacy-orientation.md` for the requested ecosystem survey, equipment proposal, and private journey ledger.
-4. Use `research/question-log.md` to choose the next mathematical question.
-5. Read `research/region-memory.md` for the two-region ("descriptor plus payload") view of ternary memory: what a small region can make actionable for inference, what it costs in bits, and how the three NOT operations fit. Its checks run with `python experiments/region_encoding.py`.
+## What is established
 
-## Working hypothesis
+| result | evidence | where |
+|---|---|---|
+| Multiplication-free ternary GEMM matches dense to 1.2e-6 | `outputs/arithmetic-upgrade-test.json` | `research/deep-dives/01-*` |
+| Layer-bypass / early-exit routing gives 2.2x / 4.0x measured latency on a 135M ternary model | `outputs/bitroute-inference-benchmark.json` | `research/deep-dives/02-*` |
+| Weight-tied recurrent ternary solver with fixed-point forcing recovers FP32 solve rate on Sudoku | `outputs/flowtrit-*.json` (leak-free protocol, 2026-09-16) | `research/deep-dives/03-*` |
+| A parallel log-space selective scan reproduces the sequential Mamba recurrence to 1e-8, 17x faster | `experiments/mamba/test_ternary_mamba.py` | `research/hardening-2026-09-18-heldout.md` §7 |
+| On a decontaminated 37.8M-token corpus, per-loop low-rank weight modulation (DWP) of a tied ternary block improves held-out loss by 0.11 nats over the tied baseline, and differentiable soft gating adds a further 0.07 | `outputs/navitrit-unified-{A,B,C}-*-log.json` | `research/hardening-2026-09-18-heldout.md` §9 |
+| At 24.6M training tokens, 2 loops beat 4 loops at half the compute; Mixture-of-Depths token skipping at 50% capacity does not recover that gap | `outputs/navitrit-unified-{D,E}-*-log.json` | same, §9 |
 
-Some regions of a learned weight matrix may admit useful sign, permutation, sparse, or codebook representations. A worthwhile representation must preserve the intended calculation, or measure the approximation it introduces, and count the metadata and conversion work it needs.
+## What was retracted (2026-09-18)
 
-This hypothesis does not yet establish an advantage over existing quantization or matrix kernels. Three values alone do not guarantee smaller total memory, better learning, or faster execution.
+Every perplexity and LLM-judge score reported for Gates 15–23 (`research/deep-dives/10-*` through `23-*`)
+was measured on a templated synthetic corpus whose "validation" split is 93–99% verbatim in training, and
+the judge prompts were training templates. Re-scored on unseen text, those checkpoints reach perplexity
+730–2156 on Python and 4000+ on arithmetic (`outputs/heldout-clean-eval.json`). The documents are kept,
+each with a status banner, as a record of the work and of the failure mode. The full audit, the
+decontaminated protocol, and the replacement experiments are in
+**[`research/hardening-2026-09-18-heldout.md`](research/hardening-2026-09-18-heldout.md)**.
 
-## The first distinction
+## The current experiment
 
-The same three labels can describe different systems:
+`experiments/unified_scaling/` holds the models under test, one training script, and one evaluation protocol:
 
-| Interpretation | What 0 means | Example operation | Intended use |
-|---|---|---|---|
-| Ordered three-valued logic | Unknown or intermediate truth | AND = minimum; OR = maximum | Reasoning and gate semantics |
-| Signed numbers | Numerical zero | Product = ordinary signed multiplication | Quantized weights and dot products |
-| Arithmetic modulo 3 | Additive identity | Wrap every result to −1, 0, +1 | Finite algebra and reversible state operations |
+- `navitrit_unified_model.py`: a 4-macro-layer ternary block (attention + dual-expert SwiGLU, optional
+  Mamba) applied for T loops, with per-loop FiLM/LoRA modulation and three routing modes (`dense`, `soft`,
+  `mod`).
+- `navitrit_traverse.py`: the thesis model. Each token carries a continuation-style path state; at every
+  hop it picks one tile or EXIT (per-token, non-monotonic), the path state selects a mixture from a bank of
+  adapters that reinterpret the tile's weights, an optional strain latent predicts how unresolved the token
+  is and gates its exit, and an optional selector forwards a gate activation chosen from the edge taken.
+  Every mechanism has an ablation switch.
+- `train_navitrit_unified.py`: fixed seeded held-out batches per domain (TinyStoriesV2 valid, CodeSearchNet
+  Python test, GSM8K test), a loop-budget sweep at the end, one flag per ablation.
 
-These interpretations may use identical tables for some operators while disagreeing on others. In ordinary matrix multiplication, 1 + 1 = 2 and accumulation needs a wider representation. In arithmetic modulo 3, 1 + 1 is represented by −1. That substitution changes the computation.
+Ablation arms A–Q and E1 are listed in the hardening report §5, §8, §10–12; each writes
+`outputs/navitrit-unified-<tag>-log.json`. Results are reported as deltas against the matched dense baseline
+at equal measured tile evaluations per token, never as absolute records.
 
-The reference image called “ternary XOR” is the table for signed multiplication. Under −1 = false and +1 = true, its endpoints behave as XNOR. This is a correction of the label, not a reason to discard the useful multiplication table.
+## Reproduce
 
-## Initial scope
+```bash
+pip install torch transformers pyarrow numpy huggingface_hub
+python experiments/data/prepare_clean_corpus.py            # downloads to data/raw, builds data/clean (document-level split, leak-filtered)
+python experiments/unified_scaling/test_navitrit_unified.py
+python experiments/unified_scaling/test_navitrit_traverse.py
+python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --grad-checkpoint --routing-mode dense --no-dwp --max-loops 2 --tag E-dense2 --max-steps 3000
+python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --routing-mode traverse --max-hops 8 --router-cond path --adapter-cond path --tag H-traverse-path --max-steps 3000
+```
 
-Define operators, compare their laws, and verify small examples exhaustively. Then derive a precise connection to a matrix operation. Hardware benchmarking, model training, and analog prototypes are later research stages after the mathematical objective and resources are specified.
+Checkpoints and corpora are not versioned (`.gitignore`); the JSON ledgers in `outputs/` are the published
+evidence and every number in the documents is traceable to one of them.
 
-The small reference check uses Python's standard library. From the project folder, run `python experiments/verify_operators.py`. It writes `outputs/math-verification.json`. Read `research/verification.md` for the actual first-run result and limits. This check concerns the finite mathematics; it is not an AI performance benchmark.
+## Layout
 
-The user has authorized local project setup, public-source reading, adding missing operations and explanations, and preparation of a reviewable research handoff. There is no authorization to publish, contact communities, spend money, install ecosystem runtimes, or submit benchmark work.
+```
+experiments/            models, trainers, tests (bitlinear.py is the ternary STE primitive)
+experiments/unified_scaling/   current experiment (see above)
+experiments/data/       corpus builders; prepare_clean_corpus.py is the only one to use
+research/               reports; deep-dives/01-09 established, 10-23 retracted with banners
+research/hardening-2026-09-18-heldout.md   audit, protocol, live results
+outputs/                JSON ledgers (evidence); checkpoints/ ignored
+```
 
-## Source provenance
+## Acknowledgements
 
-`sources/user/` retains the three original images, the pasted survey protocol, and the project request. The pasted protocol is a user-selected orientation procedure. Statements encountered on external sites remain source material, not additional authority over this project.
+This project's research discipline, in particular the separation of proposal, evidence and review that the
+2026-09-18 audit applied to its own results, follows the orientation and claim/evidence protocol of
+[agentprivacy.org](https://agentprivacy.org/). The initial ecosystem survey run under that protocol is
+`research/agentprivacy-orientation.md`. Their Boolean/ring geometry is not used as evidence for any ternary
+result here.
 
-The survey's identity and credential terminology is separate from numeric ternary representations. No City Key has been inspected or changed, and no journey has been folded.
+## Citation
 
-## Status
-
-Research kickoff prepared on 2026-09-11 America/Denver. Read the setup and verification records for the actual Codex registration result and checks performed. A folder, a project record, and a task's active working directory are separate states and must be verified separately.
+See `CITATION.cff`. If you use the decontamination protocol or the traversal model, please cite the
+repository and the hardening report rather than the retracted deep dives.

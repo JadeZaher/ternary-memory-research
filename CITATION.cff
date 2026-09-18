@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below and refer to research/hardening-2026-09-18-heldout.md for the current evidence."
+title: "Ternary Memory Research: history-conditioned non-monotonic traversal of stationary ternary weight blocks"
+authors:
+  - family-names: Zaher
+    given-names: Jade
+date-released: 2026-09-18
+version: 0.1.0
+license: MIT
+repository-code: https://github.com/JadeZaher/ternary-memory-research
+keywords:
+  - ternary quantization
+  - looped transformers
+  - dynamic routing
+  - mixture of depths
+  - weight-tied recurrence
+  - dynamic weight parameterization

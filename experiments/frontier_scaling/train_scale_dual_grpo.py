@@ -3,21 +3,25 @@ experiments/frontier_scaling/train_scale_dual_grpo.py: GRPO Training Engine for 
 
 Combines Strategy B (Outcome-Driven GRPO) with Strategy D (Hierarchical Flow Planner + Local Dynamic Navigation):
 1. Loads pretrained 100M backbone (outputs/checkpoints/navitrit-100m-trained.pt).
-2. Generates K=4 rollouts per prompt across Math, Code, and Narrative tasks.
-3. Evaluates outcome rewards via HybridVerifier (checking exact arithmetic, Python AST, and character retention).
-4. Computes Group Relative Advantage A_k = (R_k - mean(R)) / (std(R) + eps).
-5. Updates GlobalFlowPlanner, LocalFlowController, PersistentEntityRegisters, and ReasoningCore.
+2. 100% Freezes ternary language backbone (embed_tokens, attn_tiles, ffn_tiles, lm_head) to prevent representation drift.
+3. Anchors navigation policy to frozen reference controller pi_ref via KL divergence and entropy bonus.
+4. Directly supervises Reasoning Core (Node 24) on arithmetic deduction pairs.
+5. Generates K=4 rollouts per prompt across Math, Code, and Narrative tasks.
+6. Evaluates outcome rewards via HybridVerifier (checking exact arithmetic, Python AST, and character retention).
+7. Computes Group Relative Advantage A_k = (R_k - mean(R)) / (std(R) + eps).
+8. Updates GlobalFlowPlanner, LocalFlowController, PersistentEntityRegisters, and ReasoningCore.
 """
 
 import os
 import sys
 import re
 import math
+import copy
 import time
 import random
 import argparse
 import json
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -123,6 +127,7 @@ def rollout_continuation(
     max_new_tokens: int = 30,
     temperature: float = 1.0,
     enforce_reasoning: bool = False,
+    ref_controller: Optional[nn.Module] = None,
 ) -> Dict[str, Any]:
     """Generates a rollout trajectory while tracking log-probs for policy gradients."""
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
@@ -134,10 +139,12 @@ def rollout_continuation(
     
     # Step 1: Plan global trajectory and record log-probability for policy gradient
     is_math = ("Problem:" in prompt or "Reasoning:" in prompt) or enforce_reasoning
-    trajectory, trajectory_log_prob, slots = model.plan_trajectory(
+    trajectory, trajectory_log_prob, slots, kl_loss, entropy = model.plan_trajectory(
         input_ids,
         temperature=temperature,
         is_math=is_math,
+        ref_controller=ref_controller,
+        return_diagnostics=True,
     )
 
     # Step 2: Fast autoregressive token generation along planned trajectory
@@ -157,15 +164,17 @@ def rollout_continuation(
         "sample_trajectory": trajectory,
         "nodes_visited": set(trajectory),
         "reasoning_visited": (model.node_reasoning in trajectory),
+        "kl_loss": kl_loss,
+        "entropy": entropy,
     }
 
 
 def train_grpo(
     model_size: str = "100m",
-    steps: int = 1000,
+    steps: int = 600,
     rollouts_k: int = 4,
-    lr_router: float = 0.001,
-    lr_backbone: float = 0.0001,
+    lr_router: float = 0.0005,
+    lr_reasoning: float = 0.0005,
     init_checkpoint: str = "outputs/checkpoints/navitrit-100m-trained.pt",
     output_checkpoint: str = "outputs/checkpoints/navitrit-100m-dual-grpo.pt",
     output_json: str = "outputs/navitrit-100m-dual-grpo-results.json",
@@ -189,6 +198,20 @@ def train_grpo(
     else:
         print(f"Warning: init_checkpoint {init_checkpoint} not found; initializing cold.")
 
+    # 100% Freeze the ternary language backbone (preserves 8.5/10 code and grammar fluency)
+    frozen_count = 0
+    for name, p in model.named_parameters():
+        if any(b in name for b in ["embed_tokens", "embed_positions", "attn_tiles", "attn_norms", "ffn_tiles", "ffn_norms", "lm_head", "final_norm", "hop_mod"]):
+            p.requires_grad = False
+            frozen_count += p.numel()
+    print(f"Backbone Frozen: {frozen_count / 1e6:.2f}M parameters permanently locked.")
+
+    # Create frozen reference controller for KL divergence regularization
+    ref_controller = copy.deepcopy(model.controller)
+    for p in ref_controller.parameters():
+        p.requires_grad = False
+    ref_controller.eval()
+
     verifier = HybridVerifier(use_gemini=False)
 
     # Decoupled optimizers:
@@ -200,9 +223,9 @@ def train_grpo(
     )
     optimizer_router = torch.optim.AdamW(router_params, lr=lr_router, weight_decay=0.01)
 
-    # 2. Backbone & Reasoning Core optimizer
+    # 2. Reasoning Core optimizer (Node 24)
     reasoning_params = list(model.reasoning_core.parameters())
-    optimizer_reasoning = torch.optim.AdamW(reasoning_params, lr=lr_backbone, weight_decay=0.01)
+    optimizer_reasoning = torch.optim.AdamW(reasoning_params, lr=lr_reasoning, weight_decay=0.01)
 
     start_time = time.time()
     history_rewards = []
@@ -220,8 +243,8 @@ def train_grpo(
         rollout_records = []
         rewards = []
 
-        # Temperature schedule: start at 1.0, anneal to 0.6
-        temp = max(0.6, 1.0 - 0.4 * (step / steps))
+        # Temperature schedule: start at 1.0, anneal to 0.7
+        temp = max(0.7, 1.0 - 0.3 * (step / steps))
 
         # Sample K rollouts
         for k in range(rollouts_k):
@@ -235,6 +258,7 @@ def train_grpo(
                 max_new_tokens=25,
                 temperature=temp,
                 enforce_reasoning=enforce,
+                ref_controller=ref_controller,
             )
             reward, rationale = verifier.compute_reward(
                 p_type, prompt_text, res["continuation"], target
@@ -259,28 +283,50 @@ def train_grpo(
 
         policy_loss = policy_loss / rollouts_k
 
-        # Multi-task auxiliary supervision on ground truth text (stabilizes Reasoning Core)
-        full_text = prompt_info["full_text"]
-        enc_full = tokenizer.encode(full_text, return_tensors="pt").to(device)
-        if enc_full.shape[1] > 128:
-            enc_full = enc_full[:, :128]
-        
-        out_aux = model(enc_full, temperature=0.7, enforce_reasoning_node=(p_type == "math"))
-        logits_aux = out_aux["logits"][:, :-1, :].contiguous().view(-1, cfg.vocab_size)
-        labels_aux = enc_full[:, 1:].contiguous().view(-1)
-        loss_ce = F.cross_entropy(logits_aux, labels_aux)
+        # KL divergence and entropy regularization from rollouts
+        mean_kl = torch.stack([r["kl_loss"] for r in rollout_records]).mean()
+        mean_entropy = torch.stack([r["entropy"] for r in rollout_records]).mean()
 
-        # Total combined loss
-        # Note: out_aux["loss_fpf"] updates only reasoning_core parameters
-        total_loss = policy_loss + 0.5 * loss_ce + 0.1 * out_aux["loss_fpf"]
+        total_router_loss = policy_loss + 0.05 * mean_kl - 0.02 * mean_entropy
 
         optimizer_router.zero_grad()
-        optimizer_reasoning.zero_grad()
-        total_loss.backward()
+        total_router_loss.backward()
         torch.nn.utils.clip_grad_norm_(router_params, 1.0)
-        torch.nn.utils.clip_grad_norm_(reasoning_params, 1.0)
         optimizer_router.step()
-        optimizer_reasoning.step()
+
+        # Direct arithmetic supervision for Node 24 (Reasoning Core)
+        if p_type == "math":
+            enc_full = tokenizer.encode(prompt_info["full_text"], return_tensors="pt").to(device)
+            if enc_full.shape[1] > 128:
+                enc_full = enc_full[:, :128]
+
+            # Route through reasoning trajectory: Attention -> Reasoning Core -> FFN
+            math_traj = [0, 1, 10, 11, model.node_reasoning, 18, 19]
+            logits_math = model.forward_trajectory(enc_full[:, :-1], math_traj)
+            labels_math = enc_full[:, 1:].contiguous()
+
+            # Supervise specifically on the reasoning/solution tokens
+            prompt_ids = tokenizer.encode(prompt_text, return_tensors="pt").to(device)
+            prompt_len = prompt_ids.shape[1]
+
+            loss_mask = torch.zeros_like(labels_math, dtype=torch.bool)
+            if prompt_len - 1 < labels_math.shape[1]:
+                loss_mask[:, prompt_len - 1:] = True
+
+            if loss_mask.sum() > 0:
+                loss_arith = F.cross_entropy(logits_math[loss_mask], labels_math[loss_mask])
+            else:
+                loss_arith = torch.tensor(0.0, device=device)
+
+            # Contraction loss for Reasoning Core
+            h_sample = model.embed_tokens(enc_full)
+            _, core_fpf = model.execute_tile(model.node_reasoning, h_sample, t=2)
+            loss_reasoning = loss_arith + 0.1 * core_fpf
+
+            optimizer_reasoning.zero_grad()
+            loss_reasoning.backward()
+            torch.nn.utils.clip_grad_norm_(reasoning_params, 1.0)
+            optimizer_reasoning.step()
 
         # Telemetry tracking
         any_reasoning = any(r["reasoning_visited"] for r in rollout_records)
@@ -335,8 +381,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_size", type=str, default="100m", choices=["10m", "100m"])
     parser.add_argument("--steps", type=int, default=600)
     parser.add_argument("--rollouts", type=int, default=4)
-    parser.add_argument("--lr_router", type=float, default=0.001)
-    parser.add_argument("--lr_backbone", type=float, default=0.0001)
+    parser.add_argument("--lr_router", type=float, default=0.0005)
+    parser.add_argument("--lr_reasoning", type=float, default=0.0005)
     parser.add_argument("--init_checkpoint", type=str, default="outputs/checkpoints/navitrit-100m-trained.pt")
     parser.add_argument("--save_checkpoint", type=str, default="outputs/checkpoints/navitrit-100m-dual-grpo.pt")
     parser.add_argument("--json", type=str, default="outputs/navitrit-100m-dual-grpo-results.json")
@@ -347,7 +393,7 @@ if __name__ == "__main__":
         steps=args.steps,
         rollouts_k=args.rollouts,
         lr_router=args.lr_router,
-        lr_backbone=args.lr_backbone,
+        lr_reasoning=args.lr_reasoning,
         init_checkpoint=args.init_checkpoint,
         output_checkpoint=args.save_checkpoint,
         output_json=args.json,

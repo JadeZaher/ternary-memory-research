@@ -1,0 +1,39 @@
+{
+  "config": {
+    "total_parameters": 247609344,
+    "trainable_parameters": 247609344,
+    "embedding_parameters": 52511744,
+    "layer_parameters": 195096576,
+    "head_parameters": 0,
+    "total_millions": 247.609344,
+    "layers_count": 6
+  },
+  "history": [
+    {
+      "step": 250,
+      "train_loss": 2.4166407883167267,
+      "train_ce_loss": 2.4135003089904785,
+      "val_loss": 1.38064087331295,
+      "val_ce_loss": 1.3778928726911546,
+      "val_perplexity": 3.9665348217835885,
+      "lr": 0.00014996385965465467,
+      "grad_norm": 7.0669755935668945,
+      "throughput_tok_per_sec": 1235.3789617819161,
+      "vram_gb": 7.438644736,
+      "elapsed_seconds": 910.601884841919
+    },
+    {
+      "step": 500,
+      "train_loss": 0.3280813582241535,
+      "train_ce_loss": 0.3268296606838703,
+      "val_loss": 0.3346114531159401,
+      "val_ce_loss": 0.33319320157170296,
+      "val_perplexity": 1.395416869160527,
+      "lr": 0.00014870300642721805,
+      "grad_norm": 1.1487326622009277,
+      "throughput_tok_per_sec": 914.7810133891307,
+      "vram_gb": 7.552329728,
+      "elapsed_seconds": 1896.718781709671
+    }
+  ]
+}
