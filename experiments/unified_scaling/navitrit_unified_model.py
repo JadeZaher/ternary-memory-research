@@ -34,6 +34,7 @@ Invariants that changed versus the 2026-09-17 version (and why):
 import os
 import sys
 import math
+import random
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Any
 
@@ -86,6 +87,12 @@ class NaviTritUnifiedConfig:
     min_chan_weight: float = 0.50       # soft mode floor on channel-mixing weight
     mod_capacity: float = 0.50          # mod mode: fraction of tokens that receive attention + FFN
 
+    # Stage-1 backbone for the traversal experiment (hardening report section 13):
+    loop_order_random: bool = False     # permute macro-layer order each loop while training -> order-agnostic tiles
+    tile_drop: float = 0.0              # drop each macro-layer with this prob while training (>=1 kept per loop)
+    deep_sup_weight: float = 0.0        # per-hop readout loss weight (0 = off)
+    deep_sup_frac: float = 0.125        # fraction of positions read out at each intermediate hop
+    grad_checkpoint: bool = False       # checkpoint each macro-layer call (training-time memory)
     ternary: bool = True
     ternary_embed: bool = False         # ternarise the tied embedding/head matrix too (arm O experiment)
     tie_word_embeddings: bool = True
@@ -162,21 +169,35 @@ class FlashAttentionTile(nn.Module):
         self.v_proj = BitLinear(self.hidden_size, self.hidden_size, bias=False, ternary=config.ternary)
         self.o_proj = BitLinear(self.hidden_size, self.hidden_size, bias=False, ternary=config.ternary)
 
-    def forward(self, x: torch.Tensor, mod_lora: Optional[Dict[str, Any]] = None, attn_mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        """attn_mask: optional boolean [B,1,S,S] (True = may attend); replaces the causal flag for gathered subsets."""
+    def forward(self, x: torch.Tensor, mod_lora: Optional[Dict[str, Any]] = None, attn_mask: Optional[torch.Tensor] = None,
+                return_received: bool = False):
+        """attn_mask: optional boolean [B,1,S,S] (True = may attend); replaces the causal flag for gathered subsets.
+        return_received: also return attention-received mass per key [B,S] (liveness signal, section 13)."""
         B, S, D = x.shape
+        self.last_received = None
         q = self.q_proj(x) + _apply_lora(x, mod_lora, "q")
         k = self.k_proj(x)
         v = self.v_proj(x)
         q = q.view(B, S, self.num_heads, self.head_dim).transpose(1, 2)
         k = k.view(B, S, self.num_heads, self.head_dim).transpose(1, 2)
         v = v.view(B, S, self.num_heads, self.head_dim).transpose(1, 2)
-        if attn_mask is None:
+        if return_received:
+            scores = (q.float() @ k.float().transpose(-1, -2)) / math.sqrt(self.head_dim)      # [B,h,S,S]
+            if attn_mask is None:
+                attn_mask = torch.tril(torch.ones(S, S, dtype=torch.bool, device=x.device)).view(1, 1, S, S)
+            scores = scores.masked_fill(~attn_mask, float("-inf"))
+            w = torch.softmax(scores, dim=-1)
+            out = (w.to(v.dtype) @ v)
+            received = w.mean(dim=1).sum(dim=-2)                                                  # [B,S]: mass each key received
+        elif attn_mask is None:
             out = F.scaled_dot_product_attention(q, k, v, is_causal=True)
         else:
             out = F.scaled_dot_product_attention(q, k, v, attn_mask=attn_mask)
         out = out.transpose(1, 2).contiguous().view(B, S, D)
-        return self.o_proj(out) + _apply_lora(x, mod_lora, "o")
+        out = self.o_proj(out) + _apply_lora(x, mod_lora, "o")
+        if return_received:
+            return out, received
+        return out
 
 
 class DualExpertSwiGLUTile(nn.Module):
@@ -206,6 +227,7 @@ class DualExpertSwiGLUTile(nn.Module):
         if self.num_experts == 1:
             return self._expert_forward(x, 0, mod_lora, gate_act), torch.zeros((), device=x.device, dtype=x.dtype)
         probs = F.softmax(self.router(x), dim=-1)
+        self.last_expert_probs = probs.detach()
         combined = sum(probs[..., i:i + 1] * self._expert_forward(x, i, mod_lora, gate_act) for i in range(self.num_experts))
         avg_p = probs.mean(dim=[0, 1])
         balance_loss = self.num_experts * torch.sum(avg_p ** 2) - 1.0
@@ -401,16 +423,43 @@ class NaviTritUnifiedForCausalLM(nn.Module):
         total_balance = torch.zeros((), device=device)
         acc = {"w_seq": torch.zeros((), device=device), "w_chan": torch.zeros((), device=device), "w_skip": torch.zeros((), device=device)}
         n_evals = 0
+        deep_sup = torch.zeros((), device=device)
+        n_deep = 0
+        cfg = self.config
+        randomise = self.training and (cfg.loop_order_random or cfg.tile_drop > 0.0)
         for k in range(T):
             mod_film, mod_lora = (None, None)
             if self.hypernet is not None:
                 mod_film, mod_lora = self.hypernet.get_modulations(k, self.roles[k])
-            for layer in self.macro_layers:
-                h, bal, st = layer(h, mod_film=mod_film, mod_lora=mod_lora, causal_threshold=causal_threshold)
+            order = list(range(self.num_macro_layers))
+            if randomise:
+                if cfg.loop_order_random:
+                    random.shuffle(order)
+                if cfg.tile_drop > 0.0:
+                    kept = [i for i in order if random.random() >= cfg.tile_drop]
+                    order = kept if kept else [order[0]]
+            for idx in order:
+                layer = self.macro_layers[idx]
+                if cfg.grad_checkpoint and self.training:
+                    from torch.utils.checkpoint import checkpoint as _ckpt
+                    h, bal, st = _ckpt(lambda h_in, layer=layer: layer(h_in, mod_film=mod_film, mod_lora=mod_lora, causal_threshold=causal_threshold),
+                                       h, use_reentrant=False)
+                else:
+                    h, bal, st = layer(h, mod_film=mod_film, mod_lora=mod_lora, causal_threshold=causal_threshold)
                 total_balance = total_balance + bal
                 for key in acc:
                     acc[key] = acc[key] + st[key]
                 n_evals += 1
+                # Deep supervision: tied-head readout on a random subset of positions after every intermediate hop
+                is_last = (k == T - 1) and (idx == order[-1])
+                if self.training and cfg.deep_sup_weight > 0.0 and labels is not None and not is_last:
+                    n_pos = max(1, int(cfg.deep_sup_frac * (S - 1)))
+                    pos = torch.randperm(S - 1, device=device)[:n_pos]
+                    h_sub = self.final_norm(h[:, pos])
+                    lg = F.linear(h_sub, embedding_weight(self)).float()
+                    tgt = labels[:, pos + 1]
+                    deep_sup = deep_sup + F.cross_entropy(lg.reshape(-1, self.vocab_size), tgt.reshape(-1), ignore_index=-100)
+                    n_deep += 1
 
         h = self.final_norm(h)
         logits = F.linear(h, embedding_weight(self))
@@ -421,12 +470,14 @@ class NaviTritUnifiedForCausalLM(nn.Module):
             shift_labels = labels[..., 1:].contiguous()
             ce_loss = F.cross_entropy(shift_logits.view(-1, self.vocab_size).float(), shift_labels.view(-1), ignore_index=-100)
             loss = ce_loss + self.config.balance_loss_weight * total_balance
+            if n_deep > 0:
+                loss = loss + self.config.deep_sup_weight * deep_sup / n_deep
 
         n = max(1, n_evals)
         return {
             "logits": logits, "loss": loss,
             "ce_loss": ce_loss if ce_loss is not None else torch.zeros((), device=device),
-            "balance_loss": total_balance,
+            "balance_loss": total_balance, "deep_sup_loss": (deep_sup / max(1, n_deep)).item(),
             "avg_w_seq": (acc["w_seq"] / n).item(), "avg_w_chan": (acc["w_chan"] / n).item(), "avg_w_skip": (acc["w_skip"] / n).item(),
             "virtual_layers": self.config.num_macro_layers * T,
         }

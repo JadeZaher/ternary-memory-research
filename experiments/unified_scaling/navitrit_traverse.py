@@ -77,6 +77,21 @@ class TraverseConfig:
     # the EDGE the token takes (signed tile offset v-u: backward / forward-by-how-much / how many tiles are
     # skipped, plus hop index), mixes the FFN gate nonlinearity. Initialised to pure SiLU (= arm H).
     act_strategy: bool = False
+    # Stage 2 of the condensed experiment (report section 13): value-based exit and richer path inputs.
+    exit_mode: str = "router"            # "router" (arms H-Q) | "value": continue iff predicted gain > exit_lambda
+    exit_lambda: float = 0.02            # compute price in nats per hop (training); swept at eval
+    value_loss_weight: float = 1.0       # Huber on measured per-token gain (from the deep-sup sample)
+    deep_sup_weight: float = 0.0         # tied-head readout on a sampled subset after every hop (also yields gain targets)
+    deep_sup_frac: float = 0.125
+    use_liveness: bool = False           # attention-received mass -> path state
+    use_gain_proxy: bool = False         # change of proxy-head top-2 margin -> path state (needs set_proxy_vocab)
+    use_coord: bool = False              # learned 2-D coordinate per (tile, expert) + activation stats -> path state
+    hop_feature_dropout: float = 0.0     # zero the hop embedding in the path input with this prob (training)
+    coord_reg: float = 1e-3
+    # eval-time exit policies on the same model (trainer sweeps these)
+    exit_policy: str = "threshold"       # "threshold" | "random" | "capacity"
+    random_continue_prob: float = 0.5
+    capacity_frac: float = 0.5
 
 
 ACT_BANK = {
@@ -99,6 +114,8 @@ class MixedGateActivation:
         for a, name in enumerate(ACT_NAMES):
             term = ACT_BANK[name](g) * self.w[..., a: a + 1].to(g.dtype)
             out = term if out is None else out + term
+        # activation statistics for the coordinate record: fraction of active units, mean magnitude
+        self.stats = torch.stack([(out > 0).float().mean(-1), out.float().abs().mean(-1)], dim=-1).detach()  # [B,k,2]
         return out
 
 
@@ -152,6 +169,17 @@ class NaviTritTraverseForCausalLM(nn.Module):
             with torch.no_grad():
                 self.strategy_router.bias[ACT_NAMES.index("silu")] = 4.0   # softmax ~ 0.97 SiLU at init
             nn.init.normal_(self.strategy_router.weight, std=0.02)
+        t = tcfg
+        self.use_value = t.exit_mode == "value"
+        if self.use_value:
+            self.value_head = nn.Sequential(nn.Linear(2 * t.path_dim, t.path_dim // 2), nn.GELU(), nn.Linear(t.path_dim // 2, 1))
+        if t.use_liveness or t.use_gain_proxy:
+            self.sig_in = nn.Linear(2, t.path_dim)
+        if t.use_coord:
+            self.coord = nn.Parameter(torch.randn(self.M, config.num_experts, 2) * 0.1)   # learned 2-D point per (tile, expert)
+            self.coord_in = nn.Linear(2 + 1 + len(ACT_NAMES) + 2 + config.num_experts, t.path_dim)
+        self.register_buffer("proxy_ids", torch.arange(0), persistent=False)
+        self.force_random_tiles = False   # diversity probe: ignore the tile router, pick tiles at random
         self.use_strain = tcfg.strain_mode != "off"
         if self.use_strain:
             self.strain_in = nn.Linear(3, tcfg.path_dim)                      # (log delta norm, router entropy, hop/H)
@@ -190,6 +218,24 @@ class NaviTritTraverseForCausalLM(nn.Module):
         self.load_state_dict(own)
         print(f"[traverse] warm-started {loaded} tensors from {path}")
 
+    def set_proxy_vocab(self, ids: torch.Tensor) -> None:
+        self.proxy_ids = ids.to(self.tok_embeddings.weight.device)
+
+    def _proxy_margin(self, h: torch.Tensor) -> torch.Tensor:
+        """top-1 minus top-2 logit over the proxy vocabulary rows of the tied head: a cheap confidence per token."""
+        if self.proxy_ids.numel() == 0:
+            return torch.zeros(h.shape[:2], device=h.device)
+        w = embedding_weight(self)[self.proxy_ids]
+        lg = F.linear(self.final_norm(h), w).float()
+        top2 = lg.topk(2, dim=-1).values
+        return (top2[..., 0] - top2[..., 1]).detach()
+
+    def _sample_loss(self, h: torch.Tensor, labels: torch.Tensor, pos: torch.Tensor) -> torch.Tensor:
+        """per-token CE at sampled positions [B,n] using the full tied head (deep supervision / gain targets)."""
+        lg = F.linear(self.final_norm(h[:, pos]), embedding_weight(self)).float()
+        tgt = labels[:, pos + 1]
+        return F.cross_entropy(lg.reshape(-1, self.vocab_size), tgt.reshape(-1), reduction="none", ignore_index=-100).view(h.size(0), -1)
+
     def _cond(self, h: torch.Tensor, p: torch.Tensor, hop: int) -> torch.Tensor:
         s = self.state_proj(self.norm_route(h))
         if self.tcfg.router_cond == "state":
@@ -225,17 +271,34 @@ class NaviTritTraverseForCausalLM(nn.Module):
         causal = torch.tril(torch.ones(k, k, dtype=torch.bool, device=h_sub.device))
         mask = causal.unsqueeze(0) & valid.unsqueeze(1)                       # [B,k,k] queries may see valid keys <= them
         mask = mask | torch.eye(k, dtype=torch.bool, device=h_sub.device).unsqueeze(0)  # padded queries attend to themselves (no NaN)
-        attn = tile.attn(_film(tile.norm_attn(h_sub), mod_film, "attn"), mod_lora, attn_mask=mask.unsqueeze(1))
+        if self.tcfg.use_liveness:
+            attn, received = tile.attn(_film(tile.norm_attn(h_sub), mod_film, "attn"), mod_lora, attn_mask=mask.unsqueeze(1), return_received=True)
+        else:
+            attn = tile.attn(_film(tile.norm_attn(h_sub), mod_film, "attn"), mod_lora, attn_mask=mask.unsqueeze(1)); received = None
         h2 = h_sub + attn
         gate_act = MixedGateActivation(act_w) if act_w is not None else F.silu
         ffn, bal = tile.dual_ffn(_film(tile.norm_ffn(h2), mod_film, "ffn"), mod_lora, gate_act=gate_act)
-        return attn + ffn, bal
+        extras = {"received": received}
+        if self.tcfg.use_coord:
+            A = len(ACT_NAMES)
+            act_stats = gate_act.stats if isinstance(gate_act, MixedGateActivation) else torch.zeros(B, k, 2, device=h_sub.device)
+            act_mix = act_w if act_w is not None else F.one_hot(torch.tensor(ACT_NAMES.index("silu"), device=h_sub.device), A).float().expand(B, k, A)
+            eprobs = getattr(tile.dual_ffn, "last_expert_probs", None)
+            if eprobs is None:
+                eprobs = torch.ones(B, k, 1, device=h_sub.device)
+            coord_tok = torch.einsum("bke,ed->bkd", eprobs.float(), self.coord[m].float())      # expert-weighted 2-D location
+            extras["record"] = torch.cat([coord_tok, act_mix.float(), act_stats.float(), eprobs.float()], dim=-1)   # hop/H added by caller
+        return attn + ffn, bal, extras
 
     # ------------------------------------------------------------------ forward -------------
-    def forward(self, input_ids: torch.Tensor, labels: Optional[torch.Tensor] = None, max_loops: Optional[int] = None, **_) -> Dict[str, Any]:
+    def forward(self, input_ids: torch.Tensor, labels: Optional[torch.Tensor] = None, max_loops: Optional[int] = None,
+                probe: bool = False, **_) -> Dict[str, Any]:
+        """probe=True additionally returns per-token loss at min_hops and at the end (all positions; eval-time diversity probe)."""
         B, S = input_ids.shape
         dev = input_ids.device
         H = max_loops if max_loops is not None else self.tcfg.max_hops
+        t = self.tcfg
+        rec_dim = 2 + len(ACT_NAMES) + 2 + self.config.num_experts
         positions = torch.arange(S, device=dev).unsqueeze(0)
         h = F.embedding(input_ids, embedding_weight(self)) + self.pos_embeddings(positions)
         p = self.path_cell(self.tile_embed.weight[self.M].expand(B * S, -1), torch.zeros(B * S, self.tcfg.path_dim, device=dev)).view(B, S, -1)
@@ -248,9 +311,29 @@ class NaviTritTraverseForCausalLM(nn.Module):
         strain_sum = torch.zeros((), device=dev)
         prev_choice = torch.full((B, S), self.M, dtype=torch.long, device=dev)   # START
         act_usage = torch.zeros(len(ACT_NAMES), device=dev)
+        # deep supervision sample + measured gains
+        use_ds = (t.deep_sup_weight > 0.0 or self.use_value) and labels is not None
+        deep_sup = torch.zeros((), device=dev); value_loss = torch.zeros((), device=dev); n_ds = 0
+        if use_ds:
+            n_pos = max(1, int(t.deep_sup_frac * (S - 1)))
+            ds_pos = torch.randperm(S - 1, device=dev)[:n_pos] if self.training else torch.arange(0, S - 1, max(1, (S - 1) // n_pos), device=dev)[:n_pos]
+            with torch.no_grad():
+                loss_prev = self._sample_loss(h, labels, ds_pos)          # [B,n] loss before any hop
+        gain_sum = torch.zeros((), device=dev); gain_n = torch.zeros((), device=dev)
+        pred_gain_sum = torch.zeros((), device=dev)
+        margin_prev = self._proxy_margin(h) if t.use_gain_proxy else None
+        liveness = torch.zeros(B, S, device=dev)
+        token_loss_min = None
         for hop in range(H):
+            if probe and hop == t.min_hops and labels is not None:
+                with torch.no_grad():
+                    token_loss_min = self._sample_loss(h, labels, torch.arange(S - 1, device=dev))
             cond = self._cond(h, p, hop)
             logits = self.tile_router(cond).float() / self.tcfg.router_temperature
+            pred_gain = None
+            if self.use_value:
+                pred_gain = self.value_head(cond).float().squeeze(-1)             # predicted gain (nats) of this hop, per token
+                pred_gain_sum = pred_gain_sum + (pred_gain.detach() * active.float()).sum()
             pred_strain = None
             if self.use_strain:
                 pred_strain = F.softplus(self.strain_head(cond).float().squeeze(-1))   # predicted relative delta norm of this hop
@@ -262,9 +345,24 @@ class NaviTritTraverseForCausalLM(nn.Module):
                 logits = logits - torch.log(-torch.log(torch.rand_like(logits).clamp(min=1e-9)))
             if hop < self.tcfg.min_hops or not self.allow_exit:
                 logits = logits.clone(); logits[..., self.EXIT] = -1e4
+            if self.use_value:
+                logits = logits.clone(); logits[..., self.EXIT] = -1e4        # exit is decided by value, not by the tile router
             probs = F.softmax(logits, dim=-1)                                  # [B,S,M+1]
             entropy = -(probs * torch.log(probs.clamp(min=1e-9))).sum(-1)     # [B,S]
             choice = probs.argmax(dim=-1)
+            if self.force_random_tiles:
+                choice = torch.randint(0, self.M, (B, S), device=dev)
+            if self.use_value and hop >= t.min_hops and self.allow_exit:
+                if t.exit_policy == "threshold":
+                    cont = pred_gain.detach() > t.exit_lambda
+                elif t.exit_policy == "random":
+                    cont = torch.rand(B, S, device=dev) < t.random_continue_prob
+                else:  # capacity: top fraction of active tokens by predicted gain, per sequence
+                    score = pred_gain.detach().masked_fill(~active, float("-inf"))
+                    k_keep = max(1, int(t.capacity_frac * S))
+                    thresh = score.topk(k_keep, dim=1).values[:, -1:]
+                    cont = score >= thresh
+                choice = torch.where(cont, choice, torch.full_like(choice, self.EXIT))
             choice = torch.where(active, choice, torch.full_like(choice, self.EXIT))
             # Switch balance loss over tiles (exit excluded), computed on active tokens
             act_f = active.float()
@@ -276,6 +374,7 @@ class NaviTritTraverseForCausalLM(nn.Module):
             alpha = self._alpha(p, hop)                                        # [B,S,K]
 
             h_new = h
+            record = torch.zeros(B, S, rec_dim, device=dev) if t.use_coord else None
             for m in range(self.M):
                 sel = (choice == m) & active
                 if not bool(sel.any()):
@@ -289,7 +388,11 @@ class NaviTritTraverseForCausalLM(nn.Module):
                     act_all = self._strategy(p, prev_choice, m, hop)                       # [B,S,A]
                     act_w = torch.gather(act_all, 1, order.unsqueeze(-1).expand(-1, -1, act_all.size(-1)))
                     act_usage = act_usage + (act_w.detach() * valid.unsqueeze(-1)).sum(dim=(0, 1))
-                delta, bal = self._run_tile(m, h_sub, valid, a_sub, act_w)
+                delta, bal, extras = self._run_tile(m, h_sub, valid, a_sub, act_w)
+                if extras.get("received") is not None:
+                    liveness = liveness.scatter(1, order, extras["received"].to(liveness.dtype) * valid.float())
+                if t.use_coord:
+                    record = record.scatter(1, order.unsqueeze(-1).expand(-1, -1, rec_dim), extras["record"] * valid.unsqueeze(-1).float())
                 gate = torch.gather(probs[..., m], 1, order).unsqueeze(-1).to(delta.dtype)
                 if self.tcfg.gate_ste:
                     gate = gate / gate.detach().clamp(min=1e-6)   # value 1, gradient d/dp: tiles run at full magnitude like the dense model
@@ -304,8 +407,30 @@ class NaviTritTraverseForCausalLM(nn.Module):
                 strain_loss = strain_loss + (((pred_strain - log_delta.detach()) ** 2) * moved_f).sum() / moved_f.sum().clamp(min=1.0)
             h = h_new
             hops_executed = hops_executed + moved_f.sum()
+            if use_ds and bool(moved_f.any()):
+                loss_now = self._sample_loss(h, labels, ds_pos)                 # [B,n] (with grad: deep supervision)
+                moved_ds = moved_f[:, ds_pos]
+                gain = (loss_prev - loss_now.detach())                           # measured gain of this hop at sampled positions
+                if hop < H - 1:
+                    deep_sup = deep_sup + (loss_now * moved_ds).sum() / moved_ds.sum().clamp(min=1.0); n_ds += 1
+                if self.use_value:
+                    pg = pred_gain[:, ds_pos]
+                    value_loss = value_loss + (F.huber_loss(pg, gain, reduction="none", delta=0.5) * moved_ds).sum() / moved_ds.sum().clamp(min=1.0)
+                gain_sum = gain_sum + (gain * moved_ds).sum(); gain_n = gain_n + moved_ds.sum()
+                loss_prev = torch.where(moved_ds > 0, loss_now.detach(), loss_prev)
             # continuation update for tokens that executed a tile
-            step_in = self.tile_embed(choice.clamp(max=self.M)) + self.hop_embed.weight[hop]
+            hop_e = self.hop_embed.weight[hop]
+            if self.training and t.hop_feature_dropout > 0.0:
+                hop_e = hop_e * (torch.rand(B, S, 1, device=dev) >= t.hop_feature_dropout).float()
+            step_in = self.tile_embed(choice.clamp(max=self.M)) + hop_e
+            if t.use_liveness or t.use_gain_proxy:
+                dmargin = torch.zeros(B, S, device=dev)
+                if t.use_gain_proxy:
+                    margin_now = self._proxy_margin(h); dmargin = margin_now - margin_prev; margin_prev = margin_now
+                step_in = step_in + self.sig_in(torch.stack([liveness if t.use_liveness else torch.zeros_like(dmargin), dmargin], dim=-1))
+            if t.use_coord:
+                rec_in = torch.cat([record[..., :2], torch.full((B, S, 1), hop / H, device=dev), record[..., 2:]], dim=-1)
+                step_in = step_in + self.coord_in(rec_in)
             if self.use_strain:
                 feats = torch.stack([log_delta.detach(), entropy.detach(), torch.full_like(log_delta, hop / H)], dim=-1)
                 step_in = step_in + self.strain_in(feats)
@@ -326,7 +451,22 @@ class NaviTritTraverseForCausalLM(nn.Module):
             loss = ce + self.tcfg.balance_loss_weight * balance + self.tcfg.hop_cost_weight * mean_hops / H
             if self.use_strain:
                 loss = loss + self.tcfg.strain_loss_weight * strain_loss
+            if n_ds > 0:
+                loss = loss + t.deep_sup_weight * deep_sup / n_ds
+            if self.use_value:
+                loss = loss + t.value_loss_weight * value_loss / max(1, H)
+            if t.use_coord:
+                loss = loss + t.coord_reg * self.coord.pow(2).mean()
+        out_extra = {}
+        if probe and labels is not None:
+            with torch.no_grad():
+                out_extra["token_loss_final"] = F.cross_entropy(logits[..., :-1, :].reshape(-1, self.vocab_size).float(), labels[..., 1:].reshape(-1), reduction="none").view(B, S - 1)
+                out_extra["token_loss_min"] = token_loss_min
+                out_extra["final_hidden"] = h.detach()
         return {
+            **out_extra,
+            "deep_sup_loss": (deep_sup / max(1, n_ds)).item(), "value_loss": (value_loss / max(1, H)).item(),
+            "mean_measured_gain": (gain_sum / gain_n.clamp(min=1.0)).item(), "mean_pred_gain": (pred_gain_sum / hops_executed.clamp(min=1.0)).item(),
             "strain_loss": strain_loss.item(), "mean_pred_strain": (strain_sum / hops_executed.clamp(min=1.0)).item(),
             "act_usage": (act_usage / act_usage.sum().clamp(min=1e-6)).tolist(), "act_names": ACT_NAMES,
             "logits": logits, "loss": loss, "ce_loss": ce if ce is not None else torch.zeros((), device=dev),

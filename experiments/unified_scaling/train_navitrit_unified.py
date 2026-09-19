@@ -120,7 +120,8 @@ def build_config(args) -> NaviTritUnifiedConfig:
         vocab_size=50257, max_position_embeddings=max(1024, args.seq_len), num_experts=args.num_experts,
         use_dwp=not args.no_dwp, routing_mode="dense" if args.routing_mode == "traverse" else args.routing_mode,
         mod_capacity=args.mod_capacity, min_chan_weight=args.min_chan_weight, ternary=not args.fp_control,
-        ternary_embed=args.ternary_embed, **kw,
+        ternary_embed=args.ternary_embed, loop_order_random=args.loop_order_random, tile_drop=args.tile_drop,
+        deep_sup_weight=args.deep_sup, deep_sup_frac=args.deep_sup_frac, grad_checkpoint=args.grad_checkpoint, **kw,
     )
 
 
@@ -130,7 +131,9 @@ def build_model(args, config: NaviTritUnifiedConfig):
     tcfg = TraverseConfig(max_hops=args.max_hops, min_hops=args.min_hops, exit_warmup_steps=args.exit_warmup, gate_ste=not args.no_gate_ste,
                           router_cond=args.router_cond, adapter_cond=args.adapter_cond,
                           adapter_bank=args.adapter_bank, adapter_rank=config.lora_rank // 2, hop_cost_weight=args.hop_cost,
-                          strain_mode=args.strain, act_strategy=args.act_strategy)
+                          strain_mode=args.strain, act_strategy=args.act_strategy,
+                          exit_mode=args.exit_mode, exit_lambda=args.exit_lambda, deep_sup_weight=args.deep_sup, deep_sup_frac=args.deep_sup_frac,
+                          use_liveness=args.liveness, use_gain_proxy=args.gain_proxy, use_coord=args.coord, hop_feature_dropout=args.hop_dropout)
     model = NaviTritTraverseForCausalLM(config, tcfg)
     if args.init_from:
         model.load_dense_checkpoint(args.init_from)
@@ -140,8 +143,8 @@ def build_model(args, config: NaviTritUnifiedConfig):
 def forward_with_checkpoint(model, xy, use_ckpt: bool):
     """Gradient checkpointing wraps each macro-layer call; the model's forward is re-implemented here
     only for that purpose (keeps navitrit_unified_model.py free of training-time concerns)."""
-    if not use_ckpt or isinstance(model, NaviTritTraverseForCausalLM):
-        return model(xy, labels=xy)
+    return model(xy, labels=xy)  # checkpointing is handled inside the model (config.grad_checkpoint)
+    # legacy path below is unreachable and kept only for reference
     B, S = xy.shape
     positions = torch.arange(0, S, device=xy.device).unsqueeze(0)
     h = F.embedding(xy, embedding_weight(model)) + model.pos_embeddings(positions)
@@ -163,6 +166,73 @@ def forward_with_checkpoint(model, xy, use_ckpt: bool):
             "avg_w_seq": float("nan"), "avg_w_chan": float("nan"), "avg_w_skip": float("nan")}
 
 
+@torch.no_grad()
+def _eval_policy(model, batches, device, amp_dtype):
+    model.eval()
+    tot, cnt, hops, n = 0.0, 0, 0.0, 0
+    for blist in batches.values():
+        for xy in blist:
+            xy = xy.to(device)
+            with torch.autocast("cuda", dtype=amp_dtype, enabled=device.type == "cuda"):
+                out = model(xy, labels=xy)
+            k = xy.numel() - xy.size(0)
+            tot += out["ce_loss"].item() * k; cnt += k; hops += out["mean_hops"]; n += 1
+    return {"mean_loss": round(tot / max(1, cnt), 4), "mean_hops": round(hops / max(1, n), 3)}
+
+
+def stage2_eval(model, batches, device, amp_dtype, args) -> Dict:
+    """Section 13 read-out: lambda sweep, matched random / capacity controls, and the path-diversity probe."""
+    import numpy as np
+    t = model.tcfg
+    res: Dict = {"lambda_sweep": {}, "controls": {}, "diversity": {}}
+    t.exit_policy = "threshold"
+    for lam in [float(x) for x in args.lambda_sweep.split(",")]:
+        t.exit_lambda = lam
+        res["lambda_sweep"][str(lam)] = _eval_policy(model, batches, device, amp_dtype)
+        print(f"  [lambda {lam}] {res['lambda_sweep'][str(lam)]}")
+    t.exit_lambda = args.exit_lambda
+    target = res["lambda_sweep"][str(float(args.exit_lambda))]["mean_hops"]
+    # random continuation matched to the trained policy's mean hops (bisection on per-hop continue prob)
+    t.exit_policy = "random"
+    lo, hi = 0.0, 1.0
+    for _ in range(12):
+        t.random_continue_prob = (lo + hi) / 2
+        r = _eval_policy(model, {"tinystories": batches[next(iter(batches))][:2]}, device, amp_dtype)
+        lo, hi = ((lo + hi) / 2, hi) if r["mean_hops"] < target else (lo, (lo + hi) / 2)
+    res["controls"]["random_matched"] = {"continue_prob": round(t.random_continue_prob, 4), **_eval_policy(model, batches, device, amp_dtype)}
+    t.exit_policy = "capacity"
+    t.capacity_frac = max(0.05, min(1.0, (target - t.min_hops) / max(1, t.max_hops - t.min_hops)))
+    res["controls"]["capacity_matched"] = {"capacity_frac": round(t.capacity_frac, 4), **_eval_policy(model, batches, device, amp_dtype)}
+    t.exit_policy = "threshold"
+    print(f"  [controls] trained {res['lambda_sweep'][str(float(args.exit_lambda))]} | random {res['controls']['random_matched']} | capacity {res['controls']['capacity_matched']}")
+    # path-diversity probe: K forced-random-tile runs per batch; per-token angular spread of final states vs measured gain
+    divs, gains = [], []
+    for xy in batches[next(iter(batches))][:4]:
+        xy = xy.to(device)
+        with torch.autocast("cuda", dtype=amp_dtype, enabled=device.type == "cuda"):
+            base = model(xy, labels=xy, probe=True)
+            model.force_random_tiles = True
+            finals = [model(xy, labels=xy, probe=True)["final_hidden"].float() for _ in range(4)]
+            model.force_random_tiles = False
+        Hs = torch.stack(finals)                                             # [K,B,S,d]
+        Hn = F.normalize(Hs, dim=-1)
+        sim = torch.einsum("kbsd,lbsd->klbs", Hn, Hn).mean(dim=(0, 1))    # mean pairwise cosine per token
+        div = (1.0 - sim)[:, :-1].reshape(-1)
+        gain = (base["token_loss_min"] - base["token_loss_final"]).reshape(-1) if base["token_loss_min"] is not None else torch.zeros_like(div)
+        divs.append(div.cpu()); gains.append(gain.cpu())
+    d = torch.cat(divs).numpy(); g = torch.cat(gains).numpy()
+    def _rank(a):
+        return np.argsort(np.argsort(a)).astype(np.float64)
+    rd, rg = _rank(d), _rank(g)
+    rho = float(np.corrcoef(rd, rg)[0, 1]) if len(d) > 2 else 0.0
+    z = 0.5 * np.log((1 + rho) / (1 - rho + 1e-12)) * np.sqrt(max(1, len(d) - 3))   # Fisher z, normal approximation
+    pval = float(2 * (1 - 0.5 * (1 + np.math.erf(abs(z) / np.sqrt(2))))) if hasattr(np, "math") else float(2 * (1 - 0.5 * (1 + __import__("math").erf(abs(z) / np.sqrt(2)))))
+    res["diversity"] = {"spearman_rho": round(float(rho), 4), "p_value": float(pval), "mean_diversity": round(float(d.mean()), 4), "mean_gain_min_to_final": round(float(g.mean()), 4), "n_tokens": int(len(d))}
+    print(f"  [diversity] rho {rho:.3f} (p {pval:.2e}) | mean diversity {d.mean():.4f} | mean gain min->final {g.mean():.4f}")
+    model.train()
+    return res
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--preset", choices=list(PRESETS), default="pilot")
@@ -180,6 +250,14 @@ def main():
     ap.add_argument("--hop-cost", type=float, default=0.01)
     ap.add_argument("--strain", choices=["off", "observe", "gate"], default="off", help="strain latent track (report section 10)")
     ap.add_argument("--act-strategy", action="store_true", help="router forwards an activation mixture per edge (report section 12)")
+    # stage 2 (report section 13)
+    ap.add_argument("--exit-mode", choices=["router", "value"], default="router")
+    ap.add_argument("--exit-lambda", type=float, default=0.02)
+    ap.add_argument("--liveness", action="store_true")
+    ap.add_argument("--gain-proxy", action="store_true")
+    ap.add_argument("--coord", action="store_true")
+    ap.add_argument("--hop-dropout", type=float, default=0.0)
+    ap.add_argument("--lambda-sweep", type=str, default="0,0.005,0.01,0.02,0.05,0.1")
     ap.add_argument("--init-from", type=str, default=None, help="dense-arm checkpoint to warm-start the tiles from")
     ap.add_argument("--mod-capacity", type=float, default=0.5)
     ap.add_argument("--min-chan-weight", type=float, default=0.5)
@@ -202,6 +280,10 @@ def main():
     ap.add_argument("--eval-iters", type=int, default=16)
     ap.add_argument("--save-interval", type=int, default=500)
     ap.add_argument("--grad-checkpoint", action="store_true")
+    ap.add_argument("--loop-order-random", action="store_true", help="stage-1 backbone: permute macro-layer order each loop")
+    ap.add_argument("--tile-drop", type=float, default=0.0, help="stage-1 backbone: drop each macro-layer with this prob per loop")
+    ap.add_argument("--deep-sup", type=float, default=0.0, help="stage-1 backbone: per-hop readout loss weight")
+    ap.add_argument("--deep-sup-frac", type=float, default=0.125)
     ap.add_argument("--amp", choices=["bf16", "fp16", "off"], default="bf16")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--smoke", action="store_true", help="10 steps, no checkpoints: throughput + VRAM only")
@@ -223,12 +305,15 @@ def main():
     eval_batches = fixed_eval_batches(val_tokens, args.batch_size, args.seq_len, args.eval_iters, seed=12345)
     config = build_config(args)
     model = build_model(args, config).to(device)
+    if args.routing_mode == "traverse" and args.gain_proxy:
+        counts = torch.bincount(train_tokens[: 5_000_000].long(), minlength=config.vocab_size)
+        model.set_proxy_vocab(counts.topk(512).indices)
     sweep_max = args.max_hops if args.routing_mode == "traverse" else config.max_loops
     stats = model.count_parameters()
     tokens_per_step = args.batch_size * args.grad_accum * args.seq_len
     print("=" * 88)
     print(f"NaviTrit-Unified [{tag}] preset={args.preset} routing={args.routing_mode} dwp={config.use_dwp} "
-          f"experts={config.num_experts} mamba={config.use_mamba} ternary={config.ternary} loops={config.max_loops} (virtual depth {config.virtual_depth})")
+          f"experts={config.num_experts} mamba={config.use_mamba} ternary={config.ternary} order_random={config.loop_order_random} tile_drop={config.tile_drop} deep_sup={config.deep_sup_weight} loops={config.max_loops} (virtual depth {config.virtual_depth})")
     print(f"params {stats['total_millions']}M | super-block packed {stats['superblock_packed_mb']} MB | "
           f"train tokens {len(train_tokens):,} | tokens/step {tokens_per_step:,} | budget {tokens_per_step * args.max_steps / 1e6:.1f}M tokens")
     print(f"val sets: " + ", ".join(f"{k}={len(v):,}" for k, v in val_tokens.items()))
@@ -282,14 +367,20 @@ def main():
             rec = {"step": step, "train_loss": round(loss_acc, 4), "train_ce": round(ce_acc, 4), "lr": lr, "grad_norm": round(gnorm, 3),
                    "elapsed_s": round(time.time() - t0, 1), "tokens_seen": tokens_per_step * step,
                    "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2) if device.type == "cuda" else 0.0, **ev}
-            if config.routing_mode != "dense" and not args.grad_checkpoint:
+            if config.routing_mode != "dense":
                 rec.update({"w_seq": round(out["avg_w_seq"], 4), "w_chan": round(out["avg_w_chan"], 4), "w_skip": round(out["avg_w_skip"], 4)})
+            if "deep_sup_loss" in out:
+                rec["deep_sup_loss"] = round(out["deep_sup_loss"], 4)
             if args.routing_mode == "traverse":
                 rec.update({"mean_hops": round(out["mean_hops"], 3), "tile_usage": [round(u, 3) for u in out["tile_usage"]]})
                 print(f"  [traverse {step}] mean hops {out['mean_hops']:.2f} / {args.max_hops} | tile usage {[round(u, 2) for u in out['tile_usage']]}")
                 if args.act_strategy:
                     rec.update({"act_usage": dict(zip(out["act_names"], [round(u, 3) for u in out["act_usage"]]))})
                     print(f"  [act {step}] " + " ".join(f"{n} {u:.2f}" for n, u in zip(out["act_names"], out["act_usage"])))
+                if args.exit_mode == "value" or args.deep_sup > 0:
+                    rec.update({"deep_sup_loss": round(out["deep_sup_loss"], 4), "value_loss": round(out["value_loss"], 4),
+                                "mean_measured_gain": round(out["mean_measured_gain"], 4), "mean_pred_gain": round(out["mean_pred_gain"], 4)})
+                    print(f"  [value {step}] measured gain {out['mean_measured_gain']:.4f} | predicted {out['mean_pred_gain']:.4f} | value loss {out['value_loss']:.4f} | deep-sup {out['deep_sup_loss']:.3f}")
                 if args.strain != "off":
                     rec.update({"strain_loss": round(out["strain_loss"], 4), "mean_pred_strain": round(out["mean_pred_strain"], 4)})
                     print(f"  [strain {step}] aux loss {out['strain_loss']:.4f} | mean predicted strain {out['mean_pred_strain']:.3f}")
@@ -306,6 +397,11 @@ def main():
             torch.save({"config": asdict(config), "model_state_dict": model.state_dict(), "step": step},
                        os.path.join(args.output_dir, f"navitrit-unified-{tag}-latest.pt"))
 
+    stage2 = {}
+    if args.routing_mode == "traverse" and args.exit_mode == "value":
+        stage2 = stage2_eval(model, eval_batches, device, amp_dtype, args)
+        with open(log_path, "w") as f:
+            json.dump({"tag": tag, "args": vars(args), "config": asdict(config), "params": stats, "history": history, "stage2": stage2}, f, indent=2)
     # Test-time compute sweep: does more loops help on held-out data? (the LoopFormer claim, measured cleanly)
     sweep = {}
     for T in range(1, sweep_max + 1):
@@ -313,7 +409,7 @@ def main():
         print(f"  [loop sweep] T={T}: " + " | ".join(f"{k} {v}" for k, v in sweep[f'T{T}'].items() if k.endswith("ppl")))
     with open(log_path, "w") as f:
         json.dump({"tag": tag, "args": vars(args), "config": asdict(config), "params": stats, "history": history,
-                   "loop_budget_sweep": sweep, "best_mean_val_loss": best,
+                   "loop_budget_sweep": sweep, "best_mean_val_loss": best, "stage2": stage2,
                    "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2) if device.type == "cuda" else 0.0}, f, indent=2)
     print(f"Saved {log_path}")
 

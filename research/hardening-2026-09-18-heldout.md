@@ -336,6 +336,24 @@ python experiments/frontier_scaling/eval_heldout_clean.py
 Tests before launching: `python experiments/unified_scaling/test_navitrit_unified.py`,
 `python experiments/unified_scaling/test_navitrit_traverse.py`, `python -m unittest experiments.mamba.test_ternary_mamba`.
 
+### 9.2 Round two (min_hops=4, exit warmup 1000, STE gate)
+
+| arm | mean hops | TinyStories | Code | Math | mean loss |
+|---|---:|---:|---:|---:|---:|
+| H2-traverse-path | 4.0 | 16.75 | 26.39 | 126.4 | 3.6436 |
+| I2-traverse-control | 4.0 | 16.91 | 27.22 | 131.1 | 3.6691 |
+| J2-traverse-pathroute | 4.0 | 16.96 | 27.58 | 133.0 | 3.6795 |
+| K2-traverse-pathadapt | 4.0 | 16.89 | 27.92 | 128.6 | 3.6710 |
+| L-strain-observe | 4.0 | 17.09 | 28.16 | 128.9 | 3.6783 |
+| M-strain-gate | 4.0 | 18.10 | 28.78 | 146.4 | 3.7474 |
+| N-strain-gate-nohistory | 4.0 | 16.33 | 26.62 | 125.9 | 3.6367 |
+
+All arms sat at exactly the 4-hop floor once exit opened (8.00 during warmup). History (H2 vs I2) is worth
+0.025 nats, inside single-seed noise; strain gating (M) hurt. At 4 tile evaluations per token the traverse
+arms (3.64-3.68) trail the fixed-order dense model at the same compute (E at one loop: 3.485) by 0.16 nats.
+Interpretation in section 13: the router had no per-token value signal and the tiles were never trained to
+compose in arbitrary orders. Arms P, Q, O and E1 were cancelled unfinished to fund the condensed experiment.
+
 ## 10. Strain track: a latent for "how unresolved is this token" (arms L, M, N)
 
 Idea (user, 2026-09-18): give each token a stress/strain latent so the router can free history it no longer
@@ -438,3 +456,45 @@ stack (history routing, history interpretation, strain-gated exit, edge-conditio
 against H and Q against M at matched mean hops. A win for P that comes with the mixture actually moving
 off SiLU on backward or long-skip edges is the interesting outcome; a win with the mixture unchanged is
 noise and should be re-run on a second seed before it is believed.
+
+## 13. The condensed experiment (decided 2026-09-19 after two grilling rounds)
+
+Rounds one and two (sections 9.1, 9.2) showed that learned exit collapses to whatever floor is set, that
+per-token routing at matched compute trails fixed order by 0.16 nats, and that history moves the loss by
+at most 0.03 nats. The diagnosis: tiles trained in one fixed order with no readable intermediate states,
+and a router with no per-token estimate of what another hop is worth. The experiment below fixes both in
+two GPU runs and answers every remaining question offline or at eval time.
+
+**Stage 1, the backbone** (`S1-backbone`, ~1h): dense pilot, no DWP, 4 loops, with `--loop-order-random`
+(macro-layer order permuted every loop), `--tile-drop 0.25` (each tile skipped with p=0.25, at least one kept),
+and `--deep-sup 0.1 --deep-sup-frac 0.125` (full tied-head readout on 1/8 of positions after every intermediate
+hop, weight 0.1). This makes the tiles order-agnostic operators with readable states at every hop; its loop
+sweep is the fixed-order control at every compute level.
+
+**Stage 2, the traversal** (`S2-traverse`, ~2h, warm-started from S1's tiles): `navitrit_traverse.py` with
+`exit_mode="value"`:
+- the tile router chooses among tiles only; exit is decided by a **value head** (path state + residual
+  state -> predicted gain in nats of the coming hop), trained by Huber loss on the **measured gain**
+  (loss before minus loss after the hop, from the same deep-supervision sample); continue iff predicted gain
+  > lambda (0.02 nats in training), min 2 hops, exit masked for the first 500 steps;
+- path-state inputs: tile id, hop embedding with feature dropout 0.3, **liveness** (attention-received mass
+  from the tile's attention, `FlashAttentionTile(return_received=True)`), **gain proxy** (change of top-2
+  margin over the 512 most frequent vocabulary rows of the tied head), and the **activation coordinate**: a
+  learned 2-D point per (tile, expert) weighted by the expert mix, hop/H as the third axis, plus the
+  activation mixture and its statistics (fraction of active gate units, mean gate magnitude);
+- adapter bank and edge-conditioned activation selector as in arms H and P.
+
+**Read-out (all eval-time, one trained model):**
+1. lambda sweep {0, 0.005, 0.01, 0.02, 0.05, 0.1} -> the accuracy-versus-mean-hops curve;
+2. **random continuation** with per-hop continue probability bisected to match the trained policy's mean
+   hops, and **capacity** (top fraction by predicted gain) at the same mean hops: the two nulls;
+3. the fixed-order control: S1's loop sweep at the nearest tile-evaluation count;
+4. **path diversity**: four forced-random-tile passes per batch, mean pairwise cosine distance of each
+   token's final state, rank-correlated with that token's measured gain from hop `min_hops` to the end.
+
+**Decision rule** (fixed before the run): the history-conditioned value policy must beat random
+continuation by more than 0.03 nats at equal mean hops, and diversity must correlate positively with
+gain (rho > 0 with p < 0.01). Both, and the non-monotonic thesis has its first evidence; either missing,
+and the honest architecture is the modulated tied block with fixed order (arm C).
+
+Tests: `test_navitrit_traverse.py` (all mechanisms), stage-1 smoke in `navitrit_unified_model.py`.
