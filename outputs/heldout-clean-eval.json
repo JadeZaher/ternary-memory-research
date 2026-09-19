@@ -6,7 +6,83 @@
     "clean_math_16gram_in_train": 0.0
   },
   "checkpoints": {
-    "math": {
+    "navitrit-100m-step10000": {
+      "claimed_ppl": 1.15,
+      "A_corpus_tail": {
+        "loss": 1.6324,
+        "ppl": 5.116,
+        "tokens": 81920
+      },
+      "B_tinystories_valid": {
+        "loss": 3.6508,
+        "ppl": 38.505,
+        "tokens": 81920
+      },
+      "C_clean_python": {
+        "loss": 7.1021,
+        "ppl": 1214.479,
+        "tokens": 1024
+      },
+      "D_clean_math": {
+        "loss": 9.4301,
+        "ppl": 12457.885,
+        "tokens": 256
+      },
+      "E_dataclean_tinystories": {
+        "loss": 3.7848,
+        "ppl": 44.026,
+        "tokens": 81920
+      },
+      "E_dataclean_code": {
+        "loss": 7.771,
+        "ppl": 2370.727,
+        "tokens": 81920
+      },
+      "E_dataclean_math": {
+        "loss": 9.188,
+        "ppl": 9779.179,
+        "tokens": 81920
+      }
+    },
+    "navitrit-100m-loopformer": {
+      "claimed_ppl": 1.12,
+      "A_corpus_tail": {
+        "loss": 1.6478,
+        "ppl": 5.196,
+        "tokens": 81920
+      },
+      "B_tinystories_valid": {
+        "loss": 3.6835,
+        "ppl": 39.784,
+        "tokens": 81920
+      },
+      "C_clean_python": {
+        "loss": 7.4815,
+        "ppl": 1774.987,
+        "tokens": 1024
+      },
+      "D_clean_math": {
+        "loss": 9.0622,
+        "ppl": 8622.809,
+        "tokens": 256
+      },
+      "E_dataclean_tinystories": {
+        "loss": 3.8003,
+        "ppl": 44.716,
+        "tokens": 81920
+      },
+      "E_dataclean_code": {
+        "loss": 8.5282,
+        "ppl": 5055.413,
+        "tokens": 81920
+      },
+      "E_dataclean_math": {
+        "loss": 8.8797,
+        "ppl": 7184.281,
+        "tokens": 81920
+      }
+    },
+    "navitrit-100m-looped-dwp": {
       "claimed_ppl": 1.12,
       "A_corpus_tail": {
         "loss": 0.1178,

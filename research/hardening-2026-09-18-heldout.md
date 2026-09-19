@@ -60,8 +60,9 @@ On the `data/clean` held-out sets that the new pilot arms are scored on (same sc
 
 | checkpoint | TinyStories val | CodeSearchNet test | GSM8K test |
 |---|---:|---:|---:|
-| (per-checkpoint rows pending: the first run mislabelled them; re-queued after the traverse arms) | | | |
-| navitrit-100m-looped-dwp (last row of that run) | 26.6 | 2156 | 4164 |
+| navitrit-100m-step10000 (Gate 15) | 44.0 | 2371 | 9779 |
+| navitrit-100m-loopformer (Gate 19) | 44.7 | 5055 | 7184 |
+| navitrit-100m-looped-dwp (Gate 19-D2) | 26.6 | 2156 | 4164 |
 
 For scale: the pilot dense baseline (arm A, 62M params, attention-only) is at TinyStories 83.7 / code 66 /
 math 1037 after its first 2M clean tokens, i.e. already below every legacy 130M checkpoint on code and math.
@@ -281,6 +282,34 @@ Completed arms (pilot, 3000 steps = 24.6M clean tokens, seed 0, ~14.5k tok/s unc
 | A dense 4x4, no DWP | **9.93** | **22.03** | **84.9** | 3.276 | baseline; ledger `outputs/navitrit-unified-A-dense-log.json` |
 | D mod, capacity 0.5 | 11.40 | 23.83 | 107.5 | 3.428 | half the attention+FFN token-work of A; ledger `...-D-mod-log.json` |
 | E dense, 2 loops (FLOP-matched to D) | **9.58** | **21.34** | **80.6** | **3.237** | half the compute of A and better on every domain; ledger `...-E-dense2-log.json` |
+| B dense 4 loops + DWP | 8.93 | 20.34 | 73.2 | 3.165 | per-loop FiLM/LoRA: -0.11 nats vs A on every domain |
+| C soft gating + DWP | **8.30** | **19.61** | **66.6** | **3.097** | a further -0.07 vs B; saves no compute |
+| F full precision, no DWP | 8.48 | 20.11 | 71.0 | 3.134 | the ternary tax at this scale: 0.14 nats vs A |
+| G single expert, no DWP | 10.49 | 22.53 | 88.2 | 3.315 | dual expert is worth 0.04 nats |
+| H-K traverse (round 1) | 14.9-16.0 | 25.4-26.2 | 106-110 | 3.54-3.57 | **collapsed to 1 hop per token**; see 9.1 |
+
+Loop-budget sweeps (mean loss when evaluated at fewer loops than trained): A 5.98 / 3.51 / 3.32 / 3.28,
+B 4.46 / 3.73 / 3.26 / 3.16, F 9.99 / 3.68 / 3.20 / 3.13. DWP degrades most gracefully at T=1, i.e. the
+modulated tied block is the one that behaves like a test-time-compute dial.
+
+### 9.1 Round-one traverse collapse (arms H-K) and the fix
+
+All four traverse arms finished with mean hops exactly 1.00, tile usage ~[0.05, 0.02, 0.02, 0.41, EXIT 0.50]:
+every token took one tile (almost always tile 3) and exited. Their loss (3.54-3.57) matches the one-loop
+sweep point of E (3.49), so they measured a single-tile model and nothing about history. Two causes:
+1. `min_hops=1` with EXIT available from step 1. Early in training the tiles are random, extra hops raise
+   the loss, the router learns "exit immediately", and once the EXIT logit is large the Gumbel noise never
+   flips it back. Classic early-exit collapse (the same failure Gate 16-B hit on the old model).
+2. The dispatch scaled each tile's output by the router probability (`delta * p_m`, p ~ 0.2 at init), so
+   routed tiles ran at a fifth of the dense model's magnitude and the router was rewarded for concentrating
+   probability on one tile rather than for choosing well.
+Fix (defaults changed in `TraverseConfig`, flags `--min-hops`, `--exit-warmup`, `--no-gate-ste`):
+`min_hops=4` (at least 4 tile evaluations per token: matched to E's 8 at the top and D's at the bottom),
+EXIT masked entirely for the first 1000 steps (`allow_exit` flipped by the trainer), and a straight-through
+gate `p / p.detach()` so tiles run at full magnitude while the router still receives gradient through `p`
+(the Mixture-of-Depths trick). `test_exit_warmup_and_ste` covers both. Round two (H2-K2, then L-N, P, Q,
+O, E1) is queued with these defaults; round-one ledgers are kept under their original tags.
+
 
 Reading: at 24.6M tokens, **looping less beats both looping more and token skipping**. E (2 loops) is 0.04
 nats better than A (4 loops) at half the compute and 0.19 nats better than D (mod) at equal compute. The extra

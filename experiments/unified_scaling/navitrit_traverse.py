@@ -53,7 +53,9 @@ from experiments.unified_scaling.navitrit_unified_model import (
 class TraverseConfig:
     """Traversal-specific knobs; the tile geometry comes from NaviTritUnifiedConfig."""
     max_hops: int = 8               # hop budget H (= max tile evaluations per token)
-    min_hops: int = 1               # EXIT is masked before this many hops
+    min_hops: int = 4               # EXIT is masked before this many hops (arms H-K used 1 and collapsed to 1 hop)
+    exit_warmup_steps: int = 1000   # EXIT is masked entirely until the trainer has taken this many steps
+    gate_ste: bool = True           # scatter delta at full magnitude, gradient through the router prob (MoD-style)
     path_dim: int = 128             # continuation state size
     adapter_bank: int = 4           # K adapters per tile
     adapter_rank: int = 16
@@ -128,6 +130,7 @@ class NaviTritTraverseForCausalLM(nn.Module):
         self.vocab_size = config.vocab_size
         self.M = config.num_macro_layers                    # number of tiles
         self.EXIT = self.M
+        self.allow_exit = tcfg.exit_warmup_steps == 0   # trainer flips this once warmup is over
 
         self.tok_embeddings = nn.Embedding(config.vocab_size, config.hidden_size)
         self.pos_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
@@ -257,7 +260,7 @@ class NaviTritTraverseForCausalLM(nn.Module):
                     logits[..., self.EXIT] = logits[..., self.EXIT] - self.strain_exit_scale * pred_strain
             if self.training:  # Gumbel exploration noise on the hard choice (probabilities stay clean for the gate)
                 logits = logits - torch.log(-torch.log(torch.rand_like(logits).clamp(min=1e-9)))
-            if hop < self.tcfg.min_hops:
+            if hop < self.tcfg.min_hops or not self.allow_exit:
                 logits = logits.clone(); logits[..., self.EXIT] = -1e4
             probs = F.softmax(logits, dim=-1)                                  # [B,S,M+1]
             entropy = -(probs * torch.log(probs.clamp(min=1e-9))).sum(-1)     # [B,S]
@@ -288,6 +291,8 @@ class NaviTritTraverseForCausalLM(nn.Module):
                     act_usage = act_usage + (act_w.detach() * valid.unsqueeze(-1)).sum(dim=(0, 1))
                 delta, bal = self._run_tile(m, h_sub, valid, a_sub, act_w)
                 gate = torch.gather(probs[..., m], 1, order).unsqueeze(-1).to(delta.dtype)
+                if self.tcfg.gate_ste:
+                    gate = gate / gate.detach().clamp(min=1e-6)   # value 1, gradient d/dp: tiles run at full magnitude like the dense model
                 delta = delta * gate * valid.unsqueeze(-1).to(delta.dtype)
                 h_new = h_new.scatter_add(1, gi, delta)
                 balance = balance + bal

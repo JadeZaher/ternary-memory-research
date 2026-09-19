@@ -29,7 +29,7 @@ def small_config() -> NaviTritUnifiedConfig:
 def test_modes_and_gradients(device):
     for rc, ac in [("path", "path"), ("state", "hop"), ("path", "hop"), ("state", "path")]:
         torch.manual_seed(0)
-        m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, path_dim=16, adapter_bank=3, adapter_rank=4, router_cond=rc, adapter_cond=ac)).to(device)
+        m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=1, exit_warmup_steps=0, path_dim=16, adapter_bank=3, adapter_rank=4, router_cond=rc, adapter_cond=ac)).to(device)
         x = torch.randint(0, 512, (2, 24), device=device)
         # zero-drift init means adapter B = FiLM = 0, so history reaches the path cell only after the first
         # update moves them; take one SGD step, then check gradients on the second pass
@@ -50,7 +50,7 @@ def test_modes_and_gradients(device):
 
 def test_exit_bias(device):
     torch.manual_seed(0)
-    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=2, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device).eval()
+    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=2, exit_warmup_steps=0, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device).eval()
     with torch.no_grad():
         m.tile_router[-1].bias[m.EXIT] = 8.0
         out = m(torch.randint(0, 512, (2, 24), device=device))
@@ -60,7 +60,7 @@ def test_exit_bias(device):
 
 def test_causality(device):
     torch.manual_seed(1)
-    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=4, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device).eval()
+    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=4, min_hops=1, exit_warmup_steps=0, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device).eval()
     with torch.no_grad():
         for n, p in m.named_parameters():
             if "banks" in n and (".B." in n or "film" in n):
@@ -77,7 +77,7 @@ def test_strain_modes(device):
     torch.manual_seed(0)
     x = torch.randint(0, 512, (2, 24), device=device)
     for mode in ("observe", "gate"):
-        m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, path_dim=16, adapter_bank=2, adapter_rank=4, strain_mode=mode)).to(device)
+        m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=1, exit_warmup_steps=0, path_dim=16, adapter_bank=2, adapter_rank=4, strain_mode=mode)).to(device)
         out = m(x, labels=x); out["loss"].backward()
         assert torch.isfinite(out["loss"]).item() and out["strain_loss"] > 0
         assert m.strain_head[-1].weight.grad.abs().sum() > 0, "strain head got no gradient"
@@ -95,7 +95,7 @@ def test_strain_modes(device):
 def test_act_strategy(device):
     torch.manual_seed(0)
     x = torch.randint(0, 512, (2, 24), device=device)
-    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, path_dim=16, adapter_bank=2, adapter_rank=4, act_strategy=True)).to(device)
+    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=1, exit_warmup_steps=0, path_dim=16, adapter_bank=2, adapter_rank=4, act_strategy=True)).to(device)
     out = m(x, labels=x); out["loss"].backward()
     assert torch.isfinite(out["loss"]).item()
     assert m.strategy_router.weight.grad.abs().sum() > 0, "strategy router got no gradient"
@@ -103,13 +103,29 @@ def test_act_strategy(device):
     usage = dict(zip(out["act_names"], out["act_usage"]))
     assert usage["silu"] > 0.9, f"init should be ~pure SiLU, got {usage}"
     # with SiLU dominant at init the model must match the no-strategy model closely
-    m2 = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device)
+    m2 = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=1, exit_warmup_steps=0, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device)
     m2.load_state_dict({k: v for k, v in m.state_dict().items() if k in m2.state_dict()}, strict=False)
     m.eval(); m2.eval()
     with torch.no_grad():
         d = (m(x)["logits"] - m2(x)["logits"]).abs().max().item()
-    assert d < 0.5, d
+    assert d < 1.5, d  # 3% non-SiLU mass at init; tiles now run at full magnitude (STE gate) so the gap is larger than with prob-scaled outputs
     print(f"test_act_strategy PASSED (usage {[(k, round(v, 2)) for k, v in usage.items()]}, init logit gap {d:.3f})")
+
+
+def test_exit_warmup_and_ste(device):
+    torch.manual_seed(0)
+    x = torch.randint(0, 512, (2, 24), device=device)
+    m = NaviTritTraverseForCausalLM(small_config(), TraverseConfig(max_hops=6, min_hops=1, exit_warmup_steps=100, path_dim=16, adapter_bank=2, adapter_rank=4)).to(device).eval()
+    with torch.no_grad():
+        m.tile_router[-1].bias[m.EXIT] = 8.0
+        assert m(x)["mean_hops"] == 6.0, "exit must be masked during warmup"
+        m.allow_exit = True
+        assert m(x)["mean_hops"] == 1.0
+    # STE gate: tile output enters at full magnitude, router still gets gradient
+    m.train(); m.allow_exit = False
+    out = m(x, labels=x); out["loss"].backward()
+    assert m.tile_router[-1].weight.grad.abs().sum() > 0
+    print("test_exit_warmup_and_ste PASSED")
 
 
 if __name__ == "__main__":
@@ -120,4 +136,5 @@ if __name__ == "__main__":
     test_causality(dev)
     test_strain_modes(dev)
     test_act_strategy(dev)
+    test_exit_warmup_and_ste(dev)
     print("ALL TRAVERSE TESTS PASSED on", dev)

@@ -127,7 +127,8 @@ def build_config(args) -> NaviTritUnifiedConfig:
 def build_model(args, config: NaviTritUnifiedConfig):
     if args.routing_mode != "traverse":
         return NaviTritUnifiedForCausalLM(config)
-    tcfg = TraverseConfig(max_hops=args.max_hops, router_cond=args.router_cond, adapter_cond=args.adapter_cond,
+    tcfg = TraverseConfig(max_hops=args.max_hops, min_hops=args.min_hops, exit_warmup_steps=args.exit_warmup, gate_ste=not args.no_gate_ste,
+                          router_cond=args.router_cond, adapter_cond=args.adapter_cond,
                           adapter_bank=args.adapter_bank, adapter_rank=config.lora_rank // 2, hop_cost_weight=args.hop_cost,
                           strain_mode=args.strain, act_strategy=args.act_strategy)
     model = NaviTritTraverseForCausalLM(config, tcfg)
@@ -170,6 +171,9 @@ def main():
     ap.add_argument("--routing-mode", choices=["dense", "soft", "mod", "traverse"], default="dense")
     # traverse (navitrit_traverse.py): per-token non-monotonic traversal with continuation path state
     ap.add_argument("--max-hops", type=int, default=8)
+    ap.add_argument("--min-hops", type=int, default=4)
+    ap.add_argument("--exit-warmup", type=int, default=1000, help="steps before EXIT is allowed at all")
+    ap.add_argument("--no-gate-ste", action="store_true", help="scale tile output by router prob (arms H-K behaviour)")
     ap.add_argument("--router-cond", choices=["path", "state"], default="path")
     ap.add_argument("--adapter-cond", choices=["path", "hop"], default="path")
     ap.add_argument("--adapter-bank", type=int, default=4)
@@ -252,6 +256,8 @@ def main():
         for g in opt.param_groups:
             g["lr"] = lr
         opt.zero_grad(set_to_none=True)
+        if isinstance(model, NaviTritTraverseForCausalLM):
+            model.allow_exit = step > args.exit_warmup
         loss_acc, ce_acc = 0.0, 0.0
         for _ in range(args.grad_accum):
             xy = sample_batch(train_tokens, args.batch_size, args.seq_len, gen).to(device)
