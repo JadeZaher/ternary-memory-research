@@ -442,8 +442,10 @@ class NaviTritUnifiedForCausalLM(nn.Module):
                 layer = self.macro_layers[idx]
                 if cfg.grad_checkpoint and self.training:
                     from torch.utils.checkpoint import checkpoint as _ckpt
-                    h, bal, st = _ckpt(lambda h_in, layer=layer: layer(h_in, mod_film=mod_film, mod_lora=mod_lora, causal_threshold=causal_threshold),
-                                       h, use_reentrant=False)
+                    # Modulations are passed as explicit arguments, never captured by closure: closure-captured
+                    # hypernet tensors gave ~300x inflated gradients under recomputation (found 2026-09-19, C-cont).
+                    h, bal, st = _ckpt(lambda h_in, mf, ml, layer=layer: layer(h_in, mod_film=mf, mod_lora=ml, causal_threshold=causal_threshold),
+                                       h, mod_film, mod_lora, use_reentrant=False)
                 else:
                     h, bal, st = layer(h, mod_film=mod_film, mod_lora=mod_lora, causal_threshold=causal_threshold)
                 total_balance = total_balance + bal

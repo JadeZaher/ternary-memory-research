@@ -54,6 +54,15 @@ experiment that closed the traversal question is §13; each writes
 `outputs/navitrit-unified-<tag>-log.json`. Results are reported as deltas against the matched dense baseline
 at equal measured tile evaluations per token, never as absolute records.
 
+## The general-model track (2026-09-19 onward)
+
+`experiments/general_model/` works backwards from the results above to the smallest stored model that reaches
+arm C's held-out quality, under three fixed requirements: ternary weights, Mamba sequence mixing, per-token
+non-monotonic routing. Decisions, assumptions and the pre-registered rule are in
+[`research/general-model-track.md`](research/general-model-track.md); the data pipeline (16k tokenizer,
+FineWeb-Edu + TinyStories + CodeSearchNet + GSM8K, ~300M decontaminated tokens) is `experiments/general_model/data/`.
+Quality is compared in bits per byte, the only tokenizer-independent unit; ledgers are `outputs/general-<tag>-log.json`.
+
 ## Reproduce
 
 ```bash

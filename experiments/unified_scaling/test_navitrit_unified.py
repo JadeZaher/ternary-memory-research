@@ -287,6 +287,23 @@ def test_routing_modes_and_gradients():
     print("TEST 6 PASSED: all routing modes train and route gradient.")
 
 
+def test_grad_checkpoint_exact_with_dwp():
+    """In-model checkpointing must reproduce the plain-path gradients with the hypernet active
+    (closure-captured modulations gave ~300x gradients on 2026-09-19; they are explicit args now)."""
+    import copy
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    torch.manual_seed(0)
+    cfg = NaviTritUnifiedConfig(vocab_size=512, hidden_size=64, intermediate_size=128, num_attention_heads=4, num_macro_layers=2,
+                                max_loops=2, use_mamba=False, routing_mode="soft", use_dwp=True, lora_rank=8, max_position_embeddings=64)
+    m0 = NaviTritUnifiedForCausalLM(cfg).to(device); m1 = copy.deepcopy(m0); m1.config.grad_checkpoint = True
+    x = torch.randint(0, 512, (2, 32), device=device)
+    for m in (m0, m1):
+        m.train(); out = m(x, labels=x); out["loss"].backward()
+    md = max((p1.grad - p0.grad).abs().max().item() for p0, p1 in zip(m0.parameters(), m1.parameters()) if p0.grad is not None)
+    assert md < 1e-6, f"checkpointed gradients differ from plain path by {md}"
+    print(f"TEST 7 PASSED: grad checkpoint with DWP exact (max grad diff {md:.1e})")
+
+
 if __name__ == "__main__":
     print("\n" + "#" * 80)
     print("NAVITRIT-UNIFIED-GRAPH-DWP-MAX VERIFICATION & AUDIT SUITE")
@@ -298,6 +315,7 @@ if __name__ == "__main__":
     test_anti_gravity_well_invariant()
     test_cuda_forward_backward()
     test_routing_modes_and_gradients()
+    test_grad_checkpoint_exact_with_dwp()
 
     print("\n" + "#" * 80)
     print("ALL 5 NAVITRIT-UNIFIED VERIFICATION TESTS PASSED CLEANLY ON CUDA!")

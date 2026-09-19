@@ -1,0 +1,18 @@
+{
+  "tinystories": {
+    "gpt2_bytes_per_token": 4.1014,
+    "armC_loss_nats": 2.1163,
+    "armC_bpb": 0.7444
+  },
+  "code": {
+    "gpt2_bytes_per_token": 2.3248,
+    "armC_loss_nats": 2.9761,
+    "armC_bpb": 1.8468
+  },
+  "math": {
+    "gpt2_bytes_per_token": 3.8302,
+    "armC_loss_nats": 4.1987,
+    "armC_bpb": 1.5815
+  },
+  "mean_bpb": 1.3909
+}

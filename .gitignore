@@ -10,7 +10,7 @@ outputs/checkpoints/
 *.bin
 
 # Datasets and caches
-data/
+/data/
 *.parquet
 
 # Virtual environments

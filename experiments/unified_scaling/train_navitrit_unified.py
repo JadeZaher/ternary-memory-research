@@ -24,6 +24,7 @@ import sys
 import time
 import math
 import json
+import glob
 import argparse
 from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
@@ -51,16 +52,30 @@ PRESETS = {
 
 
 # ------------------------------------------------------------------ data ----------------------
+def _val_set_name(path: str) -> str:
+    """val_<name>_tokens.pt -> <name> (strip fixed prefix/suffix; name itself may contain underscores)."""
+    base = os.path.basename(path)
+    return base[len("val_"): -len("_tokens.pt")]
+
+
 def load_clean_data(data_dir: str) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
     train = torch.load(os.path.join(data_dir, "train_tokens.pt"), weights_only=True)
-    val = {}
-    for name in ("tinystories", "code", "math"):
-        p = os.path.join(data_dir, f"val_{name}_tokens.pt")
-        if os.path.exists(p):
-            val[name] = torch.load(p, weights_only=True)
+    val: Dict[str, torch.Tensor] = {}
+    names = sorted(_val_set_name(p) for p in glob.glob(os.path.join(data_dir, "val_*_tokens.pt")))
+    for name in names:
+        val[name] = torch.load(os.path.join(data_dir, f"val_{name}_tokens.pt"), weights_only=True)
     if not val:
         raise FileNotFoundError(f"No val_*_tokens.pt in {data_dir}; run experiments/data/prepare_clean_corpus.py")
     return train, val
+
+
+def load_manifest(data_dir: str) -> dict:
+    """data/clean's manifest has no vocab_size/val_bytes_per_token; data/general's does. Empty dict if absent."""
+    path = os.path.join(data_dir, "manifest.json")
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return {}
 
 
 def sample_batch(tokens: torch.Tensor, batch_size: int, seq_len: int, gen: Optional[torch.Generator] = None) -> torch.Tensor:
@@ -79,8 +94,12 @@ def fixed_eval_batches(val: Dict[str, torch.Tensor], batch_size: int, seq_len: i
 
 
 # ------------------------------------------------------------------ eval ----------------------
+CORE_BPB_SETS = ("tinystories", "code", "math")
+
+
 @torch.no_grad()
-def evaluate(model, batches: Dict[str, List[torch.Tensor]], device, amp_dtype, max_loops: Optional[int] = None) -> Dict[str, float]:
+def evaluate(model, batches: Dict[str, List[torch.Tensor]], device, amp_dtype, max_loops: Optional[int] = None,
+             bytes_per_token: Optional[Dict[str, float]] = None) -> Dict[str, float]:
     model.eval()
     res: Dict[str, float] = {}
     for name, blist in batches.items():
@@ -95,7 +114,12 @@ def evaluate(model, batches: Dict[str, List[torch.Tensor]], device, amp_dtype, m
         loss = total / max(1, count)
         res[f"{name}_loss"] = round(loss, 4)
         res[f"{name}_ppl"] = round(math.exp(min(loss, 20.0)), 3)
+        if bytes_per_token and name in bytes_per_token:
+            res[f"{name}_bpb"] = round(loss / math.log(2) / bytes_per_token[name], 4)
     res["mean_loss"] = round(sum(res[f"{n}_loss"] for n in batches) / len(batches), 4)
+    core_bpb = [res[f"{n}_bpb"] for n in CORE_BPB_SETS if f"{n}_bpb" in res]
+    if core_bpb:
+        res["mean_bpb_core"] = round(sum(core_bpb) / len(core_bpb), 4)
     model.train()
     return res
 
@@ -108,7 +132,7 @@ def cosine_lr(step: int, warmup: int, total: int, base: float, minimum: float) -
     return minimum + 0.5 * (1.0 + math.cos(math.pi * ratio)) * (base - minimum)
 
 
-def build_config(args) -> NaviTritUnifiedConfig:
+def build_config(args, manifest: Optional[dict] = None) -> NaviTritUnifiedConfig:
     kw = dict(PRESETS[args.preset])
     if args.max_loops is not None:
         kw["max_loops"] = args.max_loops
@@ -116,8 +140,9 @@ def build_config(args) -> NaviTritUnifiedConfig:
         kw["use_mamba"] = args.mamba
     if args.routing_mode == "traverse":
         kw["use_mamba"] = False
+    vocab_size = (manifest or {}).get("vocab_size", 50257)
     return NaviTritUnifiedConfig(
-        vocab_size=50257, max_position_embeddings=max(1024, args.seq_len), num_experts=args.num_experts,
+        vocab_size=vocab_size, max_position_embeddings=max(1025, args.seq_len + 1), num_experts=args.num_experts,  # positions: a batch carries seq_len + 1 tokens
         use_dwp=not args.no_dwp, routing_mode="dense" if args.routing_mode == "traverse" else args.routing_mode,
         mod_capacity=args.mod_capacity, min_chan_weight=args.min_chan_weight, ternary=not args.fp_control,
         ternary_embed=args.ternary_embed, loop_order_random=args.loop_order_random, tile_drop=args.tile_drop,
@@ -304,8 +329,10 @@ def main():
         args.max_steps, args.eval_interval, args.save_interval, args.eval_iters = 10, 5, 10 ** 9, 2
 
     train_tokens, val_tokens = load_clean_data(args.data_dir)
+    manifest = load_manifest(args.data_dir)
+    bytes_per_token = manifest.get("val_bytes_per_token") or None
     eval_batches = fixed_eval_batches(val_tokens, args.batch_size, args.seq_len, args.eval_iters, seed=12345)
-    config = build_config(args)
+    config = build_config(args, manifest)
     model = build_model(args, config).to(device)
     if args.routing_mode == "traverse" and args.gain_proxy:
         counts = torch.bincount(train_tokens[: 5_000_000].long(), minlength=config.vocab_size)
@@ -315,7 +342,7 @@ def main():
     tokens_per_step = args.batch_size * args.grad_accum * args.seq_len
     print("=" * 88)
     print(f"NaviTrit-Unified [{tag}] preset={args.preset} routing={args.routing_mode} dwp={config.use_dwp} "
-          f"experts={config.num_experts} mamba={config.use_mamba} ternary={config.ternary} order_random={config.loop_order_random} tile_drop={config.tile_drop} deep_sup={config.deep_sup_weight} loops={config.max_loops} (virtual depth {config.virtual_depth})")
+          f"experts={config.num_experts} mamba={config.use_mamba} ternary={config.ternary} order_random={config.loop_order_random} tile_drop={config.tile_drop} deep_sup={config.deep_sup_weight} loops={config.max_loops} (virtual depth {config.virtual_depth}) vocab={config.vocab_size}")
     print(f"params {stats['total_millions']}M | super-block packed {stats['superblock_packed_mb']} MB | "
           f"train tokens {len(train_tokens):,} | tokens/step {tokens_per_step:,} | budget {tokens_per_step * args.max_steps / 1e6:.1f}M tokens")
     print(f"val sets: " + ", ".join(f"{k}={len(v):,}" for k, v in val_tokens.items()))
@@ -385,7 +412,7 @@ def main():
                   f"{tokens_per_step * step / el:,.0f} tok/s | {el / 60:.1f} min")
 
         if step % args.eval_interval == 0 or step == args.max_steps:
-            ev = evaluate(model, eval_batches, device, amp_dtype)
+            ev = evaluate(model, eval_batches, device, amp_dtype, bytes_per_token=bytes_per_token)
             rec = {"step": step, "train_loss": round(loss_acc, 4), "train_ce": round(ce_acc, 4), "lr": lr, "grad_norm": round(gnorm, 3),
                    "elapsed_s": round(time.time() - t0, 1), "tokens_seen": tokens_per_step * step,
                    "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2) if device.type == "cuda" else 0.0, **ev}
@@ -427,8 +454,8 @@ def main():
     # Test-time compute sweep: does more loops help on held-out data? (the LoopFormer claim, measured cleanly)
     sweep = {}
     for T in range(1, sweep_max + 1):
-        sweep[f"T{T}"] = evaluate(model, eval_batches, device, amp_dtype, max_loops=T)
-        print(f"  [loop sweep] T={T}: " + " | ".join(f"{k} {v}" for k, v in sweep[f'T{T}'].items() if k.endswith("ppl")))
+        sweep[f"T{T}"] = evaluate(model, eval_batches, device, amp_dtype, max_loops=T, bytes_per_token=bytes_per_token)
+        print(f"  [loop sweep] T={T}: " + " | ".join(f"{k} {v}" for k, v in sweep[f'T{T}'].items() if k.endswith("ppl") or k.endswith("bpb")))
     with open(log_path, "w") as f:
         json.dump({"tag": tag, "args": vars(args), "config": asdict(config), "params": stats, "history": history,
                    "loop_budget_sweep": sweep, "best_mean_val_loss": best, "stage2": stage2,

@@ -593,3 +593,45 @@ not supported at this scale and is retired from the main line; its ledgers stay 
   loop boundaries. ~1 h. Tests whether adaptive depth on the best fixed arm reaches the S2 compute curve without
   the 0.47-nat order-agnosticism tax or any traversal machinery.
 - Arm O, ternary embeddings (section 11.1): 52.5 MB -> 5.2 MB, the largest remaining footprint win, cost unknown.
+
+### 13.2 Equal-tokens control (C-cont) and a checkpointing bug found on the way (2026-09-19)
+
+`C-cont` continues arm C for 3000 more steps with a fresh cosine schedule from its trained weights: the same
+warm-start treatment stage 2 received, so it removes confound 4 of section 13.1 (49.2M tokens for both).
+
+First attempt died on its own diagnostics: gradient norm 430 at step 10 rising to 2745 by step 80, where
+arm C trained at 1.4 throughout, with the loss unchanged. Isolation on CPU with one fixed batch and the arm C
+checkpoint (`scratchpad/diag_gnorm2.py`, reproduced in `test_navitrit_unified.py::test_grad_checkpoint_exact_with_dwp`):
+
+| configuration | plain gradient norm | in-model checkpoint |
+|---|---:|---:|
+| arm C weights, soft + DWP | 6.82 | **2212** |
+| arm C weights, DWP removed | 31.3 | 31.3 |
+| arm C weights, dense + DWP | 105 | **3463** |
+| S1 weights, dense, no DWP | 5.81 | 5.79 |
+
+Cause: the in-model gradient checkpointing added for stage 1 captured the hypernet's modulation tensors by
+closure inside the checkpointed lambda. Under `torch.utils.checkpoint(use_reentrant=False)` that inflates
+every gradient roughly 300x on recompute (the forward loss is identical). Passing the modulations as explicit
+arguments makes the gradients bit-identical to the plain path. Impact: none on any reported number. Arms A-M
+predate in-model checkpointing, S1 has no hypernet (verified exact above), and the traverse model's tile
+checkpoint already passed all tensors explicitly (verified to 1.5e-8 in 13.1). Only the first C-cont attempt
+was affected and it was discarded before its first eval.
+
+**C-cont result** (`outputs/navitrit-unified-C-cont-log.json`, 49.2M tokens, same as S2):
+
+| tile evals per token | 3.24 | 4 | 8 | 12 | 16 |
+|---|---:|---:|---:|---:|---:|
+| C-cont, fixed order, 49.2M tokens | | 7.629 | 5.204 | 3.480 | **2.800** |
+| S2-traverse, value-routed, 49.2M tokens | **3.497** | 3.497 (cap 4) | 3.497 | 3.497 | 3.497 |
+| arm C, fixed order, 24.6M tokens | | 6.549 | 4.806 | 3.554 | 3.097 |
+
+Confound 4 of section 13.1 is resolved in both directions. At full depth the extra tokens do far more for the
+fixed-order block (2.800) than routing did (3.497): a 0.70-nat gap that no lambda setting closes because S2's
+hops beyond the third are dead. At the low-compute end S2 at 3.24 tile applications equals C-cont at 12 (3.48),
+so the "about four times fewer tile applications for equal loss" reading survives the equal-tokens control.
+The curves cross near 12 applications. The fixed block is the better model wherever the budget allows 12 or
+more; the routed block is the better model below that, and only because the fixed block is untrained for
+truncation (7.6 at 4 applications). That is the case for the general-model track's design: keep the fixed
+block's per-loop modulation, and buy truncation tolerance with deep supervision and a value exit rather than
+with free-order tiles alone.
