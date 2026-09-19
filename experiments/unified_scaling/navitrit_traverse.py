@@ -80,6 +80,8 @@ class TraverseConfig:
     # Stage 2 of the condensed experiment (report section 13): value-based exit and richer path inputs.
     exit_mode: str = "router"            # "router" (arms H-Q) | "value": continue iff predicted gain > exit_lambda
     exit_lambda: float = 0.02            # compute price in nats per hop (training); swept at eval
+    explore_prob: float = 0.0            # training only: a token the value rule would exit continues anyway with this prob
+                                         # (epsilon exploration; hops beyond the exit point otherwise get no training data)
     value_loss_weight: float = 1.0       # Huber on measured per-token gain (from the deep-sup sample)
     deep_sup_weight: float = 0.0         # tied-head readout on a sampled subset after every hop (also yields gain targets)
     deep_sup_frac: float = 0.125
@@ -264,7 +266,15 @@ class NaviTritTraverseForCausalLM(nn.Module):
         return F.softmax(self.strategy_router(torch.cat([p, e], dim=-1)).float(), dim=-1)
 
     def _run_tile(self, m: int, h_sub: torch.Tensor, valid: torch.Tensor, alpha: torch.Tensor, act_w: Optional[torch.Tensor] = None) -> torch.Tensor:
-        """Attention over the gathered subset (causal + padding mask) then FFN; returns the residual delta."""
+        """Attention over the gathered subset (causal + padding mask) then FFN; returns the residual delta.
+        With config.grad_checkpoint the tile call is recomputed in backward (the activation mixture stores
+        len(ACT_BANK) d_ff-wide tensors per hop otherwise, which spilled past 8 GB in arm P and stage 2)."""
+        if self.config.grad_checkpoint and self.training and torch.is_grad_enabled():
+            from torch.utils.checkpoint import checkpoint as _ckpt
+            return _ckpt(self._run_tile_impl, m, h_sub, valid, alpha, act_w, use_reentrant=False)
+        return self._run_tile_impl(m, h_sub, valid, alpha, act_w)
+
+    def _run_tile_impl(self, m: int, h_sub: torch.Tensor, valid: torch.Tensor, alpha: torch.Tensor, act_w: Optional[torch.Tensor] = None):
         tile = self.tiles[m]
         B, k, _ = h_sub.shape
         mod_film, mod_lora = self.banks[m].modulations(alpha)
@@ -355,6 +365,8 @@ class NaviTritTraverseForCausalLM(nn.Module):
             if self.use_value and hop >= t.min_hops and self.allow_exit:
                 if t.exit_policy == "threshold":
                     cont = pred_gain.detach() > t.exit_lambda
+                    if self.training and t.explore_prob > 0.0:
+                        cont = cont | (torch.rand(B, S, device=dev) < t.explore_prob)
                 elif t.exit_policy == "random":
                     cont = torch.rand(B, S, device=dev) < t.random_continue_prob
                 else:  # capacity: top fraction of active tokens by predicted gain, per sequence

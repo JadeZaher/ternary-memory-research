@@ -132,7 +132,7 @@ def build_model(args, config: NaviTritUnifiedConfig):
                           router_cond=args.router_cond, adapter_cond=args.adapter_cond,
                           adapter_bank=args.adapter_bank, adapter_rank=config.lora_rank // 2, hop_cost_weight=args.hop_cost,
                           strain_mode=args.strain, act_strategy=args.act_strategy,
-                          exit_mode=args.exit_mode, exit_lambda=args.exit_lambda, deep_sup_weight=args.deep_sup, deep_sup_frac=args.deep_sup_frac,
+                          exit_mode=args.exit_mode, exit_lambda=args.exit_lambda, explore_prob=args.explore, deep_sup_weight=args.deep_sup, deep_sup_frac=args.deep_sup_frac,
                           use_liveness=args.liveness, use_gain_proxy=args.gain_proxy, use_coord=args.coord, hop_feature_dropout=args.hop_dropout)
     model = NaviTritTraverseForCausalLM(config, tcfg)
     if args.init_from:
@@ -253,12 +253,14 @@ def main():
     # stage 2 (report section 13)
     ap.add_argument("--exit-mode", choices=["router", "value"], default="router")
     ap.add_argument("--exit-lambda", type=float, default=0.02)
+    ap.add_argument("--explore", type=float, default=0.0, help="training-time epsilon: continue past a value-rule exit with this prob")
     ap.add_argument("--liveness", action="store_true")
     ap.add_argument("--gain-proxy", action="store_true")
     ap.add_argument("--coord", action="store_true")
     ap.add_argument("--hop-dropout", type=float, default=0.0)
     ap.add_argument("--lambda-sweep", type=str, default="0,0.005,0.01,0.02,0.05,0.1")
     ap.add_argument("--init-from", type=str, default=None, help="dense-arm checkpoint to warm-start the tiles from")
+    ap.add_argument("--resume", action="store_true", help="continue from outputs/checkpoints/navitrit-unified-<tag>-latest.pt (model, optimizer, step, history)")
     ap.add_argument("--mod-capacity", type=float, default=0.5)
     ap.add_argument("--min-chan-weight", type=float, default=0.5)
     ap.add_argument("--no-dwp", action="store_true")
@@ -330,13 +332,33 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     os.makedirs(args.log_dir, exist_ok=True)
     log_path = os.path.join(args.log_dir, f"navitrit-unified-{tag}-log.json")
+    latest_path = os.path.join(args.output_dir, f"navitrit-unified-{tag}-latest.pt")
     gen = torch.Generator().manual_seed(args.seed)
-    t0 = time.time()
+    start_step, elapsed_before = 1, 0.0
+    if args.resume:
+        ck = torch.load(latest_path, map_location="cpu", weights_only=False)
+        model.load_state_dict(ck["model_state_dict"])
+        if "optimizer_state_dict" in ck:
+            opt.load_state_dict(ck["optimizer_state_dict"])
+            print(f"[resume] optimizer state restored")
+        else:
+            print(f"[resume] checkpoint has no optimizer state: AdamW moments restart from zero at step {ck['step']}")
+        if "gen_state" in ck:
+            gen.set_state(ck["gen_state"])
+        if os.path.exists(log_path):
+            prev = json.load(open(log_path))
+            history = [h for h in prev.get("history", []) if h["step"] <= ck["step"]]
+            if history:
+                best = min(h["mean_loss"] for h in history)
+                elapsed_before = history[-1].get("elapsed_s", 0.0)
+        start_step = ck["step"] + 1
+        print(f"[resume] {latest_path} -> continuing at step {start_step} (best mean_loss so far {best:.4f}, {len(history)} eval records kept)")
+    t0 = time.time() - elapsed_before
     model.train()
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats()
 
-    for step in range(1, args.max_steps + 1):
+    for step in range(start_step, args.max_steps + 1):
         lr = cosine_lr(step, args.warmup, args.max_steps, args.lr, args.min_lr)
         for g in opt.param_groups:
             g["lr"] = lr
@@ -394,8 +416,8 @@ def main():
                 json.dump({"tag": tag, "args": vars(args), "config": asdict(config), "params": stats, "history": history}, f, indent=2)
 
         if step % args.save_interval == 0 and not args.smoke:
-            torch.save({"config": asdict(config), "model_state_dict": model.state_dict(), "step": step},
-                       os.path.join(args.output_dir, f"navitrit-unified-{tag}-latest.pt"))
+            torch.save({"config": asdict(config), "model_state_dict": model.state_dict(), "optimizer_state_dict": opt.state_dict(),
+                        "gen_state": gen.get_state(), "step": step}, latest_path)
 
     stage2 = {}
     if args.routing_mode == "traverse" and args.exit_mode == "value":

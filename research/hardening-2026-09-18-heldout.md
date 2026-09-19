@@ -498,3 +498,98 @@ gain (rho > 0 with p < 0.01). Both, and the non-monotonic thesis has its first e
 and the honest architecture is the modulated tied block with fixed order (arm C).
 
 Tests: `test_navitrit_traverse.py` (all mechanisms), stage-1 smoke in `navitrit_unified_model.py`.
+
+### 13.1 Results (2026-09-19; ledgers `outputs/navitrit-unified-S1-backbone-log.json`, `outputs/navitrit-unified-S2-traverse-log.json`)
+
+**Deviations from the plan above, all recorded before the read-out was interpreted.**
+
+1. The stage-1 process was killed by the session at step 2100 and resumed from its step-2000 checkpoint, which
+   predates optimizer-state saving, so AdamW moments restarted from zero. The loss trajectory over steps
+   2000-2100 is indistinguishable from the first attempt. The trainer now has `--resume` and stores optimizer and
+   sampler state in every `-latest.pt`.
+2. Stage 2 spilled past 8 GB (13.4 GB peak, 887 tok/s; the activation mixture stores six `d_ff`-wide tensors per
+   hop). Killed at step 510, per-tile gradient checkpointing added to `NaviTritTraverseForCausalLM._run_tile`
+   (loss and all 118 gradients identical to the unchecked path to 1.5e-8), resumed from step 500 with optimizer
+   state: 7.0 GB, ~4.5k tok/s.
+3. With exit allowed from step 500 the value policy sent every token out at the 2-hop floor by step 750 (loss
+   3.97 at 2 hops against 3.89 at 8 hops: the marginal hop was worth ~0.013 nats, under the 0.02 price, so the
+   head was right and the later hops stopped receiving data, the same starvation as sections 9.1-9.2). Added
+   training-only epsilon exploration (`TraverseConfig.explore_prob=0.3`: a token the value rule would exit
+   continues anyway with p=0.3 and its hop still trains the value head) and resumed from step 1000. Eval is
+   unchanged; the pre-registered read-out and rule are untouched.
+4. The decision rule set no effect-size floor on the diversity correlation. That was a mistake in the rule, not
+   in the run, and it matters below.
+
+**Stage 1 backbone.** Order-randomised, tile-dropped, deep-supervised dense pilot: mean held-out loss 3.748
+at 16 tile applications per token, against 3.276 for the plain dense arm A. The tiles became order-agnostic
+(sweep 4.114 / 3.801 / 3.747 / 3.748 at 4/8/12/16 applications: graceful at low depth, saturated by 12) and
+the price was 0.47 nats at full depth. Per-loop specialisation and truncation tolerance pull against each
+other; arm C, the best fixed arm at 16 applications (3.097), is the worst under truncation (6.549 at 4).
+
+**Stage 2 traversal, final (step 3000, warm-started from S1, 24.6M further tokens).**
+
+| read-out | value |
+|---|---|
+| mean held-out loss, mean hops (lambda 0.02) | 3.4965, 3.24 |
+| lambda sweep 0 / 0.005 / 0.01 / 0.02 / 0.05 / 0.1 | 3.490 @3.43, 3.492 @3.15, 3.493 @2.95, 3.497 @2.70, 3.511 @2.31, 3.526 @2.13 hops |
+| hop cap 1 / 2 / 3 / 4-8 | 4.175 / 3.553 / 3.497 / 3.4965 |
+| tile usage (4 tiles + EXIT) | 0.04 / 0.25 / 0.40 / 0.08 / 0.24 |
+| activation mixture (init: SiLU 0.97) | GELU 0.47, SiLU 0.24, ReLU 0.15, sign-sqrt 0.13, identity 0.01, tanh 0.00 |
+| value head at step 3000 | measured gain 6.18, predicted 6.08 nats (mean over executed hops), Huber 0.155 |
+
+Nulls on the same model at matched mean hops (2.70):
+
+| policy | mean loss | mean hops |
+|---|---:|---:|
+| trained value threshold | **3.4965** | 2.697 |
+| random continuation, p = 0.418 (bisected) | 3.5286 | 2.714 |
+| capacity, top 11.6 % by predicted gain per sequence | 3.5381 | 2.691 |
+
+Diversity probe (4 forced-random-tile passes, 16,384 tokens): Spearman rho **0.027**, p = 5.5e-4; mean pairwise
+cosine distance 0.278; mean measured gain from hop 2 to the end 0.084 nats.
+
+**Against the pre-registered rule.**
+
+- *Beat matched random continuation by > 0.03 nats:* 0.032 nats. Passes by 0.002, from one seed of the random
+  null. That is a pass on the number and nothing more.
+- *Diversity correlates positively with gain, rho > 0 at p < 0.01:* rho = 0.027 with p = 5.5e-4. Passes the letter
+  because 16k tokens make any non-zero rho significant; a rho of 0.027 explains under 0.1 % of the variance in
+  per-token gain. This is not evidence that path diversity matters. The rule should have carried a floor
+  (rho >= 0.1 would have been reasonable) and the result is reported as a fail of the rule's intent.
+
+The letter of the rule is satisfied and the thesis is **not** supported by this run. What the run does establish:
+
+1. **The value-based exit is a working adaptive-depth mechanism.** Predicted gain tracks measured gain, the
+   lambda sweep is a smooth 0.036-nat trade for 1.3 hops, and per-token thresholding beats both random
+   continuation and per-sequence capacity at equal compute. The capacity null losing to random is itself
+   informative: a fixed per-sequence fraction with a hop-correlated score misallocates relative to a per-token
+   threshold.
+2. **Path history adds nothing measurable**, consistent with arms H vs I, J, K (section 9.2, <= 0.03 nats). The
+   likely reason is mechanistic: every tile that runs writes into the residual stream, so the hidden state
+   already carries a compressed path record and an explicit path recurrence re-encodes it.
+3. **The model does all of its work in three hops.** Hop cap 3 equals the uncapped model on every domain and
+   lambda 0 still stops at 3.4 hops, so the value head predicts non-positive gain for every later hop. Whether
+   that is a property of the block or a training artifact (hops >= 4 were trained only through the 30 %
+   exploration stream for the last 2000 steps) is not separable in this run.
+4. **The matched-compute picture is strong but confounded.** 3.497 at 3.24 tile applications sits below arm A at
+   8 (3.511) and arm C at 12 (3.554). Stage 2 has seen 49.2M training tokens (S1 + S2) against 24.6M for every
+   fixed arm, and was warm-started, so extra training and better routing are not separated. The unconfounded
+   comparison is arm C continued for a further 3000 steps, unrun.
+5. **Wall clock.** Stage 1 trained at 9.0k tok/s, stage 2 at 2.1k. Four times fewer tile applications and four
+   times slower: the gather/scatter, path recurrence, router and adapter mixing cost more than the tile work they
+   save in this implementation. The FLOP saving is real and the latency saving is not yet banked (deep dive 02's
+   2.2x / 4.0x came from the simpler layer-bypass scheme).
+
+**Decision.** Per the rule as written before the run, the honest architecture remains the modulated tied block
+with fixed order (arm C), now with one addition that this run does justify: a per-token value-based exit.
+The non-monotonic, history-conditioned traversal (path GRU, path-mixed adapter bank, per-hop tile choice) is
+not supported at this scale and is retired from the main line; its ledgers stay as the record.
+
+**Next experiments, in order of information per GPU-minute.**
+
+- `C-continued`: arm C from its checkpoint for 3000 more steps (49.2M tokens, matching S2). ~50 min. Removes
+  confound 4 above; if C-continued at 12 applications drops below 3.497 the traversal's compute win evaporates.
+- `C-exit`: arm C recipe + deep supervision alone (no order randomisation, no tile drop) + value-based exit at
+  loop boundaries. ~1 h. Tests whether adaptive depth on the best fixed arm reaches the S2 compute curve without
+  the 0.47-nat order-agnosticism tax or any traversal machinery.
+- Arm O, ternary embeddings (section 11.1): 52.5 MB -> 5.2 MB, the largest remaining footprint win, cost unknown.

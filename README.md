@@ -18,6 +18,7 @@ per token, when each token chooses its own path through the block and reinterpre
 | A parallel log-space selective scan reproduces the sequential Mamba recurrence to 1e-8, 17x faster | `experiments/mamba/test_ternary_mamba.py` | `research/hardening-2026-09-18-heldout.md` §7 |
 | On a decontaminated 37.8M-token corpus, per-loop low-rank weight modulation (DWP) of a tied ternary block improves held-out loss by 0.11 nats over the tied baseline, and differentiable soft gating adds a further 0.07 | `outputs/navitrit-unified-{A,B,C}-*-log.json` | `research/hardening-2026-09-18-heldout.md` §9 |
 | At 24.6M training tokens, 2 loops beat 4 loops at half the compute; Mixture-of-Depths token skipping at 50% capacity does not recover that gap | `outputs/navitrit-unified-{D,E}-*-log.json` | same, §9 |
+| A per-token value-based exit (a head predicting the next hop's gain in nats, trained on measured gain) is a working adaptive-depth mechanism: 3.50 held-out loss at 3.2 tile applications per token, beating matched random continuation by 0.03 nats and per-sequence capacity routing by 0.04. Path-history conditioning adds nothing measurable (rho 0.027 between path diversity and gain). The non-monotonic traversal thesis is not supported at this scale | `outputs/navitrit-unified-{S1-backbone,S2-traverse}-log.json` | same, §13.1 |
 
 ## The research journey
 
@@ -48,7 +49,8 @@ a finding worth recording. The audit, the decontaminated protocol, and the repla
 - `train_navitrit_unified.py`: fixed seeded held-out batches per domain (TinyStoriesV2 valid, CodeSearchNet
   Python test, GSM8K test), a loop-budget sweep at the end, one flag per ablation.
 
-Ablation arms A–Q and E1 are listed in the hardening report §5, §8, §10–12; each writes
+Ablation arms A–Q and E1 are listed in the hardening report §5, §8, §10–12, and the condensed two-stage
+experiment that closed the traversal question is §13; each writes
 `outputs/navitrit-unified-<tag>-log.json`. Results are reported as deltas against the matched dense baseline
 at equal measured tile evaluations per token, never as absolute records.
 
@@ -61,7 +63,11 @@ python experiments/unified_scaling/test_navitrit_unified.py
 python experiments/unified_scaling/test_navitrit_traverse.py
 python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --grad-checkpoint --routing-mode dense --no-dwp --max-loops 2 --tag E-dense2 --max-steps 3000
 python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --routing-mode traverse --max-hops 8 --router-cond path --adapter-cond path --tag H-traverse-path --max-steps 3000
+# condensed two-stage experiment (report section 13):
+python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --max-steps 3000 --grad-checkpoint --routing-mode dense --no-dwp --loop-order-random --tile-drop 0.25 --deep-sup 0.1 --deep-sup-frac 0.125 --tag S1-backbone
+python experiments/unified_scaling/train_navitrit_unified.py --preset pilot --max-steps 3000 --grad-checkpoint --routing-mode traverse --max-hops 8 --min-hops 2 --exit-warmup 500 --exit-mode value --exit-lambda 0.02 --explore 0.3 --deep-sup 0.1 --deep-sup-frac 0.125 --liveness --gain-proxy --coord --hop-dropout 0.3 --act-strategy --router-cond path --adapter-cond path --init-from outputs/checkpoints/navitrit-unified-S1-backbone-best.pt --tag S2-traverse
 ```
+Any run can be continued from its `-latest.pt` with `--resume` (optimizer and sampler state are checkpointed).
 
 Checkpoints and corpora are not versioned (`.gitignore`); the JSON ledgers in `outputs/` are the published
 evidence and every number in the documents is traceable to one of them.
