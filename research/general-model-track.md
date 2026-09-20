@@ -75,3 +75,57 @@ bytes** (`count_parameters()["stored_mb_total"]`: ternary at 1.58 bit, everythin
 within 0.005 bits/byte go to fewer stored bytes; a configuration that qualifies only at lambda = 0 (no
 exit) is reported with its hop count and does not get credit for adaptive depth. Wall-clock tokens/s is
 reported for every run and is not part of the rule.
+
+## 6. Night 1 results (2026-09-20; ledgers `outputs/general-G1-full-log.json`, `outputs/navitrit-unified-G-anchor-log.json`)
+
+Both runs saw exactly 41,336,832 tokens of `data/general` under the 16k tokenizer at sequence length 1024.
+
+**Run notes, recorded before interpretation.** The candidate was restarted three times from its step-500
+checkpoint (full optimizer, sampler and RNG state, so the trajectory is continuous): per-token routing changes
+every subset shape every hop, the CUDA caching allocator fragmented, reserved memory grew from 1.5 GB to 16 GB and
+Windows spilled it into shared system memory, cutting throughput up to 10x and freezing the machine once. Fixed
+by a per-process VRAM cap (`--vram-fraction 0.85`), a cache release every 5 steps and batch 2 x accumulation 8;
+reserved memory then held at 1.5 GB. The candidate's wall clock was ~8.5 h at 1.35k tokens/s; the anchor took
+75 min at 9.2k tokens/s.
+
+| | candidate G1-full | anchor G-anchor |
+|---|---|---|
+| recipe | 3 Mamba + 1 attention tiles, free per-token routing, value exit, hop-conditioned adapters | arm C: 4 attention macro-layers x 4 loops, fixed order, per-loop DWP, soft gating |
+| stored MB (ternary tiles 1.58 b, rest 16 b) | **25.7** (embed 17.0) | 29.4 (embed 17.8, hypernet 5.8) |
+| mean core bits/byte (TinyStories, code, math) | 2.007 | **1.436** |
+| per set: TinyStories / code / math / FineWeb | 1.228 / 2.222 / 2.573 / 2.211 | 0.888 / 1.624 / 1.795 / 1.725 |
+| mean held-out loss (nats/token) | 5.409 | 3.975 |
+| tile applications per token at eval | 2.88 | 16 |
+
+**Against the rule (section 5).** The candidate must reach the anchor's mean core bits/byte at equal tokens
+to qualify. It misses by 0.571 bits/byte. It does not qualify; its smaller stored size does not count.
+
+**Compute-matched curve.** The anchor's loop sweep against the candidate's hop-cap sweep:
+
+| tile applications per token | 1 | 2 | 2.9 | 4 | 8 | 12 | 16 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| candidate (hop caps; policy stops at 2.9) | 2.371 | 2.110 | **2.007** | 2.007 | 2.007 | 2.007 | 2.007 |
+| anchor (loop sweep) | | | | 2.474 | 2.091 | **1.602** | **1.436** |
+
+The crossover sits between 8 and 12 applications, exactly where the equal-tokens control put it under the
+old tokenizer (hardening report 13.2). Below 8 applications the routed hybrid is the better model; from 12 up
+the fixed block is, by a margin that grows to 0.57 bits/byte at full depth. The routed model does nothing past
+its fourth hop (cap 4 = cap 8), so no lambda setting can reach the anchor.
+
+**What the routing itself did.** On this hybrid the value-based exit is clearly informative: 5.409 against
+5.558 for random continuation and 5.592 for capacity routing at 2.9 hops, a 0.149-nat margin (stage 2's was
+0.032). Lambda from 0 to 0.1 trades 1.2 hops for 0.047 nats. Tile usage 0.10 / 0.23 / 0.22 / 0.22 with exit
+0.23: balanced, no collapse.
+
+**Reading.** The 0.57-bit gap is not attributable from this night alone: the candidate differs from the
+anchor in tiles (Mamba-heavy versus attention-only), in routing (free versus fixed order) and in depth
+(2.9 versus 16 applications), and the 6.8x throughput gap says the Mamba scan also dominates the cost. The
+next two runs decompose it, each at the same 41.3M tokens:
+
+- `G2-fixed`: identical hybrid tiles and value exit, `--routing fixed` (isolates what free per-token order costs
+  or buys);
+- `G3-attn-free`: four attention tiles, free routing and value exit (isolates what the Mamba tiles cost).
+
+`G2-fixed` is on the ladder in section 4 and starts on the idle GPU immediately after this write-up.
+The footprint ladder (ternary embeddings, narrower width) is paused until a routed configuration reaches
+the anchor: shrinking a model that does not qualify tells us nothing under the rule.
