@@ -25,12 +25,12 @@ computing with stale weights.
 
 ### Why bytes per token is the metric
 
-Parameter count and FLOPs both mis-describe an offloaded model. What decides whether a 41M-parameter tile
-stack decodes at a usable rate on a laptop with no GPU is **how many bytes cross the NVMe→DRAM boundary per
-generated token**, because that boundary is two to three orders of magnitude slower than DRAM→cache. So the
-measured quantities are: bytes read per generated token, tiles touched per token, cache hit rate, miss
-latency, and tokens/s on CPU — plus the per-sequence working set (distinct tiles over a whole generation),
-which is the honest answer to "how much RAM does this actually need".
+Parameter count and FLOPs alone do not describe an offloaded model. Disk traffic per generated token
+can limit its throughput, alongside CPU computation and loading overhead. The measured quantities are
+logical bytes requested from the store, tiles touched, cache hit rate, page-in latency (including
+unpacking), and CPU tokens/s. Current mmap reads may be served from the operating-system page cache;
+they are not measurements of physical NVMe transfers. Distinct tiles over a sequence describe coverage;
+access order and reuse distance determine how much cache capacity avoids repeated loading.
 
 This is the same argument the parent track makes about stored megabytes
 (`experiments/general_model/AGENTS.md`), pushed one step further: stored bytes decide whether the model
@@ -62,7 +62,8 @@ Without this the store is an fp16 *approximation* of the model and a round trip 
 asserts an exact match (measured: `max |logit delta| = 0.000e+00`). The ternary snapshot is taken from
 BitLinear's own eval cache, so the quantisation math is never re-implemented here; `install_tile` writes
 the stored snapshot straight back into `_eval_cache` rather than re-quantising a master weight — which is
-the point, since in a deployed store the fp32 master weights do not exist at all.
+the intended deployment path. This prototype still allocates the original module parameters, including
+fp32 master weights; removing them from a deployed runtime is outstanding work.
 
 Consequence to know: `canonicalize=True` mutates the model you pass it, and calling `.train()` afterwards
 drops the eval caches and re-derives `gamma` from the (fp16-rounded) masters. Build stores from a model you
@@ -96,40 +97,117 @@ Known shape constraints, carried in the JSON:
 ## What a random-init router does and does not show
 
 `bench_cpu_decode.py` falls back to a random-init `GeneralRoutedLM` when no checkpoint is given, and says so
-loudly. What that measures is **real**: bytes actually read off disk, real unpack time, real LRU behaviour,
-real CPU tokens/s. What it does **not** show is a learned routing pattern. A random tile router routes close
-to uniformly, so the usage entropy sits near its log₂M maximum and the working set is the whole tile set —
-which is the *worst case* for paging. A trained router that concentrates on a hot subset can only do better
-on hit rate and bytes/token. Read the random-init numbers as an upper bound on traffic, never as the
-efficiency claim.
+loudly. It measures logical store reads, unpack time, LRU behaviour and CPU tokens/s. It does not show a
+learned routing pattern or language quality. The original call histogram counts dispatches over full
+prefixes, so its near-maximal entropy does not establish uniform token assignments. Random initialization
+is a baseline, not a worst-case traffic bound: training can change both tile frequency and reuse distance.
+Use incremental token assignments and hit rate versus capacity to assess learned locality.
 
 For the same reason the benchmark defaults to `allow_exit=False` (every token runs the full hop budget): a
 random-init value head makes the adaptive-depth policy meaningless, and the full budget is the comparable,
 deterministic worst case.
 
+## State caching (ladder rung 1): why the state is keyed by (hop, tile)
+
+Every hop of `GeneralRoutedLM.forward` gathers its own subset — the tokens that chose tile `m` at hop `h`
+and were still active — in causal order, and runs the tile on that subset as *one sequence*. Mamba's
+convolution/SSM state and attention's keys/values therefore belong to the **(hop, tile) stream**, not to
+the tile. One state per tile would splice the sequence histories of different hops together and change what
+the model computes; a token that skips a stream (it exited earlier, or chose another tile at that hop)
+must not advance it. `StreamStateCache` (`state_cache.py`) is exactly that map.
+
+`CachedStreamingDecoder` (`cached_decoder.py`) re-runs the eval-mode hop loop lane-locally for a **chunk**
+of tokens at a position offset: the prompt is one chunk (prefill), every generated token a chunk of one.
+Tiles are called piecewise through `hybrid_tile_forward_with_state`: norms, branch mix, FiLM, LoRA and the
+SwiGLU are per token, so only the sequence mixer continues from stream state.
+
+* **Mamba chunk.** The selective scan is a linear recurrence, so a chunk that starts from state `s_0` is
+  the block's own zero-state scan (its arithmetic, `_selective_scan`) plus the carried term
+  `C_t · A_t s_0`, `A_t = prod_{r<=t} a_r` over the chunk. The final state is recomputed in the same
+  signed-log-space form for the last position only; a single-token chunk is the plain step recurrence
+  (the arithmetic of `TernaryMambaBlock.step`). The causal conv runs on `[history ‖ chunk]` with no
+  padding, which for a zero history is the block's `padding=d_conv-1` + crop.
+* **Attention chunk.** Cached K,V plus the new rows; mask `key <= past + query`, i.e. the stream's causal
+  mask restricted to the new rows. At prefill (`past = 0`) that is the reference `causal & valid | eye`,
+  because batch 1 gathers no padding rows.
+* **State lives in the decoder, not in the tile.** `uninstall_tile` never touches sequence state, so a
+  stream survives any number of weight evictions and re-installs (tested at capacity 1). `reset()`
+  clears the streams between generations.
+* **The stateful path keeps the paging invariant.** Every tile call goes through the one funnel
+  (`_page_in`) and re-checks residency itself: an evicted tile raises `TileNotResidentError` from
+  `hybrid_tile_forward_with_state`, because the module pre-hook only fires on `tile.forward`, which the
+  piecewise path does not call.
+
+### What the cached decoder refuses, and why
+
+* `exit_policy="capacity"` ranks a token against the whole sequence (top-k over S), so a later token can
+  flip an earlier token's exit; with full recompute that decision changes as the prefix grows, and there is
+  no causal per-token answer to cache. `"random"` is stochastic. Both raise `ValueError`; `"threshold"`
+  (the trained policy) is the only supported one.
+* `force_random_tiles` (stochastic), `collect_received` (a dense-softmax diagnostic path) and the
+  training-only branches (labels, deep supervision, `probe`) are not reproduced. Batch 1 only.
+
+### What "exact" means here
+
+Test *f* asserts identical greedy ids, prefill logits within 1e-4 of `model(prompt)`, and per-token logits
+within 1e-4 of a fresh full recompute, with exits on and off, at capacity 1 and "all tiles", and with the
+path-conditioned controller. Test *e* isolates the mixer math: a 12-token sequence fed as chunks of 5, 1
+and 6 tokens equals one whole-sequence tile call within 1e-5. Expect ~1e-6, not 0.0: the reference
+computes each position's SSM state with a `logcumsumexp` over the whole prefix, the cached path carries a
+state; both are fp32 roundings of the same recurrence. Attention differs only in where SDPA splits the
+softmax.
+
+### Reading the cached rows
+
+* `tokens_per_second` includes **prefill + decode forwards**, comparable with the full-recompute row
+  whose first step also pays a prompt forward. It excludes token selection, bookkeeping, monitoring and
+  progress printing; it is not end-to-end request latency. `decode_tokens_per_second` and `prefill_ms`
+  separate the two phases.
+  `mean_mb_per_token` includes prefill traffic; `decode_mean_mb_per_token` covers decode-only paging
+  traffic. A short post-prefill sample does not establish steady state.
+* `tile_token_histogram` counts (token, hop) assignments. The older `tile_usage_histogram` counts tile
+  *calls*: in the full-recompute decoder one call covers a whole recomputed prefix, so its entropy is not a
+  per-token routing statistic — the token histogram is the one to quote for rung 3.
+* `state_bytes` is the RAM the streams hold: per Mamba stream `d_inner × (d_state + d_conv − 1)` floats,
+  per attention stream `2 × tokens × hidden` floats. At p512 that is ~76 KB per Mamba stream against a
+  30 MB fp32 tile — the cache is not where the RAM goes.
+
 ## Known limitations
 
-* **Full recompute per generated token, no KV cache.** Same protocol as deep dive 02. Tokens/s here is a
-  *relative* number for comparing cache capacities, not the throughput a real deployment would see; a KV
-  cache (or Mamba's O(1) `step()` path, which this decoder does not use) changes it by orders of magnitude.
+* **The full-recompute `StreamingDecoder` is kept unchanged as the reference** (deep dive 02 protocol);
+  `CachedStreamingDecoder` is the rung-1 path. Its tokens/s is not yet in a ledger: the benchmark must
+  not run next to the GPU trainer (machine rule below), so the rung-1 row is pending.
+* **The benchmark guards itself.** `bench_cpu_decode.py` refuses missing GPU/RAM/RSS telemetry and checks
+  the configured limits before and after construction and between rows. RAM/RSS are checked before each
+  token; GPU polling is throttled between those token checks. Defaults are 7000 MiB GPU usage, 4 GiB free
+  RAM and 6 GiB process RSS. These are boundary checks, not an OS allocation cap: one operation can
+  transiently exceed a threshold. Both modes print each token. `--check-only` inspects readiness without
+  allocating a model; it still imports torch. There is no guard override; flags may tighten the limits.
+* **Evidence files are append-by-new-file.** The default is `outputs/mixture-of-tiles-state-cache.json`;
+  an existing path is refused. Choose a new ledger filename for each run. Failed or interrupted runs
+  save completed rows with `completed: false` and a stop reason, then exit nonzero. Paired full/cached
+  rows must generate identical IDs. Temporary stores are cleaned up on success and failure.
 * **"Cold" is simulated.** The Windows page cache keeps `tiles.bin` resident after the first pass, so a
   genuinely cold NVMe read is not measurable in-process. `injected_miss_latency_ms_per_mb` models it
   (0.33 ms/MB ≈ 3 GB/s) and is **accounted, not slept**, so the numbers are deterministic and the benchmark
   does not idle. `TileCache(sleep_injected=True)` makes it a real sleep if wall-clock realism matters more
   than run time. Any table quoting an injected column is a model, not a measurement, and is labelled so.
+  Prefetch measured read time and injected time have separate counters; only unslept injected time is
+  added to measured forward duration. The legacy `prefetch_seconds` field is their sum.
 * **Prefetch policy is usage-history, not router lookahead.** The spec's preferred policy — ask the router
   for the next hop's top-2 candidates — needs the hop loop's conditioning vector, which `_run_tile` does not
   receive. The allowed fallback is implemented instead: prefetch the two most-used tiles so far
   (`StreamingDecoder.prefetch_policy == "most_used_so_far"`). It never evicts the tile currently executing
   (`prefetch(..., protect=(current,))`), and it is a no-op at capacity 1.
-* **RAM held ≫ bytes read.** A tile is 1.6 bits/weight on disk and fp32 in RAM, a ~20× expansion. The byte
-  table reports both (`disk MB` and `ram MB (fp32)`); the cache capacity is in *tiles*, so the DRAM figure to
-  budget against is `capacity × ram_bytes`, not `capacity × disk_bytes`. An int8 or fp16 compute path would
-  close most of that gap and is the obvious next step.
+* **Artifact bytes are not process RAM.** `ram_bytes` counts an unpacked ternary tensor and dense tile
+  tensors; it omits scales, effective compute weights, optional masks, retained master parameters and
+  temporary allocations. `capacity × ram_bytes` is not a complete RAM budget. The resident artifact is
+  stored at fp16 precision but loaded to fp32. RSS checks are needed in addition to logical accounting;
+  a runtime that actually discards master parameters remains future work.
 * **`uninstall_tile` does not scrub by default.** Zeroing a p512 tile costs a full pass over ~8M weights per
   eviction, which would dominate the timing, so eviction sets the residency flag and drops the eval cache;
   the guard is what makes a bypass detectable. `scrub=True` (used by the tests) additionally zeroes the
-  tensors.
+  tensors without releasing their storage.
 * **BitLinear's additive GEMM is off by default in the benchmark.** On CPU the mask path is two dense GEMMs
   plus two fp32 mask matrices per layer — double the RAM and roughly double the time, for hardware that
   cannot skip zeros (the same finding as `experiments/bench_gemm_paths.py`). `--additive-gemm` restores it.
@@ -170,9 +248,9 @@ until `ternary_embed` or a smaller vocabulary is in play — the same trap secti
 Read these as: **capacity is everything, and the cliff is at "all tiles fit"**. Going from capacity 2 to 4
 cuts traffic 145× (31.0 → 0.214 MB/token) because the whole working set becomes resident and the library is
 read exactly once for the whole sequence. Capacity 1 thrashes: eight hops × four tiles is 32 demand misses
-per token against a one-slot cache. Tile-usage entropy is 1.976 bits against a log₂4 = 2.0 maximum — a
-random-init router is very nearly uniform, so the working set is the whole tile set and these are worst-case
-traffic figures.
+per token against a one-slot cache. Tile-call entropy is 1.976 bits against a log₂4 = 2.0 maximum.
+That describes dispatch frequency over recomputed prefixes, not token-assignment uniformity or a
+worst-case traffic bound. The recorded sequence working set covers the whole library.
 
 The `tok/s` column does **not** order the way the injected column implies: the injected cost is accounted,
 not slept, so it can only *add* time, yet capacity 1 at 0.33 ms/MB looks faster than at 0.00. The cause is
@@ -195,13 +273,51 @@ So the runnable sweep is **{4, 8}**, and 16 misses by 11.5% even with the FFN dr
 and parameter deviations move in opposite directions at 8 and 16 tiles because more tiles shift the mix from
 1.58-bit ternary toward 16-bit dense: matching bytes costs you parameters.
 
+## Verified, 2026-09-19 (rung 1 exactness; CPU, 4 threads, tiny test geometry, `test_mixture_of_tiles.py`)
+
+```
+  tile 0 (mamba): chunks [(0, 5), (5, 6), (6, 12)] max |delta| 1.863e-08 stream tokens 12
+  free routing, allow_exit=True, capacity 1: ids [39, 39, 39, 351, 505, 505] prefill max |delta| 3.576e-07 step max |delta| 1.788e-07 mean hops ref 2.59 cached 2.40 misses 13 evictions 12 streams 7 state 32,256 B
+  path-conditioned routing, capacity 2: ids [148, 215, 215, 215] prefill max |delta| 1.825e-07 step max |delta| 2.161e-07 mean hops ref 4.00 cached 4.00 misses 14 evictions 12 streams 11 state 47,104 B
+```
+
+The rung-1 **benchmark row is pending** (see `HANDOFF-2026-09-20.md`): it must not run beside the GPU trainer.
+
+## Reviewed and validated, 2026-09-20 UTC
+
+The independent adversarial review found no core caching defect for the supported batch-one fp32 eval
+path. It identified an unsupported diagnostic-mode omission and runner defects: fail-open telemetry,
+infrequent checks, double-counted prefetch reads, missing full-mode progress, failure-path scratch leaks,
+and possible ledger overwrite. These are fixed. The runner has no guard bypass, and threshold flags can
+only tighten the machine limits. The display labels dispatch entropy as `call H`.
+
+One integrated CPU run passed all ten tests. Evidence and source hashes are in
+`outputs/mixture-of-tiles-rung1-validation-2026-09-20.json`; raw output is in
+`work/rung1-integrated-tests-2026-09-20.log`. The added longer-prompt checks use a tiny fixed-routing model,
+dense GEMM (the benchmark compute mode), capacity one, and three generated tokens. They are correctness
+experiments, not throughput measurements or evidence of trained language quality.
+
+| prompt tokens | maximum prefill logit error | maximum generated-step logit error | greedy IDs |
+|---:|---:|---:|---|
+| 32 | 0.000e+00 | 8.941e-08 | identical |
+| 64 | 0.000e+00 | 6.706e-08 | identical |
+| 128 | 0.000e+00 | 1.788e-07 | identical |
+
+Other added cases cover decoder reuse, a unit-width causal convolution, all unsupported routing/attention
+policies, mocked prefetch timing, and stopping at the next token boundary when a guard fails. Mocked
+timings validate accounting only. Long generated sequences, trained-checkpoint exactness and p512
+throughput remain outstanding. Read-only trainer/memory observations are recorded separately in
+`outputs/mixture-of-tiles-monitor-2026-09-20.json`; they are not performance results.
+
 ## Files
 
 | file | what it is |
 |---|---|
 | `tile_store.py` | base-3 packing, `TileStore` (build/open/read), `TileCache` (LRU + prefetch + injected latency), `install_tile`/`uninstall_tile`, residency guard |
-| `cpu_decoder.py` | `StreamingDecoder`: greedy batch-1 CPU decode where every tile is paged in through the cache; per-token paging records |
-| `bench_cpu_decode.py` | CLI benchmark → `outputs/mixture-of-tiles-bench.json` |
+| `cpu_decoder.py` | `StreamingDecoder`: greedy batch-1 CPU decode, full recompute per token, every tile paged in through the cache (the reference); per-token paging records |
+| `state_cache.py` | `StreamStateCache` keyed by (hop, tile); chunked Mamba / attention / tile forwards that continue a stream |
+| `cached_decoder.py` | `CachedStreamingDecoder`: one prefill pass then one pass per generated token, same paging funnel, prefill/decode timings split |
+| `bench_cpu_decode.py` | CLI benchmark (`--mode full|cached|both`, prompt-length list, machine guards) → a new `outputs/mixture-of-tiles-state-cache.json` |
 | `sweep_tile_count.py` | fixed-bytes tile-count planner → `outputs/mixture-of-tiles-sweep-plan.json` (plans only, no training) |
 | `test_mixture_of_tiles.py` | CPU-only suite: packing, store round trip, cache semantics, decode invariance, planner |
 
@@ -209,7 +325,9 @@ and parameter deviations move in opposite directions at 8 and 16 tiles because m
 
 ```bash
 python experiments/mixture_of_tiles/test_mixture_of_tiles.py
-python experiments/mixture_of_tiles/bench_cpu_decode.py --capacity 1,2,4 --prompt-tokens 64 --new-tokens 32
+# rung 1: full recompute vs cached state at 32/64/128-token prompts (only when the GPU trainer is idle)
+python experiments/mixture_of_tiles/bench_cpu_decode.py --mode both --prompt-tokens 32,64,128 --new-tokens 16 --capacity 2,4 --no-cold --output outputs/mixture-of-tiles-state-cache.json
+python experiments/mixture_of_tiles/bench_cpu_decode.py --mode full --capacity 1,2,4 --prompt-tokens 64 --new-tokens 32
 python experiments/mixture_of_tiles/bench_cpu_decode.py --checkpoint outputs/checkpoints/general-G1-full-best.pt
 python experiments/mixture_of_tiles/sweep_tile_count.py
 ```

@@ -18,7 +18,7 @@ import sys
 import math
 import time
 from collections import Counter
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -41,7 +41,8 @@ class StreamingDecoder:
     """Greedy batch-1 CPU decoder with a paged tile library behind it."""
 
     def __init__(self, model, cache: TileCache, prefetch: Optional[bool] = None, prefetch_top_k: int = 2,
-                 build_masks: Optional[bool] = None, scrub_on_evict: bool = False):
+                 build_masks: Optional[bool] = None, scrub_on_evict: bool = False,
+                 verbose: bool = False, safety_check: Optional[Callable[[], None]] = None):
         self.model = model
         self.model.eval()
         self.cache = cache
@@ -53,6 +54,8 @@ class StreamingDecoder:
         self.prefetch_policy = "most_used_so_far"
         self.build_masks = build_masks
         self.scrub_on_evict = bool(scrub_on_evict)
+        self.verbose = bool(verbose)
+        self.safety_check = safety_check
 
         enable_residency_guard(self.model)
         for index in range(len(self.model.tiles)):
@@ -79,8 +82,8 @@ class StreamingDecoder:
                   if index != current and not self.cache.contains(index)]
         return ranked[: self.prefetch_top_k]
 
-    def _run_tile(self, tile_index: int, h_sub, valid, alpha, need_received):
-        """Page tile `tile_index` in through the cache, then run the model's own tile call."""
+    def _page_in(self, tile_index: int) -> None:
+        """The one funnel every tile execution goes through: cache lookup, install if evicted, counters, prefetch."""
         tensors = self.cache.get(tile_index)
         if not tile_is_resident(self.model, tile_index):
             install_tile(self.model, tile_index, tensors, build_masks=self.build_masks)
@@ -89,6 +92,10 @@ class StreamingDecoder:
         self._tile_calls_this_token += 1
         if self.prefetch_enabled:
             self.cache.prefetch(self._prefetch_candidates(tile_index), protect=(tile_index,))
+
+    def _run_tile(self, tile_index: int, h_sub, valid, alpha, need_received):
+        """Page tile `tile_index` in through the cache, then run the model's own tile call."""
+        self._page_in(tile_index)
         return self._original_run_tile(tile_index, h_sub, valid, alpha, need_received)
 
     # -------------------------------------------------------------- generation ------------------
@@ -111,6 +118,8 @@ class StreamingDecoder:
         generated: List[int] = []
         previous = self.cache.stats()
         for step in range(max_new_tokens):
+            if self.safety_check is not None:
+                self.safety_check()
             self._touched_this_token = set()
             self._tile_calls_this_token = 0
             started = time.perf_counter()
@@ -123,7 +132,7 @@ class StreamingDecoder:
 
             current = self.cache.stats()
             injected_delta = ((current["injected_seconds"] - previous["injected_seconds"])
-                              + (current["prefetch_seconds"] - previous["prefetch_seconds"]))
+                              + (current["prefetch_injected_seconds"] - previous["prefetch_injected_seconds"]))
             accounted = 0.0 if self.cache.sleep_injected else injected_delta
             records.append({
                 "step": step,
@@ -145,6 +154,12 @@ class StreamingDecoder:
                 "wall_ms": (compute_seconds + accounted) * 1000.0,
             })
             previous = current
+            if self.verbose:
+                record = records[-1]
+                print(f"  [full   ] token {step + 1:>3}/{max_new_tokens} id {next_id:>6} "
+                      f"hops {record['mean_hops']:4.1f} tiles {record['tiles_touched']} "
+                      f"compute {record['compute_ms']:8.1f} ms misses {record['misses']} "
+                      f"read {record['bytes_read_total'] / MEGABYTE:6.2f} MB", flush=True)
 
         return self._summarise(records, generated, int(prompt_ids.numel()))
 
@@ -175,8 +190,8 @@ class StreamingDecoder:
             "misses": total_misses,
             "hit_rate": (total_hits / requests) if requests else 0.0,
             "mean_miss_latency_ms": stats["mean_miss_latency_ms"],
-            "total_read_ms": stats["read_seconds"] * 1000.0,
-            "total_injected_ms": (stats["injected_seconds"] + stats["prefetch_seconds"]) * 1000.0,
+            "total_read_ms": (stats["read_seconds"] + stats["prefetch_read_seconds"]) * 1000.0,
+            "total_injected_ms": (stats["injected_seconds"] + stats["prefetch_injected_seconds"]) * 1000.0,
             "total_bytes_read": total_bytes,
             "working_set_tiles": working_set,
             "working_set_size": len(working_set),

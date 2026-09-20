@@ -1,0 +1,25 @@
+{
+  "purpose": "Read-only machine observations while validating the CPU mixture-of-tiles lane; not benchmark results",
+  "samples": [
+    {
+      "timestamp_utc": "2026-09-20T05:40:34.189544+00:00",
+      "trainer_pid": 24816,
+      "trainer_active": true,
+      "training_step": 750,
+      "available_ram_bytes": 5038735360,
+      "gpu_memory_used_mib": 4362,
+      "gpu_utilization_percent": 20,
+      "benchmark_started": false
+    }
+  ],
+  "readiness_checks": [
+    {
+      "timestamp_utc": "2026-09-20T05:48:09.730570+00:00",
+      "command": "python -u -B experiments/mixture_of_tiles/bench_cpu_decode.py --check-only",
+      "exit_code": 2,
+      "model_allocated": false,
+      "benchmark_started": false,
+      "stdout": "[guard] gpu used 5348 MiB (limit 7000), free RAM 3.8566246032714844 GB (min 4.0), rss 0.35759735107421875 GB (cap 6.0)\r\n[guard] free RAM is 3.9 GB < 4.0 GB\r\n[guard] refusing to start: free RAM is 3.9 GB < 4.0 GB\r\n"
+    }
+  ]
+}

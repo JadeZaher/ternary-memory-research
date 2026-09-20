@@ -469,6 +469,8 @@ class TileCache:
         self.read_seconds = 0.0             # real mmap + unpack time of demand misses
         self.injected_seconds = 0.0         # modelled cold-NVMe time of demand misses
         self.prefetch_seconds = 0.0
+        self.prefetch_read_seconds = 0.0
+        self.prefetch_injected_seconds = 0.0
         self.miss_latencies_ms: List[float] = []
 
     def stats(self) -> Dict[str, Any]:
@@ -484,6 +486,8 @@ class TileCache:
             "read_seconds": self.read_seconds,
             "injected_seconds": self.injected_seconds,
             "prefetch_seconds": self.prefetch_seconds,
+            "prefetch_read_seconds": self.prefetch_read_seconds,
+            "prefetch_injected_seconds": self.prefetch_injected_seconds,
             "total_read_seconds": self.read_seconds + self.injected_seconds + self.prefetch_seconds,
             "mean_miss_latency_ms": (sum(self.miss_latencies_ms) / len(self.miss_latencies_ms))
                                     if self.miss_latencies_ms else 0.0,
@@ -548,6 +552,8 @@ class TileCache:
             self.prefetches += 1
             self.prefetch_bytes += byte_count
             self.prefetch_seconds += seconds + injected
+            self.prefetch_read_seconds += seconds
+            self.prefetch_injected_seconds += injected
             self._evict_until(1, protect=protected)
             self._entries[index] = tensors
             self._entries.move_to_end(index)

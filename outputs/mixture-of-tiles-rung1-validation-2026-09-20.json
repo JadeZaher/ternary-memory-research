@@ -1,0 +1,61 @@
+{
+  "timestamp_utc": "2026-09-20T05:46:39.177326+00:00",
+  "purpose": "Rung 1 correctness and safety validation, not throughput evidence",
+  "command": "python -u -B experiments/mixture_of_tiles/test_mixture_of_tiles.py",
+  "exit_code": 0,
+  "integrated_runs": 1,
+  "tests_passed": [
+    "test_pack_unpack_round_trip",
+    "test_store_round_trip",
+    "test_cache_semantics",
+    "test_streaming_decode",
+    "test_state_chunking",
+    "test_cached_decode_exactness",
+    "test_cached_benchmark_configuration",
+    "test_prefetch_latency_accounting",
+    "test_machine_guards",
+    "test_sweep_planner"
+  ],
+  "test_count": 10,
+  "completed": true,
+  "stdout": "torch 2.5.1+cu121 on CPU, threads 4\r\n\r\n=== test_pack_unpack_round_trip ===\r\n  len     1:    1 bytes, 8.0000 bits/weight, exact\r\n  len     5:    1 bytes, 1.6000 bits/weight, exact\r\n  len     6:    2 bytes, 2.6667 bits/weight, exact\r\n  len  1000:  200 bytes, 1.6000 bits/weight, exact\r\n  len  1001:  201 bytes, 1.6064 bits/weight, exact\r\n  2-D (48, 96): 922 bytes, 1.6007 bits/weight, exact\r\ntest_pack_unpack_round_trip PASSED\r\n\r\n=== test_store_round_trip ===\r\n  routing=fixed max |logit delta| 0.000e+00  tile_usage [0.333, 0.333, 0.0, 0.333]  tiles 70,646 B  resident 104,486 B  1.6006 bits/weight\r\n  routing=free  max |logit delta| 0.000e+00  tile_usage [0.0, 0.41, 0.59, 0.0]  tiles 70,646 B  resident 105,644 B  1.6006 bits/weight\r\ntest_store_round_trip PASSED\r\n\r\n=== test_cache_semantics ===\r\n  capacity 2 over [0, 1, 0, 2, 1, 0]: hits 1 misses 5 evictions 3 bytes 126,898 (= sum of tile_bytes over the miss sequence)\r\n  prefetch: get(1) after prefetch([1]) -> hits 1 misses 1 prefetch_bytes 28,126\r\n  injected latency at 0.33 ms/MB on a 28,126 B tile: 0.0089 ms\r\ntest_cache_semantics PASSED\r\n\r\n=== test_streaming_decode ===\r\n  capacity 1: ids [170, 348, 358, 243] misses 32 hits 0 bytes/token 170,080 tiles/token 3.00 working set 3 H 1.406 bits\r\n  capacity 3: ids [170, 348, 358, 243] misses 3 hits 29 bytes/token 17,662 tiles/token 3.00 working set 3 H 1.406 bits\r\n  evicted tile 0 raised TileNotResidentError when executed directly\r\ntest_streaming_decode PASSED\r\n\r\n=== test_state_chunking ===\r\n  tile 0 (mamba): chunks [(0, 5), (5, 6), (6, 12)] max |delta| 1.863e-08 stream tokens 12\r\n  tile 1 (mamba): chunks [(0, 5), (5, 6), (6, 12)] max |delta| 2.608e-08 stream tokens 12\r\n  tile 2 (attn ): chunks [(0, 5), (5, 6), (6, 12)] max |delta| 2.235e-08 stream tokens 12\r\n  d_conv=1: empty conv history, single-token then chunk max |delta| 1.583e-08\r\ntest_state_chunking PASSED\r\n\r\n=== test_cached_decode_exactness ===\r\n  free routing, allow_exit=False, capacity 1: ids [39, 264, 264, 264, 264, 264] prefill max |delta| 2.682e-07 step max |delta| 2.086e-07 mean hops ref 4.00 cached 4.00 misses 27 evictions 26 streams 7 state 38,400 B\r\n  free routing, allow_exit=False, capacity 3: ids [39, 264, 264, 264, 264, 264] prefill max |delta| 2.682e-07 step max |delta| 2.086e-07 mean hops ref 4.00 cached 4.00 misses 3 evictions 0 streams 7 state 38,400 B\r\n  free routing, allow_exit=True, capacity 1: ids [39, 39, 39, 351, 505, 505] prefill max |delta| 3.576e-07 step max |delta| 1.788e-07 mean hops ref 2.59 cached 2.40 misses 13 evictions 12 streams 7 state 32,256 B\r\n  free routing, allow_exit=True, capacity 3: ids [39, 39, 39, 351, 505, 505] prefill max |delta| 3.576e-07 step max |delta| 1.788e-07 mean hops ref 2.59 cached 2.40 misses 3 evictions 0 streams 7 state 32,256 B\r\n  evicted tile 0 raised TileNotResidentError through the stateful path\r\n  capacity refused: exit_policy='capacity': 'capacity' ranks a token against the...\r\n  random refused: exit_policy='random': 'capacity' ranks a token against the w...\r\n  force_random_tiles refused: force_random_tiles draws fresh tiles every forward; nothing ...\r\n  collect_received refused: collect_received uses a diagnostic attention path unsupporte...\r\n  path-conditioned routing, capacity 2: ids [148, 215, 215, 215] prefill max |delta| 1.825e-07 step max |delta| 2.161e-07 mean hops ref 4.00 cached 4.00 misses 14 evictions 12 streams 11 state 47,104 B\r\ntest_cached_decode_exactness PASSED\r\n\r\n=== test_cached_benchmark_configuration ===\r\n  dense GEMM fixed routing, prompt 32, capacity 1: ids [12, 40, 40] prefill max |delta| 0.000e+00 step max |delta| 8.941e-08 mean hops ref 4.00 cached 4.00 misses 12 evictions 11 streams 4 state 20,992 B\r\n  dense GEMM fixed routing, prompt 64, capacity 1: ids [10, 10, 49] prefill max |delta| 0.000e+00 step max |delta| 6.706e-08 mean hops ref 4.00 cached 4.00 misses 12 evictions 11 streams 4 state 37,376 B\r\n  dense GEMM fixed routing, prompt 128, capacity 1: ids [1, 1, 40] prefill max |delta| 0.000e+00 step max |delta| 1.788e-07 mean hops ref 4.00 cached 4.00 misses 12 evictions 11 streams 4 state 70,144 B\r\n  reused decoder: second prompt 5 tokens, stream lengths all 7, max |delta| 1.043e-07\r\ntest_cached_benchmark_configuration PASSED\r\n\r\n=== test_prefetch_latency_accounting ===\r\n  StreamingDecoder: mocked 200 ms compute + 0 ms injected = 200 ms; second-token guard stops execution\r\n  StreamingDecoder: mocked 200 ms compute + 4 ms injected = 204 ms; second-token guard stops execution\r\n  CachedStreamingDecoder: mocked 200 ms compute + 0 ms injected = 200 ms; second-token guard stops execution\r\n  CachedStreamingDecoder: mocked 200 ms compute + 4 ms injected = 204 ms; second-token guard stops execution\r\ntest_prefetch_latency_accounting PASSED\r\n\r\n=== test_machine_guards ===\r\n[guard] gpu used 1000 MiB (limit 7000), free RAM 8.0 GB (min 4.0), rss 1.0 GB (cap 6.0)\r\n[guard] gpu used 8000 MiB (limit 7000), free RAM 8.0 GB (min 4.0), rss 1.0 GB (cap 6.0)\r\n[guard] GPU memory in use is 8000 MiB > guard 7000 MiB (a spilling trainer saturates RAM bandwidth; see research/disk-inference-tier.md section 4)\r\n[guard] gpu used 1000 MiB (limit 7000), free RAM 2.0 GB (min 4.0), rss 1.0 GB (cap 6.0)\r\n[guard] free RAM is 2.0 GB < 4.0 GB\r\n[guard] gpu used 1000 MiB (limit 7000), free RAM 8.0 GB (min 4.0), rss 7.0 GB (cap 6.0)\r\n[guard] resident set 7.00 GB exceeds --max-rss-gb 6.0\r\n[guard] gpu used None MiB (limit 7000), free RAM 8.0 GB (min 4.0), rss 1.0 GB (cap 6.0)\r\n[guard] required telemetry unavailable: gpu_memory_used_mib\r\n[guard] gpu used 1000 MiB (limit 7000), free RAM None GB (min 4.0), rss 1.0 GB (cap 6.0)\r\n[guard] required telemetry unavailable: free_ram_gb\r\n[guard] gpu used 1000 MiB (limit 7000), free RAM 8.0 GB (min 4.0), rss None GB (cap 6.0)\r\n[guard] required telemetry unavailable: rss_gb\r\n[guard] GPU memory in use is 8000 MiB > guard 7000 MiB (a spilling trainer saturates RAM bandwidth; see research/disk-inference-tier.md section 4)\r\n[guard] free RAM is 2.0 GB < 4.0 GB\r\n  mocked telemetry: healthy allowed; high GPU, low RAM, high RSS and each unavailable metric refused\r\n  monitored telemetry: GPU rise caught after refresh; RAM decline caught between GPU polls\r\ntest_machine_guards PASSED\r\n\r\n=== test_sweep_planner ===\r\n  tiles   8: intermediate   416 tile bytes      366,326 vs reference 367,606 (-0.35%), --tile-kinds has 8 entries\r\n  tiles  16: intermediate   112 tile bytes      363,766 vs reference 367,606 (-1.04%), --tile-kinds has 16 entries\r\ntest_sweep_planner PASSED\r\n\r\nALL MIXTURE-OF-TILES TESTS PASSED\r\n",
+  "source_hashes": [
+    {
+      "path": "experiments/mixture_of_tiles/state_cache.py",
+      "sha256": "8a5f65ec667127b1abddd9db2a88f4bb3d96a136d58380e92651ebcd1a2d8520"
+    },
+    {
+      "path": "experiments/mixture_of_tiles/cached_decoder.py",
+      "sha256": "f4fe09fcddabf4396319fa2ae061b0fc6ce80a36019c5ba6e5c48bdce960cccc"
+    },
+    {
+      "path": "experiments/mixture_of_tiles/cpu_decoder.py",
+      "sha256": "1327d0b75d63b9112bfe66a19c44e1778135577faeeac5e66a3bb2558af9daab"
+    },
+    {
+      "path": "experiments/mixture_of_tiles/tile_store.py",
+      "sha256": "1a2e427e409d52cc7cf3a4830eda9da4a8098209cd35efb6c7bee83e1b7a00d1"
+    },
+    {
+      "path": "experiments/mixture_of_tiles/bench_cpu_decode.py",
+      "sha256": "98da5decd69cba18acd6edefbe26cb2bd6f20172320d3e49292f1c4cdf5eb019"
+    },
+    {
+      "path": "experiments/mixture_of_tiles/test_mixture_of_tiles.py",
+      "sha256": "533caabc3d2a601b2f04c762b292280f4981872a3928e1a0c54eabef974b3ad3"
+    }
+  ],
+  "benchmark_status": "unmeasured: live readiness check refused because available RAM fell below 4 GiB; general-model trainer still active at latest process observation",
+  "limitations": [
+    "Tiny geometry, short generated continuations; no trained-model quality claim",
+    "Boundary guards are not hard OS allocation caps",
+    "Original tile master parameters remain allocated; bounded-RAM deployment unproven",
+    "Timing regressions use mocked clocks and are not benchmark rows"
+  ],
+  "independent_review": {
+    "status": "approved for correctness and safety scope",
+    "source_hashes_verified": true,
+    "test_log_verified": true,
+    "benchmark_pending": true
+  }
+}

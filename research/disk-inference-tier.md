@@ -16,46 +16,52 @@ a spilling GPU job, and under an explicit thread and memory cap (see section 4).
 | level | tokens/s at batch 1 | what it proves |
 |---|---:|---|
 | floor (measured 2026-09-19, random router, fp32 tiles, full recompute, 4 threads) | ~1 | the mechanics work; nothing else |
-| interactive draft | >= 10 | state caching alone must get here |
-| usable assistant | >= 30 | needs a ternary kernel path |
-| headroom target | >= 100 | ternary kernel + paged library with a small working set |
+| interactive draft (target) | >= 10 | a latency target to test after state caching |
+| usable assistant (target) | >= 30 | a latency target, separate from language quality |
+| headroom (target) | >= 100 | a stretch target, not a forecast |
 
-The metric that matters for the disk story is **bytes read per generated token**, not tokens/s: tokens/s
-is bounded by compute until the library exceeds RAM, and by bytes/token after that.
+**Bytes read per generated token** is a central disk-streaming metric, alongside tokens/s. Computation,
+DRAM bandwidth, unpacking and storage can each limit throughput; library size alone does not identify
+the bottleneck. Measure the costs under matched settings.
 
 ## 2. Why the floor is ~1 token/s and what removes each factor
 
-1. **Full recompute per token.** Every generated token re-runs the whole prompt through every hop. A
-   per-tile state cache (Mamba: 64 KB per tile per sequence; attention: the KV of the one attention tile)
-   makes each new token cost one pass over its own hops. Expected gain: the prompt length, 50-100x at
-   64-128 tokens.
-2. **fp32 unpacked tiles.** The store unpacks ternary to float32 for `torch.matmul`. A lookup-table
-   ternary kernel (the BitNet b1.58 CPU path: 2-bit weights, add/subtract only) reads 8x fewer bytes and
-   skips the multiplies. Expected gain: 3-6x on x86 with AVX2, per published numbers for 1.58-bit kernels.
-3. **Eight hops of four tiles with a random router.** A trained router stops at ~3 hops (section 13.1)
-   and concentrates on a hot set. Expected gain: 2-3x, measured only when the trained checkpoint exists.
+1. **Full recompute per token.** Every generated token re-runs the whole prompt through every hop.
+   State keyed by **(hop, tile)** preserves each gathered stream's Mamba convolution/SSM state or
+   attention KV. The implemented cached decoder processes the prompt once and then only each new
+   token's hops. This removes repeated prefix work; its throughput improvement is still unmeasured.
+2. **fp32 unpacked tiles.** The store packs five ternary weights per byte, then expands them to
+   floating-point matrices for computation. A packed ternary CPU kernel is a separate proposed
+   implementation. Its storage format, scale handling, exactness and speed need their own test.
+3. **Random routing.** The existing benchmark uses random initialization with exits disabled.
+   A trained router might reduce hops or concentrate accesses, but neither is guaranteed. Its
+   incremental access trace and hit rate versus capacity must be measured at useful model quality.
 
-Multiplied, the floor becomes hundreds of tokens/s for a 40M-parameter model, which is where the ternary
-CPU literature already sits for models of this size.
+These are opportunities, not measured speedup factors. They cannot be multiplied into a throughput
+prediction: changing one bottleneck can expose another, and prompt prefill still costs time.
 
 ## 3. How it scales: bigger than RAM
 
 The tile store is a library of independent blobs; the cache pages them. Scaling beyond RAM has three
 conditions, each a measurable number:
 
-- **Working set per sequence** (distinct tiles a sequence touches) must be a small fraction of the
-  library. Measured by `bench_cpu_decode.py`; needs the trained router. With the random router it is
-  the whole library, which is a floor, not a result.
-- **Bytes per token** must stay under the disk's sustained rate divided by the target tokens/s: at
-  3 GB/s NVMe and 30 tokens/s that is 100 MB per token, i.e. up to ~50 tile misses per token at 1.9 MB
-  each, so the miss budget is generous once the working set is small.
+- **Reuse within the cache capacity.** Distinct tiles over a sequence describe coverage, but access
+  order and reuse distance determine cache hits. A sequence can gradually visit a large library without
+  thrashing; a smaller repeatedly evicted set can still perform poorly. Measure incremental traces,
+  token-assignment entropy and hit rate versus capacity together.
+- **Bytes per token** must fit the effective disk-bandwidth budget at the target tokens/s. That is
+  an upper bound: read latency, unpacking and computation also take time. Current mmap counters measure
+  logical bytes requested from the store, not physical NVMe transfers; cold-disk evidence is pending.
 - **A tile design that can be small.** The fixed-bytes planner showed the current tile (mixer + FFN)
   cannot be split past 8 tiles at width 512, because the mixer's size does not shrink with the FFN.
   A many-tile library needs a shared mixer with tiled FFN experts (mixture-of-experts-of-tiles). This
   is the design change the tier exists to test, after the trained working set is measured.
 
-Resident bytes are the other half: embeddings (17 MB fp16) are 2.8x the pageable library today. Ternary
-embeddings (1.6 MB) are a precondition, not an option, for the disk-resident design.
+Resident bytes are the other half. The existing ledger reports 20,083,218 bytes for the stored resident
+tensors, versus 7,183,998 bytes for the tile library. These are artifact sizes, not process RAM.
+The implementation retains master tile parameters after eviction, and installed tiles also have derived
+compute tensors. A bounded-RAM deployment must remove those retained masters and account for actual
+allocations, embeddings, routing/adapters, sequence states and temporary buffers. It is not yet demonstrated.
 
 ## 4. Machine-safety rules for this tier (the 2026-09-19 freeze)
 
@@ -64,15 +70,23 @@ memory; the spill, not the benchmark alone, saturated RAM bandwidth. Rules from 
 
 - CPU-tier jobs run only when no GPU trainer is spilling (`nvidia-smi` memory under ~7 GB) or when the
   GPU is idle.
-- `torch.set_num_threads` at most half the physical cores; process memory cap via `--max-resident-mb`
-  in the benchmark (fail fast rather than page).
+- `torch.set_num_threads(4)` at most; process memory cap via `--max-rss-gb` in the benchmark.
+  Missing machine telemetry must refuse execution. Guards at stage and token boundaries are checks,
+  not an operating-system hard allocation cap; a single operation can transiently exceed the limit.
 - Benchmarks use short prompts by default (32 tokens, 16 new) and print per-token timings as they go.
 
 ## 5. Ladder (each rung is one test plus one benchmark row)
 
 1. state caching (Mamba state + attention KV) with exactness test against full recompute;
+   **status 2026-09-19:** implemented (`experiments/mixture_of_tiles/cached_decoder.py`, state keyed by
+   (hop, tile)); exactness test passes (ids identical, logits within ~3e-7 of full recompute, exits mixed,
+   state survives eviction); tokens/s row not yet measured — the GPU trainer was running (section 4);
+   **review update 2026-09-20 UTC:** runner safety/accounting defects fixed; one integrated run passes
+   all ten tests, including dense-GEMM fixed-routing checks at 32/64/128-token prompts on tiny geometry
+   (maximum generated-step logit error 1.788e-07 across those cases, IDs identical). Evidence:
+   `outputs/mixture-of-tiles-rung1-validation-2026-09-20.json`. Full-size throughput remains unmeasured;
 2. ternary lookup-table matmul on CPU (the repo's `experiments/bitlinear.py` additive GEMM as reference),
    exactness test, bytes/token and tokens/s;
 3. trained-router working set and hit rate from the night-1 checkpoint;
-4. shared-mixer tiled-FFN design in `general_model.py` behind a toggle, fixed-bytes sweep to 64 tiles;
+4. shared-mixer tiled-FFN design note and fixed-bytes plan to 64 tiles; no changes to `general_model.py`;
 5. cold-disk measurement with unbuffered reads (`FILE_FLAG_NO_BUFFERING`) instead of injected latency.
