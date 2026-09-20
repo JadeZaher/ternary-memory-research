@@ -302,6 +302,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--lambda-sweep", default="0,0.005,0.01,0.02,0.05,0.1")
     ap.add_argument("--target-bpb", type=float, default=None)
     ap.add_argument("--grad-checkpoint", action="store_true")
+    ap.add_argument("--vram-fraction", type=float, default=0.85,
+                    help="cap on this process's CUDA memory as a fraction of the card; the allocator frees cached blocks instead of spilling into shared system memory (WDDM)")
     ap.add_argument("--amp", choices=["bf16", "fp16", "off"], default="bf16")
     ap.add_argument("--device", choices=["auto", "cuda", "cpu"], default="auto")
     ap.add_argument("--seed", type=int, default=0)
@@ -323,6 +325,9 @@ def main() -> None:
     torch.manual_seed(args.seed)
     want_cuda = args.device != "cpu" and torch.cuda.is_available() and torch.cuda.device_count() > 0
     device = torch.device("cuda" if want_cuda else "cpu")
+    if device.type == "cuda" and 0.0 < args.vram_fraction < 1.0:
+        torch.cuda.set_per_process_memory_fraction(args.vram_fraction)   # variable subset shapes fragment the allocator; without a cap it grew past the card and spilled
+        print(f"[vram] per-process cap {args.vram_fraction:.2f} of {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     amp_dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "off": torch.float32}[args.amp]
     use_amp = args.amp != "off" and device.type == "cuda"
 
@@ -401,12 +406,15 @@ def main() -> None:
         grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0).item()
         scaler.step(opt)
         scaler.update()
+        if device.type == "cuda" and step % 5 == 0:
+            torch.cuda.empty_cache()   # variable subset shapes fragment the allocator; reserved memory reached 13.7 GB within 25 steps at batch 2 (see 2026-09-19 log)
 
         if step % 10 == 0 or step == 1:
             elapsed = time.time() - t0
+            reserved_gb = torch.cuda.memory_reserved() / 1e9 if device.type == "cuda" else 0.0
             print(f"step {step:6d} | loss {loss_acc:.4f} ce {ce_acc:.4f} | gnorm {grad_norm:.2f} | lr {lr:.2e} | "
                   f"hops {out['mean_hops']:.2f} | {tokens_per_step * (step - start_step + 1) / max(1e-6, elapsed):,.0f} tok/s | "
-                  f"{elapsed / 60:.1f} min")
+                  f"res {reserved_gb:.2f} GB | {elapsed / 60:.1f} min")
 
         if not calibrated and step - start_step + 1 >= 60:
             measured = time.time() - t0
