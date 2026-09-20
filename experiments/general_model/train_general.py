@@ -420,11 +420,14 @@ def main() -> None:
 
         if step % args.eval_interval == 0 or step == args.max_steps:
             ev = evaluate(model, eval_batches, device, amp_dtype, bytes_per_token)
+            if device.type == "cuda":
+                torch.cuda.empty_cache()   # eval fragments the caching allocator; the first night-1 attempt spilled to shared memory after its first eval
             record = {"step": step, "train_loss": round(loss_acc, 4), "train_ce": round(ce_acc, 4), "lr": lr,
                       "grad_norm": round(grad_norm, 3), "elapsed_s": round(time.time() - t0, 1),
                       "tokens_seen": tokens_per_step * step, "train_mean_hops": round(out["mean_hops"], 3),
                       "tile_usage": [round(u, 3) for u in out["tile_usage"]],
                       "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2) if device.type == "cuda" else 0.0,
+                      "reserved_vram_gb": round(torch.cuda.memory_reserved() / 1e9, 2) if device.type == "cuda" else 0.0,
                       **ev}
             history.append(record)
             print(f"  [eval {step}] " + " | ".join(f"{k} {v}" for k, v in ev.items()) +
