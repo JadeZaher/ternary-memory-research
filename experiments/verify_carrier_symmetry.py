@@ -153,6 +153,34 @@ verify('the zero-moving maps have no property under min, max or the signed produ
 # 10. agreement with research/region-memory.md claim 8 (identity and sign flip are the maps an input sign undoes)
 verify('agrees with region-memory claim 8: the product-pushable set is {identity, N_0}', those('signed product (the XOR-labelled table)', 'pushable_onto_one_input') == {n for n, m in moves_zero.items() if not m})
 
+# 11. hardware reading: the differential conductance pair (research/carrier-symmetry.md section 3b)
+# A weight w in S is stored as two binary cells (g_plus, g_minus) with w = g_plus - g_minus. This is the
+# finite code only: a "write" is a change of one cell's state; endurance, drift, energy and analog
+# non-idealities are not modelled and no claim about them is made.
+pair = {-1: (0, 1), 0: (0, 0), 1: (1, 0)}
+decode = {code: w for w, code in pair.items()}
+verify('differential pair decodes as g_plus minus g_minus', all(pair[w][0] - pair[w][1] == w for w in S))
+verify('zero is the only code with no conducting cell', [w for w in S if pair[w] == (0, 0)] == [0])
+
+write_free_pair_ops = {'identity': lambda g: g, 'swap_lines': lambda g: (g[1], g[0])}
+induced = {n: name_of(lambda x, f=f: decode[f(pair[x])]) for n, f in write_free_pair_ops.items()}
+verify('swapping the two lines induces exactly N_0; no other map is write-free', induced == {'identity': 'identity', 'swap_lines': 'N_0'})
+
+
+def reprogram_cost(f):
+    """Cell-state changes needed to turn every stored code pair[x] into pair[f(x)], summed over S."""
+    return sum(int(pair[f(x)][i] != pair[x][i]) for x in S for i in (0, 1))
+
+
+reprogram = {n: reprogram_cost(f) for n, f in perms.items()}
+verify('reprogram costs: identity 0, N_0 4, the two zero-moving swaps 2 each, the two cycles 4 each',
+       reprogram == {'identity': 0, 'N_0': 4, 'N_+1': 2, 'N_-1': 2, 'cycle_plus': 4, 'cycle_minus': 4})
+zero_current_preserved = {n: perms[n](0) == 0 for n in perms}
+verify('the non-conducting code stays on the zero weight exactly under the zero-fixing maps',
+       {n for n, ok in zero_current_preserved.items() if ok} == {'identity', 'N_0'})
+verify('the write-free maps are exactly the product-pushable maps',
+       set(induced.values()) == those('signed product (the XOR-labelled table)', 'pushable_onto_one_input'))
+
 result = {
     'checked_at_utc': datetime.now(timezone.utc).isoformat(),
     'status': 'passed',
@@ -162,6 +190,12 @@ result = {
     'composition_table_row_after_column': composition,
     'moves_zero': moves_zero,
     'commutation_table': commutation,
+    'differential_pair': {
+        'code': {str(w): list(c) for w, c in pair.items()},
+        'write_free_pair_ops_induce': induced,
+        'reprogram_cost_cell_writes_over_S': reprogram,
+        'zero_current_code_preserved': zero_current_preserved,
+    },
 }
 result_path = Path('outputs/carrier-symmetry.json')
 result_path.parent.mkdir(parents=True, exist_ok=True)

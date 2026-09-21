@@ -1,6 +1,6 @@
 # The symmetry group of the ternary carrier, version 0.1
 
-Contributed 2026-09-21 by Mitchell (agentprivacy.org) as a pull request; not yet reviewed by the owner. Status: definitions and one exhaustive finite-domain check. `experiments/verify_carrier_symmetry.py` passes 27 named checks; its tables are in `outputs/carrier-symmetry.json`. Labels follow `AGENTS.md`: **derived** means proved or exhaustively checked on the finite domain; **observation** means a correspondence noted, not a result; nothing here is a measured result about a model.
+Contributed 2026-09-21 by Mitchell (agentprivacy.org) as a pull request; not yet reviewed by the owner. Status: definitions and one exhaustive finite-domain check. `experiments/verify_carrier_symmetry.py` passes 33 named checks; its tables are in `outputs/carrier-symmetry.json`. Labels follow `AGENTS.md`: **derived** means proved or exhaustively checked on the finite domain; **observation** means a correspondence noted, not a result; nothing here is a measured result about a model.
 
 ## 0. Why this note exists
 
@@ -49,6 +49,25 @@ Readings, each checked rather than argued:
 
 Practical reading for the region idea: a "NOT" stored per region is free at decode time under the signed product only if it is the sign flip; under a modulo-3 accumulator only if it is a cycle. No single map is free under both, and no zero-moving swap is free under either family that a dot product uses.
 
+### 3b. Hardware reading on a differential conductance pair (derived, finite)
+
+`research/deep-dives/09` stores a weight as two cells with `w = g_plus - g_minus` and `g` in `{0, 1}`: `+1 = (1, 0)`, `0 = (0, 0)`, `-1 = (0, 1)`. Only that finite code is modelled here. A **write** is a change of one cell's state. Endurance, drift, energy and analog non-idealities are outside this note and no claim about them is made.
+
+| map | write-free realisation | reprogram cost (cell writes over the three codes) | non-conducting code stays on the zero weight |
+|---|---|---|---|
+| `identity` | yes | 0 | yes |
+| `N_0` (sign flip) | **yes: swap the two lines, or negate the readout** | 4 | yes |
+| `N_+1` | no | 2 | no |
+| `N_-1` | no | 2 | no |
+| `cycle_plus` | no | 4 | no |
+| `cycle_minus` | no | 4 | no |
+
+Readings, each asserted by the script:
+
+- The write-free maps are exactly the product-pushable maps of section 3. Arithmetic and wiring agree on which NOT is free, and region-memory's "sign flip as an invariant compensated on inputs" is, on this code, a per-row or per-column wiring choice.
+- The two zero-moving swaps are the cheapest reprograms but can never be free, and each moves the `(0, 0)` code off the zero weight. A "NOT" of that kind turns every zero cell into a conducting cell: the zero-current fraction that deep dive 09 relies on becomes the fraction of some other value. Under the signed product there is no third option.
+- The sign flip costs 4 cell writes if it is done by reprogramming and 0 if it is done by wiring, which is the whole case for keeping it out of the weight region, as region-memory section 5 concluded from the byte cost alone.
+
 ## 4. An observation from outside (observation, fenced)
 
 The agentprivacy dual-agent harness proves, for the 64-element ring `Z/(2^6)Z`, that two involutions compose to the successor: `neg(bnot(x)) = succ(x)`. The ecosystem orientation (`research/agentprivacy-orientation.md`) correctly recorded that this is not a law of balanced ternary. Section 2 shows the triangle has an identity of the same shape with different ingredients: `N_0 ∘ N_-1 = cycle_plus`. In both cases a reflection composed with a reflection is a rotation, which is a property of every dihedral group and of nothing else here. The observation carries no claim about memory, speed or model behaviour, and the ring-side conjectures of that ecosystem stay on their own domain.
@@ -69,6 +88,8 @@ No statement about trained weights, kernels, packed bytes, cache traffic, accura
 | 6 | Product-pushable set = zero-fixing set = {identity, `N_0`}, agreeing with region-memory claim 8 | derived, exhaustive |
 | 7 | Modulo-3 addition: automorphisms {identity, `N_0`}; pushable {identity, both cycles} | derived, exhaustive |
 | 8 | The `Z/(2^6)Z` identity and claim 3 share the dihedral shape | observation only |
+| 9 | On the differential pair `w = g_plus - g_minus`, swapping the lines is the only write-free map and induces `N_0`; reprogram costs 0 / 4 / 2 / 2 / 4 / 4; the non-conducting code stays on zero exactly under the zero-fixing maps | derived, exhaustive over the finite code |
+| 10 | The write-free maps equal the product-pushable maps | derived, exhaustive |
 
 ## 7. How to run
 
@@ -76,7 +97,7 @@ No statement about trained weights, kernels, packed bytes, cache traffic, accura
 python experiments/verify_carrier_symmetry.py
 ```
 
-Prints `{"status": "passed", "check_count": 27}` and rewrites `outputs/carrier-symmetry.json` with the composition table, the zero-moving flags and the full commutation table. A failing check names the assertion and, for the `verify_all` checks, the first failing input with both sides.
+Prints `{"status": "passed", "check_count": 33}` and rewrites `outputs/carrier-symmetry.json` with the composition table, the zero-moving flags, the full commutation table and the differential-pair table of section 3b. A failing check names the assertion and, for the `verify_all` checks, the first failing input with both sides.
 
 ## Sources
 

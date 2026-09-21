@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-21T13:50:37.435173+00:00",
+  "checked_at_utc": "2026-09-21T14:04:51.353196+00:00",
   "status": "passed",
   "domain": "S = {-1, 0, +1}; every check is exhaustive over S, S x S or the stated index set",
   "checks": [
@@ -29,7 +29,13 @@
     "addition modulo 3: exactly identity and N_0 are automorphisms",
     "addition modulo 3: exactly identity and the two cycles can be pushed onto one input",
     "the zero-moving maps have no property under min, max or the signed product",
-    "agrees with region-memory claim 8: the product-pushable set is {identity, N_0}"
+    "agrees with region-memory claim 8: the product-pushable set is {identity, N_0}",
+    "differential pair decodes as g_plus minus g_minus",
+    "zero is the only code with no conducting cell",
+    "swapping the two lines induces exactly N_0; no other map is write-free",
+    "reprogram costs: identity 0, N_0 4, the two zero-moving swaps 2 each, the two cycles 4 each",
+    "the non-conducting code stays on the zero weight exactly under the zero-fixing maps",
+    "the write-free maps are exactly the product-pushable maps"
   ],
   "permutations": {
     "identity": [
@@ -249,6 +255,42 @@
         "anti_automorphism": false,
         "pushable_onto_one_input": true
       }
+    }
+  },
+  "differential_pair": {
+    "code": {
+      "-1": [
+        0,
+        1
+      ],
+      "0": [
+        0,
+        0
+      ],
+      "1": [
+        1,
+        0
+      ]
+    },
+    "write_free_pair_ops_induce": {
+      "identity": "identity",
+      "swap_lines": "N_0"
+    },
+    "reprogram_cost_cell_writes_over_S": {
+      "identity": 0,
+      "N_0": 4,
+      "N_+1": 2,
+      "N_-1": 2,
+      "cycle_plus": 4,
+      "cycle_minus": 4
+    },
+    "zero_current_code_preserved": {
+      "identity": true,
+      "N_0": true,
+      "N_+1": false,
+      "N_-1": false,
+      "cycle_plus": false,
+      "cycle_minus": false
     }
   }
 }
